@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:horizontal_week_calendar/horizontal_week_calendar.dart';
 import 'package:intl/intl.dart';
-import 'package:pharmed_app/service/notification_service.dart';
 import 'package:pharmed_app/utils/constants.dart';
 import 'package:pharmed_app/views/notification/notification_controller.dart';
 import 'package:pharmed_app/views/notification/widgets/notification_container.dart';
@@ -17,61 +16,12 @@ class NotificationView extends StatefulWidget {
 
 class _NotificationViewState extends State<NotificationView> {
   var selectedDate = DateTime.now();
-  TimeOfDay? selectedTime;
   final NotificationController controller = Get.put(NotificationController());
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final screenHeight = MediaQuery.sizeOf(context).height;
-
-    Future<void> _selectTime(BuildContext context) async {
-      final TimeOfDay? picked = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-
-      if (picked != null) {
-        setState(() {
-          selectedTime = picked;
-        });
-      }
-    }
-
-    void _scheduleNotification() {
-      if (selectedTime != null) {
-        DateTime now = DateTime.now();
-        DateTime scheduledDateTime = DateTime(
-          now.year,
-          now.month,
-          now.day,
-          selectedTime!.hour,
-          selectedTime!.minute,
-        );
-
-        Duration delay = scheduledDateTime.difference(now);
-
-        if (delay.isNegative) {
-          // If selected time is in the past, schedule it for the next day
-          scheduledDateTime = scheduledDateTime.add(const Duration(days: 1));
-          delay = scheduledDateTime.difference(now);
-        }
-
-        Future.delayed(delay, () {
-          NotiService().showNotification(
-            title: "Scheduled Notification",
-            body: "This is your reminder!",
-          );
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                "Notification scheduled at ${DateFormat.jm().format(scheduledDateTime)}"),
-          ),
-        );
-      }
-    }
 
     controller
         .fetchNotifications(DateFormat('yyyy-MM-dd').format(selectedDate));

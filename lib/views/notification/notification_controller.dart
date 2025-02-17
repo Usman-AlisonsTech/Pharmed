@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +8,7 @@ import 'package:pharmed_app/service/api_service.dart';
 import 'package:pharmed_app/service/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
-// import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class NotificationController extends GetxController {
   var isLoading = false.obs;
@@ -25,54 +26,29 @@ class NotificationController extends GetxController {
 
   String getFormattedDate(DateTime date) {
     DateTime today = DateTime.now();
-
-    if (DateFormat('yyyy-MM-dd').format(date) ==
-        DateFormat('yyyy-MM-dd').format(today)) {
-      return "today".tr;
-    } else {
-      return "";
-    }
+    return DateFormat('yyyy-MM-dd').format(date) == DateFormat('yyyy-MM-dd').format(today) ? "today".tr : "";
   }
 
   Future<void> fetchNotifications(String selectedDate) async {
     try {
       isLoading(true);
-
       final jsonData = await apiService.medicineNotification(selectedDate);
 
       if (jsonData != null && jsonData['success'] == true) {
         var notificationResponse = NotificationResponse(
           success: jsonData['success'],
-          data: (jsonData['data'] as List)
-              .map((item) => Datum.fromJson(item))
-              .toList(),
+          data: (jsonData['data'] as List).map((item) => Datum.fromJson(item)).toList(),
           message: jsonData['message'],
         );
 
         notifications.assignAll(notificationResponse.data);
 
-        // Schedule only future notifications
         for (var notification in notificationResponse.data) {
-          // Parse the schedule time from the response
-          DateTime notificationTime =
-              DateTime.parse(notification.schedule.toString());
-          if (notificationTime.isAfter(DateTime.now())) {
-            Duration delay = notificationTime.difference(DateTime.now());
-
-            // Schedule the notification after the delay
-            Future.delayed(delay, () {
-              NotiService().showNotification(
-                title: "Scheduled Notification",
-                body:
-                    "This is your reminder for ${notification.medicalHistory.medicine}!",
-              );
-            });
-
-            print(
-                "Notification scheduled for ${DateFormat.yMMMd().add_jm().format(notificationTime)}");
-          } else {
-            print(
-                "Past notification ignored: ${DateFormat.yMMMd().add_jm().format(notificationTime)}");
+          if(Platform.isIOS){
+            scheduleMedicineNotification(notification);
+          }else if(Platform.isAndroid){
+            // notiService.showNotification(title: 'Take Your Medicine ${notification.medicalHistory.medicine}');
+            scheduleMedicineNotification(notification);
           }
         }
       } else {
@@ -85,15 +61,34 @@ class NotificationController extends GetxController {
     }
   }
 
+void scheduleMedicineNotification(Datum notification) {
+  try {
+    // Parsing schedule from API response
+    DateTime scheduledTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(notification.schedule.toString());
+
+    // Convert to local timezone
+    final tz.TZDateTime scheduledDate = tz.TZDateTime.from(scheduledTime, tz.local);
+
+    notiService.scheduleNotification(
+      id: notification.id ?? 0,
+      title: "Medicine Reminder",
+      body: "Take your medicine: ${notification.medicalHistory.medicine}",
+      scheduledDate: scheduledDate,
+    );
+
+    print("Notification scheduled for: $scheduledDate");
+  } catch (e) {
+    print("Error scheduling notification: $e");
+  }
+}
+
+
   Future<void> fetchMedicineTranslations(List<String> medicineNames) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String languageCode = prefs.getString('selectedLanguage') ?? '';
 
     if (languageCode.toLowerCase() == 'en') {
-      // If language is English, use default names
-      translatedMedicines.value = {
-        for (var name in medicineNames) name: name,
-      };
+      translatedMedicines.value = {for (var name in medicineNames) name: name};
       return;
     }
 
@@ -101,17 +96,13 @@ class NotificationController extends GetxController {
       for (var medicineName in medicineNames) {
         if (translatedMedicines.containsKey(medicineName)) continue;
 
-        http.Response response = await apiService.translateText(
-          medicineName,
-          languageCode,
-        );
+        http.Response response = await apiService.translateText(medicineName, languageCode);
 
         if (response.statusCode == 200) {
           final utf8DecodedResponse = utf8.decode(response.bodyBytes);
           final data = json.decode(utf8DecodedResponse);
 
-          if (data['translated_data'] != null &&
-              data['translated_data']['text'] != null) {
+          if (data['translated_data']?['text'] != null) {
             translatedMedicines[medicineName] = data['translated_data']['text'];
           } else {
             print('Error: Translated text not found in the response');
@@ -131,10 +122,7 @@ class NotificationController extends GetxController {
     String languageCode = prefs.getString('selectedLanguage') ?? '';
 
     if (languageCode.toLowerCase() == 'en') {
-      // If language is English, use default names
-      translatedFrequency.value = {
-        for (var name in frequency) name: name,
-      };
+      translatedFrequency.value = {for (var name in frequency) name: name};
       return;
     }
 
@@ -142,17 +130,13 @@ class NotificationController extends GetxController {
       for (var medicineName in frequency) {
         if (translatedFrequency.containsKey(medicineName)) continue;
 
-        http.Response response = await apiService.translateText(
-          medicineName,
-          languageCode,
-        );
+        http.Response response = await apiService.translateText(medicineName, languageCode);
 
         if (response.statusCode == 200) {
           final utf8DecodedResponse = utf8.decode(response.bodyBytes);
           final data = json.decode(utf8DecodedResponse);
 
-          if (data['translated_data'] != null &&
-              data['translated_data']['text'] != null) {
+          if (data['translated_data']?['text'] != null) {
             translatedFrequency[medicineName] = data['translated_data']['text'];
           } else {
             print('Error: Translated text not found in the response');

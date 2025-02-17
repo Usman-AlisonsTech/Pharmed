@@ -89,10 +89,16 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                             widget.data.medicine ??
                             '';
 
-                    return CustomText(
-                      text: translatedName,
-                      weight: FontWeight.w700,
-                      fontSize: screenWidth * 0.035,
+                    return Container(
+                      width: 80,
+                      child: Text(translatedName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: screenWidth * 0.035,
+                            fontFamily: 'Poppins',
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis),
                     );
                   }),
                   SizedBox(
@@ -308,10 +314,18 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CustomText(
-                            text: data.medicine,
-                            weight: FontWeight.w900,
-                            fontSize: 30,
+                          Container(
+                            width: screenWidth*0.55,
+                            child: Text(
+                              data.medicine,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 30,
+                                fontFamily: 'Poppins'
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           GestureDetector(
                               onTap: () {

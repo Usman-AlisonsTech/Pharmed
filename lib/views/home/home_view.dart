@@ -153,20 +153,11 @@ class HomeView extends StatelessWidget {
                     ),
                     itemCount: controller.medications.length,
                     itemBuilder: (context, index) {
-                      // if (index == controller.medications.lengthx) {
-                      //   return Container(
-                      //       margin: EdgeInsets.only(left: screenWidth * 0.35),
-                      //       child: Center(
-                      //         child: const SizedBox(
-                      //           width: 30,
-                      //           height: 30,
-                      //           child:
-                      //               CircularProgressIndicator(strokeWidth: 3),
-                      //         ),
-                      //       ));
-                      // }
-                      return MedicineContainer(
-                        data: controller.medications[index],
+                      return GestureDetector(
+                        onTap: (){},
+                        child: MedicineContainer(
+                          data: controller.medications[index],
+                        ),
                       );
                     },
                   );
