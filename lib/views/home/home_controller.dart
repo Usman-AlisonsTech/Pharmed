@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:pharmed_app/models/popular_medication_model.dart';
 import 'package:pharmed_app/models/search_response_model.dart';
 import 'package:pharmed_app/service/api_service.dart';
-import 'package:pharmed_app/views/notification/notification_controller.dart';
 import 'package:pharmed_app/views/search/medicine_information/medicine_information_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -33,7 +32,6 @@ class HomeController extends GetxController {
   TextEditingController frequencyController = TextEditingController();
   TextEditingController reasonController = TextEditingController();
 
-  // final notificationController = Get.put(NotificationController());
 
   @override
   void onInit() {
@@ -303,11 +301,5 @@ class HomeController extends GetxController {
     } catch (e) {
       print("Error fetching translations: $e");
     }
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-    medications.clear();
   }
 }

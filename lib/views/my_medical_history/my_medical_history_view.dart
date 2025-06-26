@@ -52,6 +52,7 @@ class MyMedicalHistoryView extends StatelessWidget {
             buildDrawerItem(
               screenWidth,
               screenHeight,
+              context,
             ),
           ],
         ),
@@ -128,19 +129,19 @@ class MyMedicalHistoryView extends StatelessWidget {
                     },
                     child: ListView.builder(
                       itemCount: controller.filteredMedicationsList.length +
-                          (controller.isLoading.value ? 1 : 0),
+                          (controller.isPaginationLoading.value ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index ==
                             controller.filteredMedicationsList.length) {
                           // Show loader at the bottom when loading more
                           return Center(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              padding: const EdgeInsets.symmetric(vertical: 20),
                               child: SizedBox(
-                                width: 30,
-                                height: 30,
+                                width: 25,
+                                height: 25,
                                 child:
-                                    CircularProgressIndicator(strokeWidth: 3),
+                                    CircularProgressIndicator(strokeWidth: 2.5),
                               ),
                             ),
                           );

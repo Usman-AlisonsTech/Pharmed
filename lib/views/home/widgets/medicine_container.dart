@@ -100,18 +100,17 @@ class _MedicineContainerState extends State<MedicineContainer> {
                   children: [
                     Expanded(
                       child: Obx(() {
-                        String translatedName =
-                            controller.translatedMedicines[widget.data.name] ??
-                                widget.data.name ??
-                                '';
+                        String translatedName = controller.translatedMedicines[widget.data.name] ?? 
+                        widget.data.name ?? 
+                        'Unknown Medicine';    
                         return Text(
                           translatedName,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.visible,
+                          maxLines: 2, 
+                          overflow: TextOverflow.ellipsis,
                           softWrap: true,
                         );
                       }),
@@ -122,12 +121,10 @@ class _MedicineContainerState extends State<MedicineContainer> {
                 GestureDetector(
                   onTap: () {
                     controller.dateFields.clear();
-                    _showBottomSheet(
-                        context,
-                        widget.data,
-                        controller.translatedMedicines[widget.data.name] ??
-                            widget.data.name ??
-                            '');
+                    String displayName = controller.translatedMedicines[widget.data.name] ?? 
+                      widget.data.name ?? 
+                     'Unknown Medicine';
+                    _showBottomSheet(context, widget.data, displayName);
                   },
                   child: Container(
                     decoration: BoxDecoration(

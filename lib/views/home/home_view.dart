@@ -58,6 +58,7 @@ class HomeView extends StatelessWidget {
             buildDrawerItem(
               screenWidth,
               screenHeight,
+              context
             ),
           ],
         ),

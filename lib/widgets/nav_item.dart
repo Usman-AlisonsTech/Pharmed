@@ -3,13 +3,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:pharmed_app/views/authentication/login/login_view.dart';
 import 'package:pharmed_app/views/sidebar_views/change_language/change_language_view.dart';
+import 'package:pharmed_app/views/sidebar_views/delete_account/delete_account_view.dart';
 import 'package:pharmed_app/views/sidebar_views/privacy_policy/privacy_policy_view.dart';
 import 'package:pharmed_app/views/sidebar_views/terms_condition/terms_condition_view.dart';
 import 'package:pharmed_app/widgets/common_button.dart';
 import 'package:pharmed_app/widgets/custom_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Widget buildDrawerItem(double screenWidth, double screenHeight) {
+Widget buildDrawerItem(double screenWidth, double screenHeight, BuildContext context) {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
     child: Column(
@@ -35,12 +36,24 @@ Widget buildDrawerItem(double screenWidth, double screenHeight) {
             'assets/svg/privacy.svg', 'read_privacy'.tr, () {
           Get.to(PrivacyPolicyView());
         }),
-        SizedBox(height: 20),
+        SizedBox(height: 15),
+         CommonButton(
+          onPressed: () async {
+            Get.to(DeleteAccountView());
+          },
+          title: 'delete_account'.tr,
+          borderColor: Color(0xffF9F9F9),
+          bgColor: Color(0xffF9F9F9),
+          textColor: Color(0xffFF0000),
+          icon: SvgPicture.asset('assets/svg/user_delete.svg'),
+          shadowColor: Colors.white,
+        ),
+        SizedBox(height: 15),
         CommonButton(
           onPressed: () async {
             SharedPreferences pref = await SharedPreferences.getInstance();
             await pref
-                .remove('loggedInToken'); // Remove only the loggedInToken key
+                .remove('loggedInToken'); 
             Get.offAll(LoginView());
           },
           title: 'signout'.tr,

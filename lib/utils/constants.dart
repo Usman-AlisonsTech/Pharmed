@@ -9,6 +9,8 @@ class ApiConstants {
   static const String termsCondition = 'terms/content';
   static const String patientProfile = 'patient/details';
   static const String medicalProfile = 'doctor/create';
+  static const String deleteAccount = 'user/delete';
+  static const String delAccOtpVerify = 'user/verifydelete';
   static const String popularMedication = 'medications/popular';
   static const String addMedication  = 'patient/medication/add';
   static const String getMedication  =  'patient/medication/get';

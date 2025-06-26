@@ -51,6 +51,7 @@ class DicView extends StatelessWidget {
             buildDrawerItem(
               screenWidth,
               screenHeight,
+              context
             ),
           ],
         ),

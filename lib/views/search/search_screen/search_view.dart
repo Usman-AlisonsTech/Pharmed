@@ -102,6 +102,7 @@ class SearchView extends StatelessWidget {
                 } else if (controller.searchResults.isEmpty &&
                     controller.searchController.text.isNotEmpty) {
                   return Container(
+                    color: Color(0xffF9F9F9),
                     margin: EdgeInsets.only(top: 20),
                     child: ListTile(
                       title: CustomText(text: controller.searchController.text),
@@ -122,18 +123,23 @@ class SearchView extends StatelessWidget {
                     physics: AlwaysScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       final suggestion = controller.searchResults[index];
-                      return ListTile(
-                        title: CustomText(
-                            text: suggestion.genericName ?? 'Unknown'),
-                        onTap: () {
-                          controller.searchController.text != ''
-                              ? controller.searchMedicationInfo(
-                                  suggestion.genericName.toString(),
-                                  suggestion.genericName ?? '')
-                              : null;
-                        },
-                        trailing:
-                            SvgPicture.asset('assets/svg/search_icon.svg'),
+                      return Container(
+                        color: Color(0xffF9F9F9),
+                         margin: EdgeInsets.only(top: 20),
+                        child: ListTile(
+                          title: CustomText(
+                              text: suggestion.genericName ?? 'Unknown'),
+                          onTap: () {
+                            controller.searchController.text != ''
+                                ? controller.searchMedicationInfo(
+                                    suggestion.genericName.toString(),
+                                    suggestion.genericName ?? '')
+                                : null;
+                          },
+                          subtitle: CustomText(text: 'searchController',fontSize: 13,color: Color(0xffB1B1B1),),
+                          trailing:
+                              SvgPicture.asset('assets/svg/search_icon.svg'),
+                        ),
                       );
                     },
                   );

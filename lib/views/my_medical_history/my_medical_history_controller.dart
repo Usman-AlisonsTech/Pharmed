@@ -12,6 +12,7 @@ class MyMedicalHistoryController extends GetxController {
   var dateFields = <String>[''].obs;
   ApiService apiService = ApiService();
   RxBool isLoading = false.obs;
+  RxBool isPaginationLoading = false.obs; // Separate loading state for pagination
   RxBool isUpdateLoading = false.obs;
   var medicationsList = <Datum>[].obs;
   var filteredMedicationsList = <Datum>[].obs;
@@ -106,7 +107,12 @@ class MyMedicalHistoryController extends GetxController {
 
   // get Medication History
   Future<void> getMedications({int page = 1}) async {
-    isLoading.value = true;
+    // Use different loading states for initial load vs pagination
+    if (page == 1) {
+      isLoading.value = true;
+    } else {
+      isPaginationLoading.value = true;
+    }
 
     try {
       GetMedicationResponse response =
@@ -133,13 +139,17 @@ class MyMedicalHistoryController extends GetxController {
     } catch (e) {
       print('Error fetching Medications: $e');
     } finally {
-      isLoading.value = false;
+      if (page == 1) {
+        isLoading.value = false;
+      } else {
+        isPaginationLoading.value = false;
+      }
     }
   }
 
   Future<void> loadMoreMedications() async {
-    // Only load more if there's a next page
-    if (hasNextPage.value) {
+    // Only load more if there's a next page and not already loading
+    if (hasNextPage.value && !isPaginationLoading.value) {
       currentPage.value++;
       await getMedications(page: currentPage.value);
     }

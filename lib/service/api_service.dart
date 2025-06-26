@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:pharmed_app/models/add_medication_response_model.dart';
 import 'package:pharmed_app/models/add_thread_response_model.dart';
@@ -8,7 +9,6 @@ import 'package:pharmed_app/models/get_medication_response_model.dart';
 import 'package:pharmed_app/models/login_otp_response_model.dart';
 import 'package:pharmed_app/models/login_response_model.dart';
 import 'package:pharmed_app/models/medical_profile_model.dart';
-import 'package:pharmed_app/models/notification_response_model.dart';
 import 'package:pharmed_app/models/patient_profile_response_model.dart';
 import 'package:pharmed_app/models/popular_medication_model.dart';
 import 'package:pharmed_app/models/signup_error_response_model.dart';
@@ -20,6 +20,7 @@ import 'package:pharmed_app/models/terms_and_conditions_model.dart';
 import 'package:pharmed_app/models/thread_response_model.dart';
 import 'package:pharmed_app/models/update_medication_response_model.dart';
 import 'package:pharmed_app/utils/constants.dart';
+import 'package:pharmed_app/views/authentication/login/login_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
@@ -248,6 +249,56 @@ class ApiService {
     }
   }
 
+   Future deleteAccount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('loggedInToken') ?? '';
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConstants.baseurl + ApiConstants.deleteAccount),
+        headers: {"Content-Type": "application/json",'Authorization': 'Bearer ${token}',},
+      );
+
+      print('Response Status Code : ${response.statusCode}');
+      print('Response Data : ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        throw Exception("Failed to Delete Account");
+      }
+    } catch (e) {
+     print(e);
+    }
+  }
+
+   Future delAccOtpVerify(String otp) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('loggedInToken') ?? '';
+    print(ApiConstants.baseurl + ApiConstants.delAccOtpVerify);
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConstants.baseurl + ApiConstants.delAccOtpVerify),
+        headers: {"Content-Type": "application/json",'Authorization': 'Bearer ${token}'},
+        body: json.encode({
+          "otp": otp,
+        }),
+      );
+
+      print('Response Status Code : ${response.statusCode}');
+      print('Response Data : ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else if (response.statusCode == 404) {
+        throw Exception("Invalid OTP");
+      } else {
+        throw Exception("Failed to Login");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // popular medication
   Future<PopularMedicationResponse?> popularMedication({pageNum}) async {
     final url = ApiConstants.baseurl + ApiConstants.popularMedication;
@@ -268,6 +319,10 @@ class ApiService {
       if (response.statusCode == 200) {
         var jsonData = json.decode(response.body);
         return PopularMedicationResponse.fromJson(jsonData);
+      } else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           return null;
       } else {
         print("Error: ${response.statusCode}");
         return null;
@@ -296,6 +351,10 @@ class ApiService {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         return SuggestionResponse.fromJson(jsonData);
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           return null;
       } else {
         print("Error: ${response.statusCode}, ${response.body}");
         return null;
@@ -331,6 +390,9 @@ class ApiService {
       } else if (response.statusCode == 500) {
         print("Server error (500). Returning empty data.");
         return [];
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
       } else {
         print("Error fetching medications: ${response.statusCode}");
       }
@@ -364,6 +426,10 @@ class ApiService {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return AddMedication.fromJson(responseData);
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           throw Exception('Unauthorized: Session expired');
       } else {
         print("Error: ${response.statusCode} - ${response.body}");
         return AddMedication(
@@ -402,6 +468,10 @@ class ApiService {
       if (response.statusCode == 200) {
         // Parse the response body into a GetMedicationResponse model
         return GetMedicationResponse.fromJson(json.decode(response.body));
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           throw Exception('Unauthorized: Session expired');
       } else {
         throw Exception('Failed to load medications');
       }
@@ -433,6 +503,10 @@ class ApiService {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return UpdateMedicationResponse.fromJson(responseData);
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           throw Exception('Unauthorized: Session expired');
       } else {
         return UpdateMedicationResponse(
           success: false,
@@ -472,6 +546,10 @@ class ApiService {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         return DrugInteractionResponse.fromJson(data);
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           throw Exception('Unauthorized: Session expired');
       } else {
         return null;
       }
@@ -503,6 +581,10 @@ class ApiService {
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           throw Exception('Unauthorized: Session expired');
       } else {
         print("Error: ${response.statusCode}");
         return null;
@@ -532,6 +614,10 @@ class ApiService {
 
       if (response.statusCode == 200) {
         return GetThreadResponse.fromJson(json.decode(response.body));
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           throw Exception('Unauthorized: Session expired');
       } else {
         throw Exception('Failed to load thread: ${response.body}');
       }
@@ -563,6 +649,10 @@ class ApiService {
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(response.body);
         return AddThreadResponse.fromJson(responseBody);
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           throw Exception('Unauthorized: Session expired');
       } else {
         throw Exception('Failed to add thread: ${response.body}');
       }
