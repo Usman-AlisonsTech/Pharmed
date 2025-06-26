@@ -28,7 +28,7 @@ class LoginController extends GetxController {
           await apiService.login(emailController.text, passwordController.text);
 
       if (loginResponse != null && loginResponse.success == true) {
-        Get.offAll(LoginOtpView(email: emailController.text));
+        Get.to(LoginOtpView(email: emailController.text));
       } else {
         Get.snackbar("Error", loginResponse?.message ?? "Login failed",
             backgroundColor: Colors.red, colorText: Colors.white);

@@ -2,7 +2,7 @@ name: pharmed_app
 description: "A new Flutter project."
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+4
+version: 1.0.1+1
 
 environment:
   sdk: ^3.5.3
@@ -10,9 +10,11 @@ environment:
 dependencies:
   cached_network_image: ^3.4.1
   country_picker: ^2.0.27
+  crypto: ^3.0.6
   cupertino_icons: ^1.0.8
   custom_otp_textfield: ^0.0.2
   custom_refresh_indicator: ^4.0.1
+  encrypt: ^5.0.3
   file_picker: ^8.1.7
   flutter:
     sdk: flutter

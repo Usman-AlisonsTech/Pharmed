@@ -19,8 +19,8 @@ class MyMedicalHistoryView extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     final controller = Get.put(MyMedicalHistoryController());
-    
-    controller.currentPage.value =1;
+
+    controller.currentPage.value = 1;
     controller.getMedications();
 
     return Scaffold(
@@ -127,8 +127,25 @@ class MyMedicalHistoryView extends StatelessWidget {
                       return false;
                     },
                     child: ListView.builder(
-                      itemCount: controller.filteredMedicationsList.length,
+                      itemCount: controller.filteredMedicationsList.length +
+                          (controller.isLoading.value ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index ==
+                            controller.filteredMedicationsList.length) {
+                          // Show loader at the bottom when loading more
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: SizedBox(
+                                width: 30,
+                                height: 30,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 3),
+                              ),
+                            ),
+                          );
+                        }
+
                         Datum medication =
                             controller.filteredMedicationsList[index];
                         return MedicalHistoryContainer(data: medication);

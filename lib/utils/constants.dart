@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ApiConstants {
-  static const String baseurl = 'https://pharmed.alisonstech-dev.com/API/public/api/';
+  // static const String baseurl = 'https://pharmed.alisonstech-dev.com/API/public/api/';
+  static const String baseurl = 'http://ec2-3-29-110-146.me-central-1.compute.amazonaws.com/backend/api/';
   static const String login = 'patient/login';
   static const String loginOtp = 'patient/otpverify';
   static const String signUp = 'patient/create';
@@ -19,6 +20,7 @@ class ApiConstants {
   static const String addThread  = 'medications/thread/add';
   static const String privacyPolicy = 'privacy/content';
   static const String forgotPass = 'forgot_password/sendCode';
+  static const String secretKey = 'usman';
 }
 
 class ColorConstants {

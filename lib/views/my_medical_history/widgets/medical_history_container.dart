@@ -315,16 +315,41 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: screenWidth*0.55,
-                            child: Text(
-                              data.medicine,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 30,
-                                fontFamily: 'Poppins'
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                            width: screenWidth * 0.55,
+                            child: FutureBuilder<String>(
+                              future: controller.translateText(data.medicine),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                    child: SizedBox(),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text(
+                                    data.medicine,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w900,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                    textAlign: TextAlign.start,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                                } else {
+                                  return Text(
+                                    snapshot.data ?? data.medicine,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w900,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                    textAlign: TextAlign.start,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                                }
+                              },
                             ),
                           ),
                           GestureDetector(

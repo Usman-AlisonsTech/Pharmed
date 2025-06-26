@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pharmed_app/localization/localization.dart';
-import 'package:pharmed_app/service/notification_service.dart';
 import 'package:pharmed_app/views/splash/splash_controller.dart';
 import 'package:pharmed_app/views/splash/splash_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  NotiService().initNotification();
   final prefs = await SharedPreferences.getInstance();
   String? savedLanguage = prefs.getString('selectedLanguage') ?? 'en';
   Locale initialLocale = Locale('en', 'US');

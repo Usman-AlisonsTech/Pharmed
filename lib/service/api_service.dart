@@ -12,6 +12,7 @@ import 'package:pharmed_app/models/notification_response_model.dart';
 import 'package:pharmed_app/models/patient_profile_response_model.dart';
 import 'package:pharmed_app/models/popular_medication_model.dart';
 import 'package:pharmed_app/models/signup_error_response_model.dart';
+import 'package:pharmed_app/models/signup_otp_notverify_response_model.dart';
 import 'package:pharmed_app/models/signup_otp_response_model.dart';
 import 'package:pharmed_app/models/signup_response_model.dart';
 import 'package:pharmed_app/models/suggestion_response_model.dart';
@@ -33,6 +34,9 @@ class ApiService {
           "password": password,
         }),
       );
+
+      print('Response Status Code : ${response.statusCode}');
+      print('Response Data : ${response.body}');
 
       if (response.statusCode == 200) {
         return LoginResponse.fromJson(json.decode(response.body));
@@ -56,8 +60,13 @@ class ApiService {
         }),
       );
 
+      print('Response Status Code : ${response.statusCode}');
+      print('Response Data : ${response.body}');
+
       if (response.statusCode == 200) {
         return LoginOtpResponse.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 404) {
+        throw Exception("Invalid OTP");
       } else {
         throw Exception("Failed to Login");
       }
@@ -84,10 +93,18 @@ class ApiService {
       print('Response Status Code : ${response.statusCode}');
       print('Response Data : ${response.body}');
 
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
       if (response.statusCode == 200) {
-        return SignUpResponse.fromJson(json.decode(response.body));
-      } else if (response.statusCode == 422) {
-        return SignUpErrorResponse.fromJson(json.decode(response.body));
+        return SignUpResponse.fromJson(responseData);
+      } else if (response.statusCode == 404) {
+        if (responseData["message"] == "Not Verified") {
+          return SignUpNotVerifyResponse.fromJson(responseData);
+        } else if (responseData["message"] == "User Exist") {
+          return SignUpErrorResponse.fromJson(responseData);
+        } else {
+          return SignUpErrorResponse.fromJson(responseData);
+        }
       } else {
         throw Exception("Failed to sign up");
       }

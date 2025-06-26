@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pharmed_app/models/signup_error_response_model.dart';
+import 'package:pharmed_app/models/signup_otp_notverify_response_model.dart';
 import 'package:pharmed_app/models/signup_response_model.dart';
 import 'package:pharmed_app/service/api_service.dart';
 import 'package:pharmed_app/views/authentication/login/login_view.dart';
@@ -52,10 +53,9 @@ class SignUpController extends GetxController {
         }
       } else if (response is SignUpErrorResponse) {
         // Check if email already exists
-        if (response.errors != null &&
-            response.errors!.email.isNotEmpty &&
-            response.errors!.email
-                .contains("The email has already been taken.")) {
+        if (response.message != null &&
+            response.message!
+                .contains("User Exist")) {
           Get.snackbar(
               "Warning", "Email already exists. Redirecting to login...",
               backgroundColor: Colors.orange, colorText: Colors.white);
@@ -63,6 +63,11 @@ class SignUpController extends GetxController {
         } else {
           Get.snackbar("Error", response.message ?? "User Registration Failed",
               backgroundColor: Colors.red, colorText: Colors.white);
+        }
+      }
+      else if(response is SignUpNotVerifyResponse){
+        if(response.message != null && response.message!.contains("Not Verified")){
+              Get.to(SignupOtpView(email: emailController.text));
         }
       }
     } catch (e) {

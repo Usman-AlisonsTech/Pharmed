@@ -43,14 +43,14 @@ class NotificationController extends GetxController {
 
         notifications.assignAll(notificationResponse.data);
 
-        for (var notification in notificationResponse.data) {
-          if(Platform.isIOS){
-            scheduleMedicineNotification(notification);
-          }else if(Platform.isAndroid){
-            // notiService.showNotification(title: 'Take Your Medicine ${notification.medicalHistory.medicine}');
-            scheduleMedicineNotification(notification);
-          }
-        }
+        // for (var notification in notificationResponse.data) {
+        //   if(Platform.isIOS){
+        //     scheduleMedicineNotification(notification);
+        //   }else if(Platform.isAndroid){
+        //     // notiService.showNotification(title: 'Take Your Medicine ${notification.medicalHistory.medicine}');
+        //     scheduleMedicineNotification(notification);
+        //   }
+        // }
       } else {
         print("Error: Failed to fetch notifications.");
       }

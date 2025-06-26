@@ -1,5 +1,6 @@
   import 'package:flutter/material.dart';
   import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:pharmed_app/views/dic/dic_view.dart';
 import 'package:pharmed_app/views/home/home_view.dart';
 import 'package:pharmed_app/views/my_medical_history/my_medical_history_view.dart';
@@ -73,7 +74,7 @@ import 'package:pharmed_app/views/notification/notification_view.dart';
                   _buildBottomNavItem(
                     index: 0,
                     iconPath: 'assets/svg/home.svg',
-                    label: 'Home',
+                    label: 'home'.tr,
                     showPolicy: false,
                     onPressed: () {
                       onItemTapped(0);
@@ -82,7 +83,7 @@ import 'package:pharmed_app/views/notification/notification_view.dart';
                   _buildBottomNavItem(
                     index: 1,
                     iconPath: 'assets/svg/dic.svg',
-                    label: 'DIC',
+                    label: 'dic'.tr,
                     showPolicy: false,
                     onPressed: () {
                       onItemTapped(1);
@@ -91,7 +92,7 @@ import 'package:pharmed_app/views/notification/notification_view.dart';
                   _buildBottomNavItem(
                     index: 2,
                     iconPath: 'assets/svg/medicine.svg',
-                    label: 'Medicines',
+                    label: 'medicines'.tr,
                     showPolicy: true,
                     iconWidth: 15,
                     onPressed: () {
@@ -101,7 +102,7 @@ import 'package:pharmed_app/views/notification/notification_view.dart';
                   _buildBottomNavItem(
                     index: 3,
                     iconPath: 'assets/svg/notification.svg',
-                    label: 'Notification',
+                    label: 'notification'.tr,
                     showPolicy: true,
                     onPressed: () {
                       onItemTapped(3);

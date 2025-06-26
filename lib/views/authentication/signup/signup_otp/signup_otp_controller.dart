@@ -38,27 +38,37 @@ class SignupOtpController extends GetxController {
     }
   }
 
-  Future<void> resendOtp() async {
-    try {
-      SignUpResponse? loginResponse = await apiService.signUp(
-          signUpController.emailController.text,
-          signUpController.passwordController.text,
-          signUpController.phoneNumController.text,
-          signUpController.passwordController.text);
+ Future<void> resendOtp() async {
+  try {
+    var loginResponse = await apiService.signUp(
+      signUpController.userNameController.text,
+      signUpController.emailController.text,
+      signUpController.phoneNumController.text,
+      signUpController.passwordController.text,
+    );
 
-      if (loginResponse != null && loginResponse.success == true) {
+    if (loginResponse != null) {
+      if (loginResponse.success == true) {
         Get.snackbar('Success', loginResponse.message ?? '',
             backgroundColor: Colors.green, colorText: Colors.white);
+      } else if (loginResponse.message == "Not Verified") {
+        Get.snackbar("Success", "Otp Sent Successfully",
+            backgroundColor: Colors.green, colorText: Colors.white);
       } else {
-        Get.snackbar("Error", loginResponse?.message ?? "Login failed",
+        Get.snackbar("Error", loginResponse.message ?? "Login failed",
             backgroundColor: Colors.red, colorText: Colors.white);
       }
-    } catch (e) {
-      Get.snackbar("Error",
-          "UnAuthorized User, Please Check Password or create a new account",
+    } else {
+      Get.snackbar("Error", "Login failed",
           backgroundColor: Colors.red, colorText: Colors.white);
     }
+  } catch (e) {
+    Get.snackbar("Error",
+        "UnAuthorized User, Please Check Password or create a new account",
+        backgroundColor: Colors.red, colorText: Colors.white);
   }
+}
+
 
   Future<void> _saveToken(String? token, String? userName, int? id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

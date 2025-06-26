@@ -80,9 +80,6 @@
 
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
-    <key>UIApplicationExitsOnSuspend</key>
-    <false/>
-
     
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
