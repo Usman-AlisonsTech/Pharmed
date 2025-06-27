@@ -156,7 +156,7 @@ class _SignUpViewState extends State<SignUpView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            text: 'phone_number'.tr,
+                            text: '${'phone_number'.tr} (Optional)',
                             weight: FontWeight.w500,
                             fontSize: 16,
                           ),
@@ -171,12 +171,6 @@ class _SignUpViewState extends State<SignUpView> {
                               ),
                             ),
                             hintText: 'enter_phone'.tr,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your phone number';
-                              }
-                              return null;
-                            },
                           ),
                         ],
                       ),

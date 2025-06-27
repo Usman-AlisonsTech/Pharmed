@@ -67,7 +67,7 @@ class HomeView extends StatelessWidget {
         padding: EdgeInsets.only(
           left: ScreenConstants.screenhorizontalPadding,
           right: ScreenConstants.screenhorizontalPadding,
-          top: screenHeight * 0.06,
+          top: screenHeight * 0.055,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -45,28 +45,30 @@ class DrugsDetailView extends StatelessWidget {
                 fontSize: 30,
                 weight: FontWeight.w900,
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: screenHeight * 0.03),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CustomText(
-                    text: "drugs".tr,
-                    fontSize: 18,
-                    weight: FontWeight.w700,
-                  ),
-                  SizedBox(width: 10),
+                  // CustomText(
+                  //   text: "drugs".tr,
+                  //   fontSize: 18,
+                  //   weight: FontWeight.w700,
+                  // ),
+                  // SizedBox(width: 10),
                   Obx(() => CustomText(
                         text: controller.translatedDrugNames.value,
-                        fontSize: 18,
-                        weight: FontWeight.w700,
+                        fontSize: 20,
+                        weight: FontWeight.w500,
                       )),
                 ],
               ),
 
-              // Show translated drug names
-
-              SizedBox(height: screenHeight * 0.01),
-
-              // Show translated details
+              SizedBox(height: screenHeight * 0.04),
+              CustomText(
+                text: 'overview'.tr,
+                fontSize: 16,
+                weight: FontWeight.w900,
+              ),
               Obx(() => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: controller.translatedDetails.map((detail) {
@@ -81,6 +83,34 @@ class DrugsDetailView extends StatelessWidget {
                       );
                     }).toList(),
                   )),
+              SizedBox(height: screenHeight * 0.03),
+              CustomText(
+                text: 'security_levels'.tr,
+                fontSize: 16,
+                weight: FontWeight.w900,
+              ),
+              SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Color(0xffF3E632)),
+                  color: Color(0xffFFFDE7),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(text: '45', weight: FontWeight.w600,fontSize: 20),
+                        CustomText(text: 'low risk', weight: FontWeight.w400,fontSize: 15),
+                      ],
+                    ),
+                    CircleAvatar(backgroundColor:Color(0xffF3E632),child: Icon(Icons.dangerous, color: Colors.white,),)
+                  ],
+                ),
+              )
             ],
           ),
         ),

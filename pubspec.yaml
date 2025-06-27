@@ -2,7 +2,7 @@ name: pharmed_app
 description: "A new Flutter project."
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.1+2
+version: 1.0.1+4
 
 environment:
   sdk: ^3.5.3
@@ -44,6 +44,8 @@ dependencies:
   shared_preferences: ^2.3.2
   shimmer: ^3.0.0
   smooth_page_indicator: ^1.2.0+3
+  textfield_search: ^0.11.1
+  textfield_tags: ^3.0.1
   timezone: ^0.9.0
   url_launcher: ^6.3.1
 

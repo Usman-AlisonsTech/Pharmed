@@ -61,24 +61,28 @@ class MyMedicalHistoryView extends StatelessWidget {
         padding: EdgeInsets.only(
           left: ScreenConstants.screenhorizontalPadding,
           right: ScreenConstants.screenhorizontalPadding,
-          top: screenHeight * 0.06,
+          top: screenHeight * 0.055,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            IconButton(
-              onPressed: () {
-                scaffoldKey.currentState?.openDrawer();
-              },
-              icon: SvgPicture.asset('assets/svg/side-bar.svg'),
+            Row(
+              children: [
+                InkWell(
+                  onTap: () {
+                    scaffoldKey.currentState?.openDrawer();
+                  },
+                  child: SvgPicture.asset('assets/svg/side-bar.svg', width: 23,),
             ),
-            SizedBox(height: 10),
+            SizedBox(width: screenWidth * 0.05),
             CustomText(
               text: 'medical_history'.tr,
               fontSize: 30,
               weight: FontWeight.w900,
             ),
-            SizedBox(height: screenHeight * 0.05),
+              ],
+            ),
+            SizedBox(height: screenHeight * 0.04),
             CustomTextField(
               controller: controller.searchController,
               prefixIcon: const Padding(

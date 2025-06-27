@@ -7,14 +7,60 @@ import 'package:pharmed_app/widgets/common_button.dart';
 import 'package:pharmed_app/widgets/custom_appbar.dart';
 import 'package:pharmed_app/widgets/custom_text.dart';
 import 'package:pharmed_app/widgets/nav_item.dart';
+import 'dart:async';
 
-class DicView extends StatelessWidget {
+class DicView extends StatefulWidget {
+  const DicView({super.key});
+
+  @override
+  State<DicView> createState() => _DicViewState();
+}
+
+class _DicViewState extends State<DicView> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  final TextEditingController drugController = TextEditingController();
-  final RxList<String> addedDrugs =
-      <String>[].obs; // List to store added medicines
+  final TextEditingController searchController = TextEditingController();
+  final RxList<String> addedDrugs = <String>[].obs;
+  Timer? _debounce;
+  final FocusNode _focusNode = FocusNode();
+  bool _showDropdown = false;
 
-  DicView({super.key});
+  @override
+  void initState() {
+    super.initState();
+    searchController.addListener(_onSearchChanged);
+    _focusNode.addListener(_onFocusChanged);
+  }
+
+  void _onFocusChanged() {
+    setState(() {
+      _showDropdown = _focusNode.hasFocus && searchController.text.isNotEmpty;
+    });
+  }
+
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (searchController.text.isNotEmpty) {
+        Get.find<DicController>().searchMedication(searchController.text);
+        setState(() {
+          _showDropdown = true;
+        });
+      } else {
+        setState(() {
+          _showDropdown = false;
+        });
+        Get.find<DicController>().searchResults.clear();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    searchController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +94,7 @@ class DicView extends StatelessWidget {
               ],
             ),
             SizedBox(height: screenHeight * 0.05),
-            buildDrawerItem(
-              screenWidth,
-              screenHeight,
-              context
-            ),
+            buildDrawerItem(screenWidth, screenHeight, context),
           ],
         ),
       ),
@@ -60,12 +102,12 @@ class DicView extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(
               horizontal: ScreenConstants.screenhorizontalPadding,
-              vertical: screenHeight * 0.06),
+              vertical: screenHeight * 0.055),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomAppbar(scaffoldKey: scaffoldKey),
-              SizedBox(height: screenHeight * 0.065),
+              SizedBox(height: screenHeight * 0.04),
               CustomText(
                   text: 'drug_interaction_checker'.tr,
                   fontSize: 30,
@@ -76,73 +118,131 @@ class DicView extends StatelessWidget {
                   fontSize: 16,
                   weight: FontWeight.w500),
               SizedBox(height: screenHeight * 0.03),
-              Obx(() => Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                ...addedDrugs.map((drug) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4.0),
-                                    child: Container(
-                                      child: Chip(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                        label: Text(drug),
-                                        deleteIcon: Icon(Icons.close, size: 16),
-                                        onDeleted: () {
-                                          addedDrugs.remove(drug);
-                                        },
-                                        labelPadding: EdgeInsets.symmetric(
-                                            horizontal: 5, vertical: 0),
-                                        backgroundColor: Colors.white,
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                                SizedBox(
-                                  width: 200,
-                                  child: TextField(
-                                    controller: drugController,
-                                    style: TextStyle(
-                                        fontSize: 16, fontFamily: 'Poppins'),
-                                    decoration: InputDecoration(
-                                        hintText: addedDrugs.isEmpty
-                                            ? 'add_medicine_name'.tr
-                                            : '',
-                                        border: InputBorder.none,
-                                        hintStyle: TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 16,
-                                            fontFamily: 'Poppins')),
-                                    onSubmitted: (value) {
-                                      String drugName = value.trim();
-                                      if (drugName.isNotEmpty &&
-                                          !addedDrugs.contains(drugName)) {
-                                        addedDrugs.add(drugName);
-                                      }
-                                      drugController.clear();
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: Color(0xffF9F9F9),
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: [
+                    // Search TextField
+                    TextField(
+                      controller: searchController,
+                      focusNode: _focusNode,
+                      decoration: InputDecoration(
+                        hintText: 'add_medicine_name'.tr,
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
                         ),
-                      ],
+                      ),
+                      onSubmitted: (value) {
+                        String drugName = value.trim();
+                        if (drugName.isNotEmpty &&
+                            !addedDrugs.contains(drugName)) {
+                          addedDrugs.add(drugName);
+                          searchController.clear();
+                          setState(() {
+                            _showDropdown = false;
+                          });
+                          controller.searchResults.clear();
+                        }
+                      },
                     ),
-                  )),
+                    // Search results dropdown
+                    Obx(() {
+                      if (controller.isSearchLoading.value) {
+                        return Container(
+                          margin: EdgeInsets.only(top: 10, bottom: 10),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 3),
+                          ),
+                        );
+                      } else if (_showDropdown &&
+                          controller.searchResults.isEmpty &&
+                          searchController.text.isNotEmpty) {
+                        return Container(
+                          color: Color(0xffF9F9F9),
+                          margin: EdgeInsets.only(top: 0),
+                          child: ListTile(
+                            tileColor: Colors.red,
+                            title: CustomText(text: searchController.text),
+                            trailing: CircleAvatar(
+                              backgroundColor: ColorConstants.themecolor,
+                              child: Icon(Icons.add,
+                                  size: 16, color: Colors.white),
+                              radius: 10,
+                            ),
+                            onTap: () {
+                              String drugName = searchController.text;
+                              if (drugName.isNotEmpty &&
+                                  !addedDrugs.contains(drugName)) {
+                                addedDrugs.add(drugName);
+                                searchController.clear();
+                                setState(() {
+                                  _showDropdown = false;
+                                });
+                                controller.searchResults.clear();
+                              }
+                            },
+                          ),
+                        );
+                      } else if (_showDropdown &&
+                          controller.searchResults.isNotEmpty) {
+                        return Container(
+                          constraints: BoxConstraints(maxHeight: 200),
+                          margin: EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: Color(0xffF9F9F9),
+                          ),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: controller.searchResults.length,
+                            physics: AlwaysScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              final suggestion =
+                                  controller.searchResults[index];
+                              return ListTile(
+                                title: CustomText(
+                                    text: suggestion.genericName ?? 'Unknown'),
+                                // minVerticalPadding: 5,
+                                minTileHeight: 50,
+                                trailing: CircleAvatar(
+                                  backgroundColor: ColorConstants.themecolor,
+                                  child: Icon(Icons.add,
+                                      size: 16, color: Colors.white),
+                                  radius: 10,
+                                ),
+                                onTap: () {
+                                  String drugName =
+                                      suggestion.genericName ?? '';
+                                  if (drugName.isNotEmpty &&
+                                      !addedDrugs.contains(drugName)) {
+                                    addedDrugs.add(drugName);
+                                    searchController.clear();
+                                    setState(() {
+                                      _showDropdown = false;
+                                    });
+                                    controller.searchResults.clear();
+                                  }
+                                },
+                              );
+                            },
+                          ),
+                        );
+                      }
+
+                      return SizedBox();
+                    }),
+                  ],
+                ),
+              ),
               SizedBox(height: 10),
               Row(
                 children: [
@@ -155,6 +255,42 @@ class DicView extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: 15),
+              Obx(() => Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: addedDrugs
+                        .map((drug) => Chip(
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(color: Color(0xffF9F9F9)),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              label: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6.0, vertical: 2.0),
+                                child: Text(
+                                  drug,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              deleteIcon: CircleAvatar(
+                                backgroundColor: ColorConstants.themecolor,
+                                child: Icon(Icons.remove,
+                                    size: 16, color: Colors.white),
+                                radius: 10,
+                              ),
+                              onDeleted: () {
+                                addedDrugs.remove(drug);
+                              },
+                              labelPadding: EdgeInsets.symmetric(horizontal: 0),
+                              backgroundColor: Color(0xffF9F9F9),
+                              deleteIconColor: Colors.white,
+                            ))
+                        .toList(),
+                  )),
               SizedBox(height: screenHeight * 0.07),
               Row(
                 children: [
@@ -184,10 +320,15 @@ class DicView extends StatelessWidget {
                     width: screenWidth * 0.3,
                     child: CommonButton(
                       onPressed: () {
-                        drugController.clear();
+                        searchController.clear();
                         addedDrugs.clear();
                         controller.showInterAction.value = false;
                         controller.interactionResponse.value = null;
+                        controller.searchResults.clear();
+                        controller.isLoading.value = false;
+                        setState(() {
+                          _showDropdown = false;
+                        });
                       },
                       title: 'clear'.tr,
                       textWeight: FontWeight.w600,
@@ -203,7 +344,11 @@ class DicView extends StatelessWidget {
               SizedBox(height: screenHeight * 0.04),
               Obx(() {
                 if (controller.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                      child: SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator()));
                 }
 
                 if (controller.showInterAction.value) {
@@ -227,6 +372,7 @@ class DicView extends StatelessWidget {
                   } else {
                     return Column(
                       children: [
+                        SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -261,7 +407,7 @@ class DicView extends StatelessWidget {
                                 },
                                 minTileHeight: 5,
                                 title: CustomText(
-                                    text: 'interaction_details'.tr + '$index',
+                                    text: 'interaction_details'.tr + ' $index',
                                     fontSize: 16,
                                     weight: FontWeight.w500),
                                 trailing: Icon(Icons.arrow_forward, size: 20),

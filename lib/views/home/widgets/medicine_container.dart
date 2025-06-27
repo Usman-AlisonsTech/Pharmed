@@ -170,7 +170,7 @@ class _MedicineContainerState extends State<MedicineContainer> {
               topRight: Radius.circular(20),
             ),
           ),
-          height: screenHeight * 0.9,
+          height: screenHeight * 0.95,
           child: Column(
             children: [
               // Image section
@@ -261,79 +261,6 @@ class _MedicineContainerState extends State<MedicineContainer> {
                           },
                         ),
                         SizedBox(height: 20),
-                        // Start Date and End Date Row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(text: 'start_date'.tr),
-                                  SizedBox(height: 8),
-                                  GestureDetector(
-                                    onTap: () => _selectDate(context,
-                                        controller.startDateController),
-                                    child: AbsorbPointer(
-                                      child: CustomTextField(
-                                        controller:
-                                            controller.startDateController,
-                                        hintText: 'enter_start_date'.tr,
-                                        borderColor: Color(0xffDADADA),
-                                        hintStyle: TextStyle(
-                                            fontSize: 14, color: Colors.grey),
-                                        borderRadius: 8,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.trim().isEmpty) {
-                                            return 'This field is required';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(text: 'end_date'.tr),
-                                  SizedBox(height: 8),
-                                  GestureDetector(
-                                    onTap: () => _selectDate(
-                                        context, controller.endDateController),
-                                    child: AbsorbPointer(
-                                      child: CustomTextField(
-                                        controller:
-                                            controller.endDateController,
-                                        hintText: 'enter_end_date'.tr,
-                                        hintStyle: TextStyle(
-                                            fontSize: 14, color: Colors.grey),
-                                        borderColor: Color(0xffDADADA),
-                                        borderRadius: 8,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.trim().isEmpty) {
-                                            return 'This field is required';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
                         // Dosage and Frequency Row
                         Row(
                           children: [
@@ -410,6 +337,79 @@ class _MedicineContainerState extends State<MedicineContainer> {
                             }
                             return null;
                           },
+                        ),
+                        SizedBox(height: 20),
+                         // Start Date and End Date Row
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomText(text: 'start_date'.tr),
+                                  SizedBox(height: 8),
+                                  GestureDetector(
+                                    onTap: () => _selectDate(context,
+                                        controller.startDateController),
+                                    child: AbsorbPointer(
+                                      child: CustomTextField(
+                                        controller:
+                                            controller.startDateController,
+                                        hintText: 'enter_start_date'.tr,
+                                        borderColor: Color(0xffDADADA),
+                                        hintStyle: TextStyle(
+                                            fontSize: 14, color: Colors.grey),
+                                        borderRadius: 8,
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 5),
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.trim().isEmpty) {
+                                            return 'This field is required';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomText(text: 'end_date'.tr),
+                                  SizedBox(height: 8),
+                                  GestureDetector(
+                                    onTap: () => _selectDate(
+                                        context, controller.endDateController),
+                                    child: AbsorbPointer(
+                                      child: CustomTextField(
+                                        controller:
+                                            controller.endDateController,
+                                        hintText: 'enter_end_date'.tr,
+                                        hintStyle: TextStyle(
+                                            fontSize: 14, color: Colors.grey),
+                                        borderColor: Color(0xffDADADA),
+                                        borderRadius: 8,
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 5),
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.trim().isEmpty) {
+                                            return 'This field is required';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 20),
                         CustomText(text: 'schedule_your_doses'.tr),
@@ -569,7 +569,21 @@ class _MedicineContainerState extends State<MedicineContainer> {
                             }),
                           ],
                         ),
-
+                        SizedBox(height: 20),
+                        Obx(() => CommonButton(
+                            title: 'add_to_medicines'.tr,
+                            bgColor: Colors.black,
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                controller.addToMedicines(
+                                    data.name ?? '', context);
+                              }
+                            },
+                            isLoading: controller.isAddToMedicinesLoading.value,
+                            borderRadius: 8,
+                            fontSize: 16,
+                          ),
+                        ),
                         SizedBox(height: 20),
                       ],
                     ),
@@ -577,24 +591,24 @@ class _MedicineContainerState extends State<MedicineContainer> {
                 ),
               ),
               // Fixed bottom button
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.1, vertical: 20),
-                child: Obx(
-                  () => CommonButton(
-                    title: 'add_to_medicines'.tr,
-                    bgColor: Colors.black,
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        controller.addToMedicines(data.name ?? '', context);
-                      }
-                    },
-                    isLoading: controller.isAddToMedicinesLoading.value,
-                    borderRadius: 8,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(
+              //       horizontal: screenWidth * 0.1, vertical: 20),
+              //   child: Obx(
+              //     () => CommonButton(
+              //       title: 'add_to_medicines'.tr,
+              //       bgColor: Colors.black,
+              //       onPressed: () {
+              //         if (_formKey.currentState!.validate()) {
+              //           controller.addToMedicines(data.name ?? '', context);
+              //         }
+              //       },
+              //       isLoading: controller.isAddToMedicinesLoading.value,
+              //       borderRadius: 8,
+              //       fontSize: 16,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         );

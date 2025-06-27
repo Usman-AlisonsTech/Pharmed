@@ -27,13 +27,12 @@ class _NotificationViewState extends State<NotificationView> {
         .fetchNotifications(DateFormat('yyyy-MM-dd').format(selectedDate));
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.only(
               left: ScreenConstants.screenhorizontalPadding,
               right: ScreenConstants.screenhorizontalPadding,
-              top: screenHeight * 0.04,
+              top: screenHeight * 0.055,
             ),
             child: Column(
               children: [
@@ -196,7 +195,6 @@ class _NotificationViewState extends State<NotificationView> {
             ),
           ),
         ),
-      ),
     );
   }
 }

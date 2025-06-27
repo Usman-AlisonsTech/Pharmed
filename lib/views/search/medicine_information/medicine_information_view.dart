@@ -14,7 +14,7 @@ class MedicineInformationView extends StatefulWidget {
   final List<dynamic> jsonData;
   final RxBool isLoading;
 
-  MedicineInformationView({
+  const MedicineInformationView({
     super.key,
     required this.jsonData,
     required this.medicineName,
@@ -22,21 +22,29 @@ class MedicineInformationView extends StatefulWidget {
   });
 
   @override
-  State<MedicineInformationView> createState() =>
-      _MedicineInformationViewState();
+  State<MedicineInformationView> createState() => _MedicineInformationViewState();
 }
 
-class _MedicineInformationViewState extends State<MedicineInformationView> {
+class _MedicineInformationViewState extends State<MedicineInformationView>
+    with SingleTickerProviderStateMixin {
   final RxList<dynamic> savedData = <dynamic>[].obs;
   final homeController = Get.find<HomeController>();
   final controller = Get.put(MedicineInformationController());
   List<dynamic> localJsonData = [];
   final RxMap<String, String> translations = <String, String>{}.obs;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     localJsonData = List.from(widget.jsonData);
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _selectDate(
@@ -67,11 +75,12 @@ class _MedicineInformationViewState extends State<MedicineInformationView> {
       body: Obx(() {
         if (homeController.isSearchLoading.value || widget.isLoading.value) {
           return const Center(
-              child: SizedBox(
-            width: 30,
-            height: 30,
-            child: CircularProgressIndicator(strokeWidth: 3),
-          ));
+            child: SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(strokeWidth: 3),
+            ),
+          );
         } else {
           return SingleChildScrollView(
             child: Padding(
@@ -98,9 +107,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView> {
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return const Center(
-                                child: SizedBox(),
-                              );
+                              return const SizedBox();
                             } else if (snapshot.hasError) {
                               return Text(
                                 widget.medicineName,
@@ -129,56 +136,110 @@ class _MedicineInformationViewState extends State<MedicineInformationView> {
                           },
                         ),
                       ),
-                      (widget.jsonData.length == 1 &&
-                              widget.jsonData[0]["message"] ==
-                                  "No Search History")
-                          ? SizedBox()
-                          : GestureDetector(
-                              onTap: () {
-                                Get.to(ConnectPharView(
-                                  medicineName: widget.medicineName,
-                                ));
-                              },
-                              child: Container(
-                                constraints: BoxConstraints(
-                                  minWidth: screenWidth * 0.2,
-                                  maxWidth: screenWidth * 0.3,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.black,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 5),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/svg/chat.svg',
-                                      color: Colors.white,
-                                      width: 16,
-                                      height: 16,
-                                    ),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      'connect_phar'.tr,
-                                      style: TextStyle(
-                                        fontSize: screenWidth * 0.035,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                      softWrap: true,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.visible,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                      if (widget.jsonData.length != 1 ||
+                          widget.jsonData[0]["message"] != "No Search History")
+                        GestureDetector(
+                          onTap: () {
+                            Get.to(ConnectPharView(
+                              medicineName: widget.medicineName,
+                            ));
+                          },
+                          child: Container(
+                            constraints: BoxConstraints(
+                              minWidth: screenWidth * 0.2,
+                              maxWidth: screenWidth * 0.3,
                             ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.black,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/svg/chat.svg',
+                                  color: Colors.white,
+                                  width: 16,
+                                  height: 16,
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'connect_phar'.tr,
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.035,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  softWrap: true,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.visible,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  SizedBox(height: screenHeight * 0.03),
+                  TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.black,
+                    unselectedLabelColor: Colors.grey,
+                    indicatorColor: ColorConstants.themecolor,
+                    labelStyle: TextStyle(
+                      fontSize: screenWidth * 0.04,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
+                    tabs: const [
+                      Tab(text: 'Uses'),
+                      Tab(text: 'Side Effects'),
+                      Tab(text: 'Precautions'),
                     ],
                   ),
                   SizedBox(height: screenHeight * 0.05),
-                  ..._buildWidgets(widget.jsonData),
+                  SizedBox(
+                    height: screenHeight * 0.5,
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: _buildWidgets(widget.jsonData),
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              'Side Effects',
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.045,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              'Precautions',
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.045,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -187,21 +248,45 @@ class _MedicineInformationViewState extends State<MedicineInformationView> {
       }),
       bottomNavigationBar: (widget.jsonData.length == 1 &&
               widget.jsonData[0]["message"] == "No Search History")
-          ? SizedBox()
+          ? const SizedBox()
           : Padding(
               padding: const EdgeInsets.only(
-                  left: 25, right: 25, bottom: 30, top: 20),
-              child: CommonButton(
-                onPressed: () {
-                  if (widget.jsonData.length == 1 &&
-                      widget.jsonData[0]["message"] == "No Search History") {
-                    null;
-                  } else {
-                    _showBottomSheet(context, widget.medicineName);
-                  }
-                },
-                title: 'add_to_medicines'.tr,
-                bgColor: Colors.black,
+                  left: 25, right: 25, bottom: 20, top: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CommonButton(
+                    onPressed: () {
+                      if (widget.jsonData.length == 1 &&
+                          widget.jsonData[0]["message"] == "No Search History") {
+                        return;
+                      } else {
+                        _showBottomSheet(context, widget.medicineName);
+                      }
+                    },
+                    title: 'add_to_medicines'.tr,
+                    bgColor: Colors.black,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomText(
+                        text: 'Source: FDA –',
+                        fontSize: 12, 
+                        weight: FontWeight.w500,
+                        textAlign: TextAlign.center,
+                      ),
+                      CustomText(
+                        text: 'https://api.fda.gov',
+                        fontSize: 12, 
+                        color: ColorConstants.themecolor,
+                        weight: FontWeight.w500,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
     );
@@ -319,7 +404,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView> {
               topRight: Radius.circular(20),
             ),
           ),
-          height: screenHeight * 0.85,
+          height: screenHeight * 0.95,
           child: Column(
             children: [
               SizedBox(height: 20),
@@ -413,79 +498,6 @@ class _MedicineInformationViewState extends State<MedicineInformationView> {
                           },
                         ),
                         SizedBox(height: 20),
-                        // Start Date and End Date Row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(text: 'start_date'.tr),
-                                  SizedBox(height: 8),
-                                  GestureDetector(
-                                    onTap: () => _selectDate(context,
-                                        controller.startDateController),
-                                    child: AbsorbPointer(
-                                      child: CustomTextField(
-                                        controller:
-                                            controller.startDateController,
-                                        hintText: 'enter_start_date'.tr,
-                                        borderColor: Color(0xffDADADA),
-                                        hintStyle: TextStyle(
-                                            fontSize: 14, color: Colors.grey),
-                                        borderRadius: 8,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.trim().isEmpty) {
-                                            return 'This field is required';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(text: 'end_date'.tr),
-                                  SizedBox(height: 8),
-                                  GestureDetector(
-                                    onTap: () => _selectDate(
-                                        context, controller.endDateController),
-                                    child: AbsorbPointer(
-                                      child: CustomTextField(
-                                        controller:
-                                            controller.endDateController,
-                                        hintText: 'enter_end_date'.tr,
-                                        hintStyle: TextStyle(
-                                            fontSize: 14, color: Colors.grey),
-                                        borderColor: Color(0xffDADADA),
-                                        borderRadius: 8,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.trim().isEmpty) {
-                                            return 'This field is required';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
                         // Dosage and Frequency Row
                         Row(
                           children: [
@@ -562,6 +574,78 @@ class _MedicineInformationViewState extends State<MedicineInformationView> {
                             }
                             return null;
                           },
+                        ),
+                        SizedBox(height: 20),
+                          Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomText(text: 'start_date'.tr),
+                                  SizedBox(height: 8),
+                                  GestureDetector(
+                                    onTap: () => _selectDate(context,
+                                        controller.startDateController),
+                                    child: AbsorbPointer(
+                                      child: CustomTextField(
+                                        controller:
+                                            controller.startDateController,
+                                        hintText: 'enter_start_date'.tr,
+                                        borderColor: Color(0xffDADADA),
+                                        hintStyle: TextStyle(
+                                            fontSize: 14, color: Colors.grey),
+                                        borderRadius: 8,
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 5),
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.trim().isEmpty) {
+                                            return 'This field is required';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomText(text: 'end_date'.tr),
+                                  SizedBox(height: 8),
+                                  GestureDetector(
+                                    onTap: () => _selectDate(
+                                        context, controller.endDateController),
+                                    child: AbsorbPointer(
+                                      child: CustomTextField(
+                                        controller:
+                                            controller.endDateController,
+                                        hintText: 'enter_end_date'.tr,
+                                        hintStyle: TextStyle(
+                                            fontSize: 14, color: Colors.grey),
+                                        borderColor: Color(0xffDADADA),
+                                        borderRadius: 8,
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 5),
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.trim().isEmpty) {
+                                            return 'This field is required';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 20),
                         CustomText(text: 'schedule_your_doses'.tr),
@@ -719,21 +803,8 @@ class _MedicineInformationViewState extends State<MedicineInformationView> {
                                 }),
                               );
                             }),
-                          ],
-                        ),
-
-                        SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              // Fixed bottom button
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.1, vertical: 20),
-                child: Obx(
-                  () => CommonButton(
+                            SizedBox(height: 20),
+                            Obx(() => CommonButton(
                     title: 'add_to_medicines'.tr,
                     bgColor: Colors.black,
                     onPressed: () {
@@ -746,7 +817,34 @@ class _MedicineInformationViewState extends State<MedicineInformationView> {
                     fontSize: 16,
                   ),
                 ),
+                          ],
+                        ),
+
+                        SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
               ),
+              // Fixed bottom button
+              // Padding(
+              //   padding: EdgeInsets.symmetric(
+              //       horizontal: screenWidth * 0.1, vertical: 20),
+              //   child: Obx(
+              //     () => CommonButton(
+              //       title: 'add_to_medicines'.tr,
+              //       bgColor: Colors.black,
+              //       onPressed: () {
+              //         if (_formKey.currentState!.validate()) {
+              //           controller.addToMedicines(widget.medicineName, context);
+              //         }
+              //       },
+              //       isLoading: controller.isAddToMedicinesLoading.value,
+              //       borderRadius: 8,
+              //       fontSize: 16,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         );

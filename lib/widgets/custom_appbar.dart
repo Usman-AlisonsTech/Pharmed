@@ -11,18 +11,12 @@ class CustomAppbar extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          // color: Colors.red,
-          child: IconButton(
-            onPressed: () {
+          InkWell(onTap: (){
               scaffoldKey.currentState?.openDrawer();
-            },
-            icon: SvgPicture.asset('assets/svg/side-bar.svg'),
-          ),
-        ),
-        SizedBox(width: screenWidth * 0.07),
+            },child: SvgPicture.asset('assets/svg/side-bar.svg', width: 23,)),
+        SizedBox(width: screenWidth * 0.05),
         Expanded(
           child: GestureDetector(
             onTap: () {

@@ -31,7 +31,6 @@ class SignUpController extends GetxController {
   signUp() async {
     if (!userNameformKey.currentState!.validate() ||
         !emailformKey.currentState!.validate() ||
-        !phoneNumformKey.currentState!.validate() ||
         !passformKey.currentState!.validate()) {
       return;
     }

@@ -245,7 +245,7 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
               topRight: Radius.circular(20),
             ),
           ),
-          height: screenHeight * 0.9,
+          height: screenHeight * 0.95,
           child: Column(
             children: [
               // Image section
@@ -380,7 +380,71 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                             horizontal: 10, vertical: 5),
                       ),
                       const SizedBox(height: 20),
+                      // Dosage and Frequency Row
                       Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(text: 'dosage'.tr),
+                                const SizedBox(height: 8),
+                                GestureDetector(
+                                  onTap: () async {},
+                                  child: CustomTextField(
+                                    hintStyle: const TextStyle(
+                                        fontSize: 14, color: Colors.grey),
+                                    controller: controller.dosageController,
+                                    hintText: 'eg_500'.tr,
+                                    borderColor: const Color(0xffDADADA),
+                                    borderRadius: 8,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(text: 'frequency'.tr),
+                                const SizedBox(height: 8),
+                                GestureDetector(
+                                  onTap: () async {},
+                                  child: CustomTextField(
+                                    hintStyle: const TextStyle(
+                                        fontSize: 14, color: Colors.grey),
+                                    controller: controller.frequencyController,
+                                    hintText: 'eg_twice_daily'.tr,
+                                    borderColor: const Color(0xffDADADA),
+                                    borderRadius: 8,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      CustomText(text: 'reason_for_use'.tr),
+                      const SizedBox(height: 10),
+                      CustomTextField(
+                        controller: controller.reasonController,
+                        hintText: 'condition_or_symptom'.tr,
+                        borderColor: const Color(0xffDADADA),
+                        hintStyle:
+                            const TextStyle(fontSize: 14, color: Colors.grey),
+                        borderRadius: 8,
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                      ),
+                      const SizedBox(height: 20),
+                        Row(
                         children: [
                           Expanded(
                             child: Column(
@@ -465,70 +529,7 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                       ),
 
                       const SizedBox(height: 20),
-                      // Dosage and Frequency Row
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(text: 'dosage'.tr),
-                                const SizedBox(height: 8),
-                                GestureDetector(
-                                  onTap: () async {},
-                                  child: CustomTextField(
-                                    hintStyle: const TextStyle(
-                                        fontSize: 14, color: Colors.grey),
-                                    controller: controller.dosageController,
-                                    hintText: 'eg_500'.tr,
-                                    borderColor: const Color(0xffDADADA),
-                                    borderRadius: 8,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(text: 'frequency'.tr),
-                                const SizedBox(height: 8),
-                                GestureDetector(
-                                  onTap: () async {},
-                                  child: CustomTextField(
-                                    hintStyle: const TextStyle(
-                                        fontSize: 14, color: Colors.grey),
-                                    controller: controller.frequencyController,
-                                    hintText: 'eg_twice_daily'.tr,
-                                    borderColor: const Color(0xffDADADA),
-                                    borderRadius: 8,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      CustomText(text: 'reason_for_use'.tr),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        controller: controller.reasonController,
-                        hintText: 'condition_or_symptom'.tr,
-                        borderColor: const Color(0xffDADADA),
-                        hintStyle:
-                            const TextStyle(fontSize: 14, color: Colors.grey),
-                        borderRadius: 8,
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                      ),
-                      const SizedBox(height: 20),
+                    
                       CustomText(text: 'schedule_your_doses'.tr),
                       const SizedBox(height: 10),
 
@@ -626,17 +627,9 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                             ),
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              // Fixed bottom button
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.1, vertical: 20),
-                child: Obx(
-                  () => CommonButton(
+                      ),
+                      const SizedBox(height: 20),
+                      Obx(() => CommonButton(
                     isLoading: controller.isUpdateLoading.value,
                     title: 'edit'.tr,
                     bgColor: Colors.black,
@@ -652,7 +645,33 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                     fontSize: 16,
                   ),
                 ),
+                const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
               ),
+              // Fixed bottom button
+              // Padding(
+              //   padding: EdgeInsets.symmetric(
+              //       horizontal: screenWidth * 0.1, vertical: 20),
+              //   child: Obx(
+              //     () => CommonButton(
+              //       isLoading: controller.isUpdateLoading.value,
+              //       title: 'edit'.tr,
+              //       bgColor: Colors.black,
+              //       onPressed: () {
+              //         controller.updateMedicines(
+              //             data.medicine, data.id, context);
+              //         Timer(Duration(seconds: 2), () {
+              //           controller.getMedications();
+              //           controller.isUpdateLoading.value = false;
+              //         });
+              //       },
+              //       borderRadius: 8,
+              //       fontSize: 16,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         );
