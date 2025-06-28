@@ -84,12 +84,11 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
         } else {
           return SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.only(
-                left: ScreenConstants.screenhorizontalPadding,
-                right: ScreenConstants.screenhorizontalPadding,
-                top: screenHeight * 0.10,
-                bottom: screenHeight * 0.2,
-              ),
+          padding: EdgeInsets.only(
+          left: ScreenConstants.screenhorizontalPadding,
+          right: ScreenConstants.screenhorizontalPadding,
+          top: screenHeight * 0.055,
+        ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -201,7 +200,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                   ),
                   SizedBox(height: screenHeight * 0.05),
                   SizedBox(
-                    height: screenHeight * 0.5,
+                    height: screenHeight * 0.6,
                     child: TabBarView(
                       controller: _tabController,
                       children: [
@@ -251,7 +250,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
           ? const SizedBox()
           : Padding(
               padding: const EdgeInsets.only(
-                  left: 25, right: 25, bottom: 20, top: 20),
+                  left: 25, right: 25, bottom: 20, top: 10),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

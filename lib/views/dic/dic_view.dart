@@ -79,21 +79,30 @@ class _DicViewState extends State<DicView> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                    onTap: () {
-                      scaffoldKey.currentState?.closeDrawer();
-                    },
-                    child: Container(
-                        margin: EdgeInsets.only(
-                            left: screenWidth * 0.05,
-                            right: screenWidth * 0.05),
-                        child: Icon(
-                          Icons.arrow_back,
-                          size: 22,
-                        ))),
+               Row(
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          scaffoldKey.currentState?.closeDrawer();
+                        },
+                        child: Container(
+                            margin: EdgeInsets.only(
+                                left: screenWidth * 0.05,
+                                right: screenWidth * 0.05),
+                            child: Icon(
+                              Icons.arrow_back,
+                              size: 22,
+                            ))),
+                    CustomText(
+                      text: 'setting'.tr,
+                      weight: FontWeight.w900,
+                      fontSize: 30,
+                    )
+                  ],
+                ),
               ],
             ),
-            SizedBox(height: screenHeight * 0.05),
+            SizedBox(height: screenHeight * 0.02),
             buildDrawerItem(screenWidth, screenHeight, context),
           ],
         ),

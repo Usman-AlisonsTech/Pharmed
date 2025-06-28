@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:pharmed_app/utils/constants.dart';
 import 'package:pharmed_app/widgets/custom_text.dart';
 import 'search_controller.dart';
 
@@ -14,24 +15,27 @@ class SearchView extends StatelessWidget {
 
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: screenHeight * 0.08,
+        padding: EdgeInsets.only(
+          left: ScreenConstants.screenhorizontalPadding,
+          right: ScreenConstants.screenhorizontalPadding,
+          top: screenHeight * 0.055,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  GestureDetector(
-                      onTap: () => Get.back(), child: Icon(Icons.arrow_back)),
-                  SizedBox(width: 15),
-                  Expanded(
-                      child: SizedBox(
-                    height: 35,
+        child: Column(
+          children: [
+            // Fixed Search Bar Section
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => Get.back(),
+                  child: Icon(Icons.arrow_back),
+                ),
+                SizedBox(width: 15),
+                Expanded(
+                  child: SizedBox(
+                    height: 37,
                     child: TextFormField(
                       controller: controller.searchController,
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.start,
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 14,
@@ -55,16 +59,6 @@ class SearchView extends StatelessWidget {
                             color: Colors.black,
                           ),
                         ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            Icons.clear,
-                            color: Colors.black,
-                            size: 16,
-                          ),
-                          onPressed: () {
-                            controller.clearSearchField();
-                          },
-                        ),
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                         border: OutlineInputBorder(
@@ -81,22 +75,26 @@ class SearchView extends StatelessWidget {
                         ),
                       ),
                       onChanged: (value) {
-                        controller
-                            .searchMedication(controller.searchController.text);
+                        controller.searchMedication(
+                            controller.searchController.text);
                       },
                     ),
-                  )),
-                ],
-              ),
-              // Show search results dynamically
-              Obx(() {
+                  ),
+                )
+              ],
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: Obx(() {
                 if (controller.isSearchLoading.value) {
-                  return Container(
-                    margin: EdgeInsets.only(top: 50),
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: CircularProgressIndicator(strokeWidth: 3),
+                  return Center(
+                    child: Container(
+                      margin: EdgeInsets.only(top: 50),
+                      child: SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: CircularProgressIndicator(strokeWidth: 3),
+                      ),
                     ),
                   );
                 } else if (controller.searchResults.isEmpty &&
@@ -115,38 +113,65 @@ class SearchView extends StatelessWidget {
                     ),
                   );
                 } else if (controller.searchController.text.isEmpty) {
-                  return SizedBox(); // Hide the UI when the text field is empty
+                  return SizedBox();
                 } else {
                   return ListView.builder(
-                    shrinkWrap: true,
+                    padding: EdgeInsets.only(top: 10),
                     itemCount: controller.searchResults.length,
-                    physics: AlwaysScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       final suggestion = controller.searchResults[index];
                       return Container(
                         color: Color(0xffF9F9F9),
-                         margin: EdgeInsets.only(top: 20),
-                        child: ListTile(
-                          title: CustomText(
-                              text: suggestion.genericName ?? 'Unknown'),
+                        margin: EdgeInsets.only(bottom: 10),
+                        child: InkWell(
                           onTap: () {
                             controller.searchController.text != ''
                                 ? controller.searchMedicationInfo(
                                     suggestion.genericName.toString(),
-                                    suggestion.genericName ?? '')
+                                    suggestion.genericName ?? '',
+                                  )
                                 : null;
                           },
-                          subtitle: CustomText(text: 'searchController',fontSize: 13,color: Color(0xffB1B1B1),),
-                          trailing:
-                              SvgPicture.asset('assets/svg/search_icon.svg'),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CustomText(
+                                        text:
+                                            suggestion.genericName ?? 'Unknown',
+                                        fontSize: 14,
+                                        weight: FontWeight.w500,
+                                      ),
+                                      SizedBox(height: 4),
+                                      CustomText(
+                                        text:  'Brand Name',
+                                        fontSize: 13,
+                                        weight: FontWeight.w500,
+                                        color: Color(0xffB1B1B1),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(width: 16),
+                                SvgPicture.asset('assets/svg/search_icon.svg'),
+                              ],
+                            ),
+                          ),
                         ),
                       );
                     },
                   );
                 }
-              })
-            ],
-          ),
+              }),
+            ),
+          ],
         ),
       ),
     );

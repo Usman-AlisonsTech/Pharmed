@@ -15,45 +15,32 @@ class ChangeLanguageView extends StatelessWidget {
     final controller = Get.put(ChangeLanguageController());
 
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 70),
+      body:  Padding(
+          padding: EdgeInsets.only(
+            left: ScreenConstants.screenhorizontalPadding,
+            right: ScreenConstants.screenhorizontalPadding,
+            top: screenHeight * 0.055,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Get.back();
-                    },
-                    child: Icon(Icons.arrow_back, size: 20),
-                  ),
-                  SizedBox(width: 20),
-                  Flexible(
-                    child: Text(
-                      'change_language'.tr,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 28,
-                          fontFamily: 'Poppins'),
-                      textAlign: TextAlign.start,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                    ),
-                  ),
-                ],
+                GestureDetector(
+                onTap: () => Get.back(),
+                child: const Icon(Icons.arrow_back, size: 22),
               ),
-
-              const SizedBox(height: 10),
+              SizedBox(height: screenHeight * 0.04),
+              CustomText(
+                text: 'change_language'.tr,
+                weight: FontWeight.w900,
+                fontSize: 30,
+              ),
+              SizedBox(height: 15),
               CustomText(
                 text: 'select_language'.tr,
                 color: ColorConstants.themecolor,
                 weight: FontWeight.w500,
               ),
               SizedBox(height: screenHeight * 0.05),
-
               // English Container
               Obx(() {
                 return GestureDetector(
@@ -197,7 +184,6 @@ class ChangeLanguageView extends StatelessWidget {
             ],
           ),
         ),
-      ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         child: CommonButton(

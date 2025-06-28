@@ -15,14 +15,16 @@ class TermsConditionView extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
+      body:  SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            padding: EdgeInsets.only(
+            left: ScreenConstants.screenhorizontalPadding,
+            right: ScreenConstants.screenhorizontalPadding,
+            top: screenHeight * 0.055,
+          ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: screenHeight * 0.02),
                 GestureDetector(
                   onTap: () => Get.back(),
                   child: const Icon(Icons.arrow_back, size: 22),
@@ -58,12 +60,11 @@ class TermsConditionView extends StatelessWidget {
                     textStyle: TextStyle(fontFamily: 'Poppins'),
                   );
                 }),
-                SizedBox(height: screenHeight * 0.05),
+                SizedBox(height: screenHeight * 0.055),
               ],
             ),
           ),
         ),
-      ),
     );
   }
 }

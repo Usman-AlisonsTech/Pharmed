@@ -15,12 +15,6 @@ Widget buildDrawerItem(double screenWidth, double screenHeight, BuildContext con
     padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
     child: Column(
       children: [
-        Center(
-            child: CustomText(
-          text: 'setting'.tr,
-          weight: FontWeight.w900,
-          fontSize: 30,
-        )),
         SizedBox(
           height: screenHeight * 0.035,
         ),
