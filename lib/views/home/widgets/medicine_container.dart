@@ -150,20 +150,21 @@ class _MedicineContainerState extends State<MedicineContainer> {
   }
 
   void _showBottomSheet(BuildContext context, Datum data, medicineName) {
-    final HomeController controller = Get.find<HomeController>();
-    final _formKey = GlobalKey<FormState>();
+  final HomeController controller = Get.find<HomeController>();
+  final _formKey = GlobalKey<FormState>();
 
-    showModalBottomSheet(
-      isDismissible: false,
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      builder: (BuildContext context) {
-        double screenWidth = MediaQuery.of(context).size.width;
-        double screenHeight = MediaQuery.of(context).size.height;
+  showModalBottomSheet(
+    isDismissible: false,
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    builder: (BuildContext context) {
+      double screenWidth = MediaQuery.of(context).size.width;
+      double screenHeight = MediaQuery.of(context).size.height;
 
-        return Container(
-          padding: EdgeInsets.all(0),
+      return Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
@@ -228,391 +229,335 @@ class _MedicineContainerState extends State<MedicineContainer> {
               ),
               SizedBox(height: 15),
               Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomText(
-                          text: medicineName ?? '',
-                          weight: FontWeight.w900,
-                          fontSize: 30,
-                        ),
-
-                        SizedBox(height: 20),
-                        CustomText(text: 'prescribing_physician_name'.tr),
-                        SizedBox(height: 10),
-                        CustomTextField(
-                          controller: controller.physicianName,
-                          hintText: 'enter_physician_name'.tr,
-                          hintStyle:
-                              TextStyle(fontSize: 14, color: Colors.grey),
-                          borderColor: Color(0xffDADADA),
-                          borderRadius: 8,
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'This field is required';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        // Dosage and Frequency Row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(text: 'dosage'.tr),
-                                  SizedBox(height: 8),
-                                  CustomTextField(
-                                    hintText: 'eg_500'.tr,
-                                    controller: controller.dosageController,
-                                    hintStyle: TextStyle(
-                                        fontSize: 14, color: Colors.grey),
-                                    borderColor: Color(0xffDADADA),
-                                    borderRadius: 8,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                    validator: (value) {
-                                      if (value == null ||
-                                          value.trim().isEmpty) {
-                                        return 'This field is required';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(text: 'frequency'.tr),
-                                  SizedBox(height: 8),
-                                  CustomTextField(
-                                    controller: controller.frequencyController,
-                                    hintText: 'eg_twice_daily'.tr,
-                                    borderColor: Color(0xffDADADA),
-                                    hintStyle: TextStyle(
-                                        fontSize: 14, color: Colors.grey),
-                                    borderRadius: 8,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                    validator: (value) {
-                                      if (value == null ||
-                                          value.trim().isEmpty) {
-                                        return 'This field is required';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        CustomText(text: 'reason_for_use'.tr),
-                        SizedBox(height: 10),
-                        CustomTextField(
-                          controller: controller.reasonController,
-                          hintText: 'condition_or_symptom'.tr,
-                          borderColor: Color(0xffDADADA),
-                          hintStyle:
-                              TextStyle(fontSize: 14, color: Colors.grey),
-                          borderRadius: 8,
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'This field is required';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                         // Start Date and End Date Row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(text: 'start_date'.tr),
-                                  SizedBox(height: 8),
-                                  GestureDetector(
-                                    onTap: () => _selectDate(context,
-                                        controller.startDateController),
-                                    child: AbsorbPointer(
-                                      child: CustomTextField(
-                                        controller:
-                                            controller.startDateController,
-                                        hintText: 'enter_start_date'.tr,
-                                        borderColor: Color(0xffDADADA),
-                                        hintStyle: TextStyle(
-                                            fontSize: 14, color: Colors.grey),
-                                        borderRadius: 8,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.trim().isEmpty) {
-                                            return 'This field is required';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(text: 'end_date'.tr),
-                                  SizedBox(height: 8),
-                                  GestureDetector(
-                                    onTap: () => _selectDate(
-                                        context, controller.endDateController),
-                                    child: AbsorbPointer(
-                                      child: CustomTextField(
-                                        controller:
-                                            controller.endDateController,
-                                        hintText: 'enter_end_date'.tr,
-                                        hintStyle: TextStyle(
-                                            fontSize: 14, color: Colors.grey),
-                                        borderColor: Color(0xffDADADA),
-                                        borderRadius: 8,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.trim().isEmpty) {
-                                            return 'This field is required';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        CustomText(text: 'schedule_your_doses'.tr),
-                        SizedBox(height: 10),
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      if (controller.dateFields.isEmpty) {
-                                        controller.addDateField();
-                                      }
-                                      controller.selectDateTime(0);
-                                    },
-                                    child: AbsorbPointer(
-                                      child: Obx(() => CustomTextField(
-                                            hintText: 'set_your_date'.tr,
-                                            borderColor: Color(0xffDADADA),
-                                            controller: TextEditingController(
-                                                text: controller
-                                                        .dateFields.isNotEmpty
-                                                    ? controller
-                                                        .dateFields[0].value
-                                                    : ""),
-                                            hintStyle: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey),
-                                            suffixIcon: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10),
-                                              child: Icon(
-                                                  Icons.watch_later_rounded,
-                                                  color: Colors.grey),
-                                            ),
-                                            borderRadius: 8,
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 10,
-                                                    vertical: 5),
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.trim().isEmpty) {
-                                                return 'This field is required';
-                                              }
-                                              return null;
-                                            },
-                                          )),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                GestureDetector(
-                                  onTap: () {
-                                    controller.addDateField();
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.grey),
-                                      color: Color(0xffF9F9F9),
-                                    ),
-                                    padding: EdgeInsets.all(10),
-                                    child: Center(
-                                      child:
-                                          Icon(Icons.add, color: Colors.grey),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            // Dynamically Render Additional Fields
-                            Obx(() {
-                              return Column(
-                                children: List.generate(
-                                    controller.dateFields.length, (index) {
-                                  if (index == 0) return SizedBox();
-
-                                  return Container(
-                                    margin: EdgeInsets.only(top: 10),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              controller.selectDateTime(index);
-                                            },
-                                            child: AbsorbPointer(
-                                              child: Obx(() => CustomTextField(
-                                                    hintText:
-                                                        'set_your_date'.tr,
-                                                    borderColor:
-                                                        Color(0xffDADADA),
-                                                    controller:
-                                                        TextEditingController(
-                                                            text: controller
-                                                                .dateFields[
-                                                                    index]
-                                                                .value),
-                                                    hintStyle: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.grey),
-                                                    suffixIcon: Padding(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 10),
-                                                      child: Icon(
-                                                          Icons
-                                                              .watch_later_rounded,
-                                                          color: Colors.grey),
-                                                    ),
-                                                    borderRadius: 8,
-                                                    contentPadding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 10,
-                                                            vertical: 5),
-                                                    validator: (value) {
-                                                      if (value == null ||
-                                                          value
-                                                              .trim()
-                                                              .isEmpty) {
-                                                        return 'This field is required';
-                                                      }
-                                                      return null;
-                                                    },
-                                                  )),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 10),
-                                        GestureDetector(
-                                          onTap: () {
-                                            controller.removeDateField(index);
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              border: Border.all(
-                                                  color: Colors.grey),
-                                              color: Color(0xffF9F9F9),
-                                            ),
-                                            padding: EdgeInsets.all(10),
-                                            child: Center(
-                                              child: Icon(Icons.delete,
-                                                  color: Colors.grey),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                              );
-                            }),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        Obx(() => CommonButton(
-                            title: 'add_to_medicines'.tr,
-                            bgColor: Colors.black,
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                controller.addToMedicines(
-                                    data.name ?? '', context);
-                              }
-                            },
-                            isLoading: controller.isAddToMedicinesLoading.value,
-                            borderRadius: 8,
-                            fontSize: 16,
+                child: NotificationListener<ScrollNotification>(
+                  // Listen to scroll events to manage focus
+                  onNotification: (ScrollNotification scrollInfo) {
+                    return true;
+                  },
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomText(
+                            text: medicineName ?? '',
+                            weight: FontWeight.w900,
+                            fontSize: 30,
                           ),
-                        ),
-                        SizedBox(height: 20),
-                      ],
+                          SizedBox(height: 20),
+                          CustomText(text: 'prescribing_physician_name'.tr),
+                          SizedBox(height: 10),
+                          _buildTextField(
+                            context,
+                            controller: controller.physicianName,
+                            hintText: 'enter_physician_name'.tr,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'This field is required';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 20),
+                          // Dosage and Frequency Row
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomText(text: 'dosage'.tr),
+                                    SizedBox(height: 8),
+                                    _buildTextField(
+                                      context,
+                                      controller: controller.dosageController,
+                                      hintText: 'eg_500'.tr,
+                                      validator: (value) {
+                                        if (value == null || value.trim().isEmpty) {
+                                          return 'This field is required';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomText(text: 'frequency'.tr),
+                                    SizedBox(height: 8),
+                                    _buildTextField(
+                                      context,
+                                      controller: controller.frequencyController,
+                                      hintText: 'eg_twice_daily'.tr,
+                                      validator: (value) {
+                                        if (value == null || value.trim().isEmpty) {
+                                          return 'This field is required';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          CustomText(text: 'reason_for_use'.tr),
+                          SizedBox(height: 10),
+                          _buildTextField(
+                            context,
+                            controller: controller.reasonController,
+                            hintText: 'condition_or_symptom'.tr,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'This field is required';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 20),
+                          // Start Date and End Date Row
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomText(text: 'start_date'.tr),
+                                    SizedBox(height: 8),
+                                    GestureDetector(
+                                      onTap: () => _selectDate(context, controller.startDateController),
+                                      child: AbsorbPointer(
+                                        child: _buildTextField(
+                                          context,
+                                          controller: controller.startDateController,
+                                          hintText: 'enter_start_date'.tr,
+                                          validator: (value) {
+                                            if (value == null || value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomText(text: 'end_date'.tr),
+                                    SizedBox(height: 8),
+                                    GestureDetector(
+                                      onTap: () => _selectDate(context, controller.endDateController),
+                                      child: AbsorbPointer(
+                                        child: _buildTextField(
+                                          context,
+                                          controller: controller.endDateController,
+                                          hintText: 'enter_end_date'.tr,
+                                          validator: (value) {
+                                            if (value == null || value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          CustomText(text: 'schedule_your_doses'.tr),
+                          SizedBox(height: 10),
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (controller.dateFields.isEmpty) {
+                                          controller.addDateField();
+                                        }
+                                        controller.selectDateTime(0);
+                                      },
+                                      child: AbsorbPointer(
+                                        child: Obx(() => _buildTextField(
+                                              context,
+                                              controller: TextEditingController(
+                                                  text: controller.dateFields.isNotEmpty
+                                                      ? controller.dateFields[0].value
+                                                      : ""),
+                                              hintText: 'set_your_date'.tr,
+                                              suffixIcon: Icon(
+                                                Icons.watch_later_rounded,
+                                                color: Colors.grey,
+                                              ),
+                                              validator: (value) {
+                                                if (value == null || value.trim().isEmpty) {
+                                                  return 'This field is required';
+                                                }
+                                                return null;
+                                              },
+                                            )),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  GestureDetector(
+                                    onTap: () {
+                                      controller.addDateField();
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.grey),
+                                        color: Color(0xffF9F9F9),
+                                      ),
+                                      padding: EdgeInsets.all(10),
+                                      child: Center(
+                                        child: Icon(Icons.add, color: Colors.grey),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // Dynamically Render Additional Fields
+                              Obx(() {
+                                return Column(
+                                  children: List.generate(
+                                      controller.dateFields.length, (index) {
+                                    if (index == 0) return SizedBox();
+                                    return Container(
+                                      margin: EdgeInsets.only(top: 10),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                controller.selectDateTime(index);
+                                              },
+                                              child: AbsorbPointer(
+                                                child: Obx(() => _buildTextField(
+                                                      context,
+                                                      controller: TextEditingController(
+                                                          text: controller.dateFields[index].value),
+                                                      hintText: 'set_your_date'.tr,
+                                                      suffixIcon: Icon(
+                                                        Icons.watch_later_rounded,
+                                                        color: Colors.grey,
+                                                      ),
+                                                      validator: (value) {
+                                                        if (value == null || value.trim().isEmpty) {
+                                                          return 'This field is required';
+                                                        }
+                                                        return null;
+                                                      },
+                                                    )),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          GestureDetector(
+                                            onTap: () {
+                                              controller.removeDateField(index);
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(8),
+                                                border: Border.all(color: Colors.grey),
+                                                color: Color(0xffF9F9F9),
+                                              ),
+                                              padding: EdgeInsets.all(10),
+                                              child: Center(
+                                                child: Icon(Icons.delete, color: Colors.grey),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                                );
+                              }),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          Obx(() => CommonButton(
+                                title: 'add_to_medicines'.tr,
+                                bgColor: Colors.black,
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    controller.addToMedicines(data.name ?? '', context);
+                                  }
+                                },
+                                isLoading: controller.isAddToMedicinesLoading.value,
+                                borderRadius: 8,
+                                fontSize: 16,
+                              )),
+                          SizedBox(height: 20),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-              // Fixed bottom button
-              // Padding(
-              //   padding: EdgeInsets.symmetric(
-              //       horizontal: screenWidth * 0.1, vertical: 20),
-              //   child: Obx(
-              //     () => CommonButton(
-              //       title: 'add_to_medicines'.tr,
-              //       bgColor: Colors.black,
-              //       onPressed: () {
-              //         if (_formKey.currentState!.validate()) {
-              //           controller.addToMedicines(data.name ?? '', context);
-              //         }
-              //       },
-              //       isLoading: controller.isAddToMedicinesLoading.value,
-              //       borderRadius: 8,
-              //       fontSize: 16,
-              //     ),
-              //   ),
-              // ),
             ],
           ),
+        ),
+      );
+    },
+  );
+}
+
+Widget _buildTextField(
+  BuildContext context, {
+  required TextEditingController controller,
+  required String hintText,
+  Widget? suffixIcon,
+  String? Function(String?)? validator,
+}) {
+  final FocusNode focusNode = FocusNode();
+
+  focusNode.addListener(() {
+    if (focusNode.hasFocus) {
+      Future.delayed(Duration(milliseconds: 300), () {
+        Scrollable.ensureVisible(
+          context,
+          alignment: 0.5, 
+          duration: Duration(milliseconds: 200),
         );
-      },
-    );
-  }
+      });
+    }
+  });
+
+  return CustomTextField(
+    controller: controller,
+    focusNode: focusNode,
+    hintText: hintText,
+    hintStyle: TextStyle(fontSize: 14, color: Colors.grey),
+    borderColor: Color(0xffDADADA),
+    borderRadius: 8,
+    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+    suffixIcon: suffixIcon != null
+        ? Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: suffixIcon,
+          )
+        : null,
+    validator: validator,
+  );
+}
 }

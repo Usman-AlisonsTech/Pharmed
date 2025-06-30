@@ -237,445 +237,434 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
         double screenWidth = MediaQuery.of(context).size.width;
         double screenHeight = MediaQuery.of(context).size.height;
 
-        return Container(
-          padding: const EdgeInsets.all(0),
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          height: screenHeight * 0.95,
-          child: Column(
+         return Padding(
+    padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+    child: Container(
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      height: screenHeight * 0.95,
+      child: Column(
+        children: [
+          // Image section
+          Stack(
             children: [
-              // Image section
-              Stack(
-                children: [
-                  Container(
-                    width: screenWidth,
-                    height: screenHeight * 0.3,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8)),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: CachedNetworkImage(
-                        imageUrl: data.imageUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Center(
-                          child: SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: CircularProgressIndicator(strokeWidth: 3),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) =>
-                            Icon(Icons.error, size: 20, color: Colors.red),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 20,
-                    top: 20,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                        controller.dateFields.clear();
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(5)),
+              Container(
+                width: screenWidth,
+                height: screenHeight * 0.3,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8)),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: CachedNetworkImage(
+                    imageUrl: data.imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Center(
+                      child: SizedBox(
                         width: 30,
                         height: 30,
+                        child: CircularProgressIndicator(strokeWidth: 3),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        Icon(Icons.error, size: 20, color: Colors.red),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 20,
+                top: 20,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    controller.dateFields.clear();
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(5)),
+                    width: 30,
+                    height: 30,
+                    child: const Center(
+                      child: CustomText(
+                        text: 'X',
+                        weight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+          const SizedBox(height: 15),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: screenWidth * 0.55,
+                        child: FutureBuilder<String>(
+                          future: controller.translateText(data.medicine),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox();
+                            } else if (snapshot.hasError) {
+                              return Text(
+                                data.medicine,
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w900,
+                                  fontFamily: 'Poppins',
+                                ),
+                                textAlign: TextAlign.start,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            } else {
+                              return Text(
+                                snapshot.data ?? data.medicine,
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w900,
+                                  fontFamily: 'Poppins',
+                                ),
+                                textAlign: TextAlign.start,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                            controller.updateMedicines(
+                                data.medicine, data.id, context);
+                            Timer(Duration(seconds: 3), () {
+                              controller.getMedications();
+                              controller.isUpdateLoading.value = false;
+                            });
+                          },
+                          child: SvgPicture.asset(
+                              'assets/svg/tabler_edit.svg'))
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  CustomText(text: 'prescribing_physician_name'.tr),
+                  const SizedBox(height: 10),
+                  _buildTextField(
+                    context,
+                    controller: controller.physicianName,
+                    hintText: 'enter_physician_name'.tr,
+                      validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'This field is required';
+                            }
+                            return null;
+                          },
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(text: 'dosage'.tr),
+                            const SizedBox(height: 8),
+                            _buildTextField(
+                              context,
+                              controller: controller.dosageController,
+                              hintText: 'eg_500'.tr,
+                              validator: (value) {
+                                        if (value == null || value.trim().isEmpty) {
+                                          return 'This field is required';
+                                        }
+                                        return null;
+                                      },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(text: 'frequency'.tr),
+                            const SizedBox(height: 8),
+                            _buildTextField(
+                              context,
+                              controller: controller.frequencyController,
+                              hintText: 'eg_twice_daily'.tr,
+                             validator: (value) {
+                                        if (value == null || value.trim().isEmpty) {
+                                          return 'This field is required';
+                                        }
+                                        return null;
+                                      },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  CustomText(text: 'reason_for_use'.tr),
+                  const SizedBox(height: 10),
+                  _buildTextField(
+                    context,
+                    controller: controller.reasonController,
+                    hintText: 'condition_or_symptom'.tr,
+                     validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'This field is required';
+                              }
+                              return null;
+                            },
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(text: 'start_date'.tr),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () async {
+                                DateTime? selectedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2101),
+                                );
+                                if (selectedDate != null) {
+                                  controller.startDateController.text =
+                                      DateFormat('yyyy-MM-dd').format(selectedDate);
+                                }
+                              },
+                              child: AbsorbPointer(
+                                child: _buildTextField(
+                                  context,
+                                  controller: controller.startDateController,
+                                  hintText: 'enter_start_date'.tr,
+                                  validator: (value) {
+                                            if (value == null || value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(text: 'end_date'.tr),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () async {
+                                DateTime? selectedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2101),
+                                );
+                                if (selectedDate != null) {
+                                  controller.endDateController.text =
+                                      DateFormat('yyyy-MM-dd').format(selectedDate);
+                                }
+                              },
+                              child: AbsorbPointer(
+                                child: _buildTextField(
+                                  context,
+                                  controller: controller.endDateController,
+                                  hintText: 'enter_end_date'.tr,
+                                  validator: (value) {
+                                            if (value == null || value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  CustomText(text: 'schedule_your_doses'.tr),
+                  const SizedBox(height: 10),
+                  Column(
+                    children: [
+                      Obx(() {
+                        return Column(
+                          children: List.generate(controller.dateFields.length, (index) {
+                            return Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () async {
+                                        await controller.selectDateTime(index);
+                                      },
+                                      child: _buildTextField(
+                                        context,
+                                        controller: TextEditingController(text: controller.dateFields[index]),
+                                        hintText: 'Select a time',
+                                       readOnly: true,
+                                        suffixIcon: Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 10),
+                                          child: InkWell(
+                                            onTap: () async {
+                                              await controller.selectDateTime(index);
+                                            },
+                                            child: Icon(
+                                              Icons.watch_later_rounded,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  GestureDetector(
+                                    onTap: () {
+                                      controller.removeDateField(index);
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.grey),
+                                        color: const Color(0xffF9F9F9),
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      child: const Center(
+                                        child: Icon(Icons.delete, color: Colors.grey),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                        );
+                      }),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        controller.addDateField();
+                      },
+                      child: Container(
+                        width: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey),
+                          color: const Color(0xffF9F9F9),
+                        ),
+                        padding: const EdgeInsets.all(10),
                         child: const Center(
-                          child: CustomText(
-                            text: 'X',
-                            weight: FontWeight.w800,
-                            color: Colors.white,
+                          child: Icon(
+                            Icons.add,
+                            weight: 10,
+                            color: Colors.grey,
                           ),
                         ),
                       ),
                     ),
-                  )
+                  ),
+                  const SizedBox(height: 20),
+                  Obx(() => CommonButton(
+                        isLoading: controller.isUpdateLoading.value,
+                        title: 'edit'.tr,
+                        bgColor: Colors.black,
+                        onPressed: () {
+                          controller.updateMedicines(data.medicine, data.id, context);
+                          Timer(Duration(seconds: 2), () {
+                            controller.getMedications();
+                            controller.isUpdateLoading.value = false;
+                          });
+                        },
+                        borderRadius: 8,
+                        fontSize: 16,
+                      )),
+                  const SizedBox(height: 20),
                 ],
               ),
-              const SizedBox(height: 15),
-              // Scrollable content section
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Title Row with edit icon
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: screenWidth * 0.55,
-                            child: FutureBuilder<String>(
-                              future: controller.translateText(data.medicine),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center(
-                                    child: SizedBox(),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text(
-                                    data.medicine,
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w900,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                    textAlign: TextAlign.start,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  );
-                                } else {
-                                  return Text(
-                                    snapshot.data ?? data.medicine,
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w900,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                    textAlign: TextAlign.start,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                          GestureDetector(
-                              onTap: () {
-                                controller.updateMedicines(
-                                    data.medicine, data.id, context);
-                                Timer(Duration(seconds: 3), () {
-                                  controller.getMedications();
-                                  controller.isUpdateLoading.value = false;
-                                });
-                              },
-                              child: SvgPicture.asset(
-                                  'assets/svg/tabler_edit.svg'))
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      // Prescribing physician name
-                      CustomText(text: 'prescribing_physician_name'.tr),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        hintStyle:
-                            const TextStyle(fontSize: 14, color: Colors.grey),
-                        controller: controller.physicianName,
-                        hintText: 'enter_physician_name'.tr,
-                        borderColor: const Color(0xffDADADA),
-                        borderRadius: 8,
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                      ),
-                      const SizedBox(height: 20),
-                      // Dosage and Frequency Row
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(text: 'dosage'.tr),
-                                const SizedBox(height: 8),
-                                GestureDetector(
-                                  onTap: () async {},
-                                  child: CustomTextField(
-                                    hintStyle: const TextStyle(
-                                        fontSize: 14, color: Colors.grey),
-                                    controller: controller.dosageController,
-                                    hintText: 'eg_500'.tr,
-                                    borderColor: const Color(0xffDADADA),
-                                    borderRadius: 8,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(text: 'frequency'.tr),
-                                const SizedBox(height: 8),
-                                GestureDetector(
-                                  onTap: () async {},
-                                  child: CustomTextField(
-                                    hintStyle: const TextStyle(
-                                        fontSize: 14, color: Colors.grey),
-                                    controller: controller.frequencyController,
-                                    hintText: 'eg_twice_daily'.tr,
-                                    borderColor: const Color(0xffDADADA),
-                                    borderRadius: 8,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      CustomText(text: 'reason_for_use'.tr),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        controller: controller.reasonController,
-                        hintText: 'condition_or_symptom'.tr,
-                        borderColor: const Color(0xffDADADA),
-                        hintStyle:
-                            const TextStyle(fontSize: 14, color: Colors.grey),
-                        borderRadius: 8,
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                      ),
-                      const SizedBox(height: 20),
-                        Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(text: 'start_date'.tr),
-                                const SizedBox(height: 8),
-                                GestureDetector(
-                                  onTap: () async {
-                                    DateTime? selectedDate =
-                                        await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime(2101),
-                                    );
-                                    if (selectedDate != null) {
-                                      controller.startDateController.text =
-                                          DateFormat('yyyy-MM-dd')
-                                              .format(selectedDate);
-                                    }
-                                  },
-                                  child: AbsorbPointer(
-                                    child: CustomTextField(
-                                      hintStyle: const TextStyle(
-                                          fontSize: 14, color: Colors.grey),
-                                      controller:
-                                          controller.startDateController,
-                                      hintText: 'enter_start_date'.tr,
-                                      borderColor: const Color(0xffDADADA),
-                                      borderRadius: 8,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 5),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(text: 'end_date'.tr),
-                                const SizedBox(height: 8),
-                                GestureDetector(
-                                  onTap: () async {
-                                    DateTime? selectedDate =
-                                        await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime(2101),
-                                    );
-                                    if (selectedDate != null) {
-                                      // Update the endDateController text with the selected date
-                                      controller.endDateController.text =
-                                          DateFormat('yyyy-MM-dd')
-                                              .format(selectedDate);
-                                    }
-                                  },
-                                  child: AbsorbPointer(
-                                    child: CustomTextField(
-                                      hintStyle: const TextStyle(
-                                          fontSize: 14, color: Colors.grey),
-                                      controller: controller.endDateController,
-                                      hintText: 'enter_end_date'.tr,
-                                      borderColor: const Color(0xffDADADA),
-                                      borderRadius: 8,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 5),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-                    
-                      CustomText(text: 'schedule_your_doses'.tr),
-                      const SizedBox(height: 10),
-
-                      Column(
-                        children: [
-                          Obx(() {
-                            return Column(
-                              children: List.generate(
-                                  controller.dateFields.length, (index) {
-                                return Container(
-                                  margin: const EdgeInsets.only(top: 10),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () async {
-                                            await controller
-                                                .selectDateTime(index);
-                                          },
-                                          child: CustomTextField(
-                                            controller: TextEditingController(
-                                                text: controller
-                                                    .dateFields[index]),
-                                            hintText: 'Select a time',
-                                            borderColor:
-                                                const Color(0xffDADADA),
-                                            suffixIcon: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10),
-                                              child: InkWell(
-                                                onTap: () async {
-                                                  await controller
-                                                      .selectDateTime(index);
-                                                },
-                                                child: Icon(
-                                                  Icons.watch_later_rounded,
-                                                  color: Colors.grey,
-                                                ),
-                                              ),
-                                            ),
-                                            readOnly: true,
-                                            borderRadius: 8,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      GestureDetector(
-                                        onTap: () {
-                                          controller.removeDateField(index);
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            border:
-                                                Border.all(color: Colors.grey),
-                                            color: const Color(0xffF9F9F9),
-                                          ),
-                                          padding: const EdgeInsets.all(10),
-                                          child: const Center(
-                                            child: Icon(Icons.delete,
-                                                color: Colors.grey),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }),
-                            );
-                          }),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-                      Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            controller.addDateField();
-                          },
-                          child: Container(
-                            width: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.grey),
-                              color: const Color(0xffF9F9F9),
-                            ),
-                            padding: const EdgeInsets.all(10),
-                            child: const Center(
-                              child: Icon(
-                                Icons.add,
-                                weight: 10,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Obx(() => CommonButton(
-                    isLoading: controller.isUpdateLoading.value,
-                    title: 'edit'.tr,
-                    bgColor: Colors.black,
-                    onPressed: () {
-                      controller.updateMedicines(
-                          data.medicine, data.id, context);
-                      Timer(Duration(seconds: 2), () {
-                        controller.getMedications();
-                        controller.isUpdateLoading.value = false;
-                      });
-                    },
-                    borderRadius: 8,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              ),
-              // Fixed bottom button
-              // Padding(
-              //   padding: EdgeInsets.symmetric(
-              //       horizontal: screenWidth * 0.1, vertical: 20),
-              //   child: Obx(
-              //     () => CommonButton(
-              //       isLoading: controller.isUpdateLoading.value,
-              //       title: 'edit'.tr,
-              //       bgColor: Colors.black,
-              //       onPressed: () {
-              //         controller.updateMedicines(
-              //             data.medicine, data.id, context);
-              //         Timer(Duration(seconds: 2), () {
-              //           controller.getMedications();
-              //           controller.isUpdateLoading.value = false;
-              //         });
-              //       },
-              //       borderRadius: 8,
-              //       fontSize: 16,
-              //     ),
-              //   ),
-              // ),
-            ],
+            ),
           ),
-        );
-      },
-    );
+        ],
+      ),
+    ),
+  );
+      },);
   }
+
+  Widget _buildTextField(
+  BuildContext context, {
+  required TextEditingController controller,
+  required String hintText,
+  Widget? suffixIcon,
+  String? Function(String?)? validator,
+  bool? readOnly,
+}) {
+  final FocusNode focusNode = FocusNode();
+
+  focusNode.addListener(() {
+    if (focusNode.hasFocus) {
+      Future.delayed(Duration(milliseconds: 300), () {
+        Scrollable.ensureVisible(
+          context,
+          alignment: 0.5, 
+          duration: Duration(milliseconds: 200),
+        );
+      });
+    }
+  });
+
+  return CustomTextField(
+    controller: controller,
+    focusNode: focusNode,
+    hintText: hintText,
+    hintStyle: TextStyle(fontSize: 14, color: Colors.grey),
+    borderColor: Color(0xffDADADA),
+    borderRadius: 8,
+    readOnly: readOnly??false,
+    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+    suffixIcon: suffixIcon != null
+        ? Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: suffixIcon,
+          )
+        : null,
+    validator: validator,
+  );
+}
 }

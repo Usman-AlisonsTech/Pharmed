@@ -17,11 +17,12 @@ class CustomTextField extends StatelessWidget {
   final bool readOnly;
   final String? Function(String?)? validator;
   final Function(String)? onChanged;
-  final Color? borderColor; // Added borderColor parameter
-  final EdgeInsetsGeometry? contentPadding; // Added contentPadding parameter
-  final TextStyle? hintStyle; // Added hintStyle parameter
-  final double? hintTextPadding; // Added hintTextPadding parameter
-  final double? leftPadding; // Added leftPadding parameter
+  final Color? borderColor;
+  final EdgeInsetsGeometry? contentPadding;
+  final TextStyle? hintStyle;
+  final double? hintTextPadding;
+  final double? leftPadding;
+  final FocusNode? focusNode; // Added focusNode parameter
 
   const CustomTextField({
     super.key,
@@ -41,17 +42,19 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.borderRadius,
-    this.borderColor, // Passed borderColor to the constructor
-    this.contentPadding, // Passed contentPadding to the constructor
-    this.hintStyle, // Passed hintStyle to the constructor
-    this.hintTextPadding, // Passed hintTextPadding to the constructor
-    this.leftPadding, // Passed leftPadding to the constructor
+    this.borderColor,
+    this.contentPadding,
+    this.hintStyle,
+    this.hintTextPadding,
+    this.leftPadding,
+    this.focusNode, // Passed focusNode to the constructor
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      focusNode: focusNode, // Added focusNode to TextFormField
       keyboardType: textInputType,
       maxLines: lines,
       validator: validator,
@@ -60,8 +63,8 @@ class CustomTextField extends StatelessWidget {
       readOnly: readOnly,
       initialValue: initialValue,
       style: TextStyle(
-        fontFamily: 'Poppins', // Ensure Poppins font is applied
-        fontWeight: FontWeight.w500, // Set font weight to 500
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.w500,
       ),
       decoration: InputDecoration(
         hintText: hintText,
@@ -71,22 +74,22 @@ class CustomTextField extends StatelessWidget {
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         contentPadding: contentPadding ?? EdgeInsets.only(
-          top: 15, // Padding from top
-          bottom: 15, // Padding from bottom
-          left: leftPadding ?? 25, // Padding on the left side (fallback to 25 if not provided)
-          right: 20, // Padding on the right side (you can adjust it as needed)
+          top: 15,
+          bottom: 15,
+          left: leftPadding ?? 25,
+          right: 20,
         ),
         prefixIconConstraints: BoxConstraints(
-          minWidth: 24, // Set a minimum width to ensure proper size of the icon
-          minHeight: 24, // Set a minimum height to center the icon vertically
+          minWidth: 24,
+          minHeight: 24,
         ),
         suffixIconConstraints: BoxConstraints(
-          minWidth: 24, // Make sure suffix icon has sufficient space
-          minHeight: 24, // Ensure it's vertically aligned
+          minWidth: 24,
+          minHeight: 24,
         ),
-        hintStyle: hintStyle ?? const TextStyle(color: Colors.grey, fontSize: 16), // Fallback to default hintStyle
-        enabledBorder: border(), // Use the border function for styling
-        focusedBorder: border(), // Use the same border for focused state
+        hintStyle: hintStyle ?? const TextStyle(color: Colors.grey, fontSize: 16),
+        enabledBorder: border(),
+        focusedBorder: border(),
         errorBorder: errorBorder(),
         focusedErrorBorder: errorBorder(),
       ),
@@ -103,11 +106,10 @@ class CustomTextField extends StatelessWidget {
 
   // Function to handle default border styling
   OutlineInputBorder border() {
-    // If borderColor is not passed, default to black
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(borderRadius ?? 5),
       borderSide: BorderSide(
-        color: borderColor ?? Colors.black, // Use borderColor or default to black
+        color: borderColor ?? Colors.black,
       ),
     );
   }

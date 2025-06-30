@@ -202,50 +202,47 @@ class _DicViewState extends State<DicView> {
                             },
                           ),
                         );
-                      } else if (_showDropdown &&
-                          controller.searchResults.isNotEmpty) {
-                        return Container(
-                          constraints: BoxConstraints(maxHeight: 200),
-                          margin: EdgeInsets.only(bottom: 20),
-                          decoration: BoxDecoration(
-                            color: Color(0xffF9F9F9),
-                          ),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: controller.searchResults.length,
-                            physics: AlwaysScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              final suggestion =
-                                  controller.searchResults[index];
-                              return ListTile(
-                                title: CustomText(
-                                    text: suggestion.genericName ?? 'Unknown'),
-                                // minVerticalPadding: 5,
-                                minTileHeight: 50,
-                                trailing: CircleAvatar(
-                                  backgroundColor: ColorConstants.themecolor,
-                                  child: Icon(Icons.add,
-                                      size: 16, color: Colors.white),
-                                  radius: 10,
-                                ),
-                                onTap: () {
-                                  String drugName =
-                                      suggestion.genericName ?? '';
-                                  if (drugName.isNotEmpty &&
-                                      !addedDrugs.contains(drugName)) {
-                                    addedDrugs.add(drugName);
-                                    searchController.clear();
-                                    setState(() {
-                                      _showDropdown = false;
-                                    });
-                                    controller.searchResults.clear();
-                                  }
-                                },
-                              );
-                            },
-                          ),
-                        );
-                      }
+                      } else if (_showDropdown && controller.searchResults.isNotEmpty) {
+  return Container(
+    constraints: BoxConstraints(maxHeight: 200),
+    margin: EdgeInsets.only(bottom: 20),
+    decoration: BoxDecoration(
+      color: Color(0xffF9F9F9),
+    ),
+    child: MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: controller.searchResults.length,
+        physics: AlwaysScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          final suggestion = controller.searchResults[index];
+          return ListTile(
+            title: CustomText(text: suggestion.genericName ?? 'Unknown'),
+            minTileHeight: 50,
+            trailing: CircleAvatar(
+              backgroundColor: ColorConstants.themecolor,
+              child: Icon(Icons.add, size: 16, color: Colors.white),
+              radius: 10,
+            ),
+            onTap: () {
+              String drugName = suggestion.genericName ?? '';
+              if (drugName.isNotEmpty && !addedDrugs.contains(drugName)) {
+                addedDrugs.add(drugName);
+                searchController.clear();
+                setState(() {
+                  _showDropdown = false;
+                });
+                controller.searchResults.clear();
+              }
+            },
+          );
+        },
+      ),
+    ),
+  );
+}
 
                       return SizedBox();
                     }),
