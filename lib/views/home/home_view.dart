@@ -84,11 +84,17 @@ class HomeView extends StatelessWidget {
             CustomAppbar(scaffoldKey: scaffoldKey),
             SizedBox(height: screenHeight * 0.04),
             Obx(
-              () => CustomText(
-                  text: controller.translatedText.value,
-                  color: ColorConstants.themecolor,
-                  weight: FontWeight.w500,
-                  fontSize: 16),
+              () => Text(
+                  controller.translatedText.value,
+                  style: TextStyle(
+                    color: ColorConstants.themecolor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )
             ),
             SizedBox(height: 5),
             CustomText(

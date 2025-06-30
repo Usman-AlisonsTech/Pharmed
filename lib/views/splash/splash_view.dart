@@ -14,8 +14,9 @@ class SplashView extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'assets/png/splash_bg.png',
+            'assets/png/splash_bg.jpg',
             fit: BoxFit.cover,
+            
           ),
           Center(
             child: Column(
