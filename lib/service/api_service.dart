@@ -11,8 +11,6 @@ import 'package:pharmed_app/models/login_response_model.dart';
 import 'package:pharmed_app/models/medical_profile_model.dart';
 import 'package:pharmed_app/models/patient_profile_response_model.dart';
 import 'package:pharmed_app/models/popular_medication_model.dart';
-import 'package:pharmed_app/models/signup_error_response_model.dart';
-import 'package:pharmed_app/models/signup_otp_notverify_response_model.dart';
 import 'package:pharmed_app/models/signup_otp_response_model.dart';
 import 'package:pharmed_app/models/signup_response_model.dart';
 import 'package:pharmed_app/models/suggestion_response_model.dart';
@@ -77,42 +75,37 @@ class ApiService {
   }
 
   // sign up service
-  Future signUp(
-      String userName, String email, String phoneNum, String password) async {
-    try {
-      final response = await http.post(
-        Uri.parse(ApiConstants.baseurl + ApiConstants.signUp),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode({
-          "username": userName,
-          "email": email,
-          "password": password,
-          "phone": phoneNum,
-        }),
-      );
+Future<dynamic> signUp(
+    String userName, String email, String phoneNum, String password) async {
+  try {
+    final response = await http.post(
+      Uri.parse(ApiConstants.baseurl + ApiConstants.signUp),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "username": userName,
+        "email": email,
+        "password": password,
+        "phone": phoneNum,
+      }),
+    );
 
-      print('Response Status Code : ${response.statusCode}');
-      print('Response Data : ${response.body}');
+    print('Response Status Code: ${response.statusCode}');
+    print('Response Data: ${response.body}');
 
-      final Map<String, dynamic> responseData = json.decode(response.body);
+    final Map<String, dynamic> responseData = json.decode(response.body);
 
-      if (response.statusCode == 200) {
-        return SignUpResponse.fromJson(responseData);
-      } else if (response.statusCode == 404) {
-        if (responseData["message"] == "Not Verified") {
-          return SignUpNotVerifyResponse.fromJson(responseData);
-        } else if (responseData["message"] == "User Exist") {
-          return SignUpErrorResponse.fromJson(responseData);
-        } else {
-          return SignUpErrorResponse.fromJson(responseData);
-        }
-      } else {
-        throw Exception("Failed to sign up");
-      }
-    } catch (e) {
-      rethrow;
+    if (response.statusCode == 201) {
+      // Parse into model only when status is 201
+      return SignUpResponse.fromJson(responseData);
+    } else {
+      // Pass raw message for other status codes
+      final String message = responseData['data']?['issue']?[0]?['details']?['text'] ?? 'Unknown error';
+      return message;
     }
+  } catch (e) {
+    rethrow;
   }
+}
 
   // Login otp service
   Future<SignUpOtpResponse?> signUpOtp(String email, String otp) async {
@@ -126,8 +119,13 @@ class ApiService {
         }),
       );
 
+      print('Response Status Code : ${response.statusCode}');
+      print('Response Data : ${response.body}');
+
       if (response.statusCode == 200) {
         return SignUpOtpResponse.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 404) {
+        throw Exception("Invalid OTP");
       } else {
         throw Exception("Failed to Login");
       }
@@ -137,47 +135,66 @@ class ApiService {
   }
 
   // Create patient profile service
-  Future<PatientProfileResponse> createPatientProfile(
-      {required String name,
-      required String dob,
-      required String gender,
-      required String nationality,
-      required String weight,
-      required String lang}) async {
-    try {
-      final url = ApiConstants.baseurl + ApiConstants.patientProfile;
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String token = prefs.getString('loggedInToken') ?? '';
+ Future<PatientProfileResponse> createPatientProfile({
+  required String name,
+  required String dob,
+  required String gender,
+  required String nationality,
+  required String weight,
+  required String lang,
+  required int term,
+  required String phone,
+  required String email,
+  required String address,
+  required String maritalStatus,
+  required String birthPlace,
+}) async {
+  try {
+    final url = ApiConstants.baseurl + ApiConstants.patientProfile;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('loggedInToken') ?? '';
 
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${token}',
-        },
-        body: json.encode({
-          'name': name,
-          'dob': dob,
-          'gender': gender,
-          'nationality': nationality,
-          'weight': weight,
-          'lang': lang,
-          'term': null,
-        }),
-      );
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        "name": name,
+        "dob": dob,
+        "gender": gender,
+        "nationality": nationality,
+        "weight": weight,
+        "lang": lang,
+        "term": term,
+        "phone": phone,
+        "email": email,
+        "address": address,
+        "marital_status": maritalStatus,
+        "birth_place": birthPlace,
+        "active": true
+      }),
+    );
+    // print();
 
-      print('Response Status Code : ${response.statusCode}');
-      print('Response Data : ${response.body}');
+    print('Response Status Code : ${response.statusCode}');
+    print('Response Data : ${response.body}');
 
-      if (response.statusCode == 200) {
-        return PatientProfileResponse.fromJson(json.decode(response.body));
-      } else {
-        throw Exception('Failed to create profile');
-      }
-    } catch (e) {
-      throw Exception('An error occurred: $e');
+    final Map<String, dynamic> jsonBody = json.decode(response.body);
+
+    if (response.statusCode == 201) {
+      return PatientProfileResponse.fromJson(jsonBody);
+    } else if (response.statusCode == 422) {
+      final firstError = jsonBody['errors']?.values?.first?[0] ?? 'Validation error';
+      throw Exception(firstError);
+    } else {
+      throw Exception(jsonBody['message'] ?? 'Failed to create profile');
     }
+  } catch (e) {
+    throw Exception('An error occurred: $e');
   }
+}
 
   Future<MedicalProfileResponse> createMedicalProfile({
     required String fullName,

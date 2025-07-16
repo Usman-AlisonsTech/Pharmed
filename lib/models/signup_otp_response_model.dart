@@ -98,7 +98,7 @@ class UserDetail {
     final dynamic verificationCode;
     final dynamic emailVerifiedAt;
     final dynamic userImage;
-    final String? otp;
+    final dynamic otp;
     final dynamic phone;
     final DateTime? createdAt;
     final DateTime? updatedAt;
@@ -116,7 +116,7 @@ class UserDetail {
         dynamic? verificationCode,
         dynamic? emailVerifiedAt,
         dynamic? userImage,
-        String? otp,
+        dynamic? otp,
         dynamic? phone,
         DateTime? createdAt,
         DateTime? updatedAt,

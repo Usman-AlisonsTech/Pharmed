@@ -20,7 +20,7 @@ class SignupOtpController extends GetxController {
         await _saveToken(
             response.data!.token,
             response.data!.userDetail!.username ?? '',
-            response.data!.userDetail!.id ?? 0);
+            response.data!.userDetail!.id ?? 0, response.data!.userDetail!.email??'', response.data!.userDetail!.phone??'');
         Get.offAll(() => WhoAreYouView(
               token: response.data!.token,
               userName: response.data!.userDetail!.username,
@@ -38,43 +38,54 @@ class SignupOtpController extends GetxController {
     }
   }
 
- Future<void> resendOtp() async {
+Future<void> resendOtp() async {
   try {
-    var loginResponse = await apiService.signUp(
+    var response = await apiService.signUp(
       signUpController.userNameController.text,
       signUpController.emailController.text,
       signUpController.phoneNumController.text,
       signUpController.passwordController.text,
     );
 
-    if (loginResponse != null) {
-      if (loginResponse.success == true) {
-        Get.snackbar('Success', loginResponse.message ?? '',
-            backgroundColor: Colors.green, colorText: Colors.white);
-      } else if (loginResponse.message == "Not Verified") {
+    if (response is SignUpResponse) {
+      final message = response.data?.issue.isNotEmpty == true
+          ? response.data?.issue.first.details?.text ?? ""
+          : "";
+
+      Get.snackbar("Success", message,
+          backgroundColor: Colors.green, colorText: Colors.white);
+
+    } else if (response is String) {
+      if (response.toLowerCase().contains("not verified")) {
         Get.snackbar("Success", "Otp Sent Successfully",
             backgroundColor: Colors.green, colorText: Colors.white);
+      } else if (response.toLowerCase().contains("user already exists")) {
+        Get.snackbar("Warning", response,
+            backgroundColor: Colors.orange, colorText: Colors.white);
       } else {
-        Get.snackbar("Error", loginResponse.message ?? "Login failed",
+        Get.snackbar("Error", response,
             backgroundColor: Colors.red, colorText: Colors.white);
       }
     } else {
-      Get.snackbar("Error", "Login failed",
+      Get.snackbar("Error", "Something went wrong",
           backgroundColor: Colors.red, colorText: Colors.white);
     }
   } catch (e) {
     Get.snackbar("Error",
-        "UnAuthorized User, Please Check Password or create a new account",
+        "UnAuthorized User, Please check password or create a new account.",
         backgroundColor: Colors.red, colorText: Colors.white);
   }
 }
 
 
-  Future<void> _saveToken(String? token, String? userName, int? id) async {
+
+  Future<void> _saveToken(String? token, String? userName, int? id, String? email, String? phone) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (token != null && token.isNotEmpty) {
       await prefs.setString('loggedInToken', token);
       prefs.setString('username', userName ?? '');
+      prefs.setString('email', email ?? '');
+      prefs.setString('phone', phone ?? '');
       prefs.setInt('id', id ?? 0);
       print("Token saved: $token");
       print("UserName saved: $userName");

@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:pharmed_app/utils/constants.dart';
 import 'package:pharmed_app/views/personalize_experience/create_patient_profile/create_patient_profile_controller.dart';
-import 'package:pharmed_app/views/personalize_experience/terms_and_conditions/terms_and_conditions_view.dart';
 import 'package:pharmed_app/widgets/common_button.dart';
 import 'package:pharmed_app/widgets/custom_text.dart';
 import 'package:pharmed_app/widgets/custom_textfield.dart';
@@ -18,25 +17,26 @@ class CreatePatientProfileView extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     // Function to pick the date and set the date in MM/DD/YYYY format
-    Future<void> _selectDate(BuildContext context) async {
-      DateTime initialDate = DateTime.now();
-      DateTime firstDate = DateTime(1900);
-      DateTime lastDate = DateTime.now();
+   Future<void> _selectDate(BuildContext context) async {
+  DateTime initialDate = DateTime.now();
+  DateTime firstDate = DateTime(1900);
+  DateTime lastDate = DateTime(2050);
 
-      final DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: initialDate,
-        firstDate: firstDate,
-        lastDate: lastDate,
-      );
+  final DateTime? pickedDate = await showDatePicker(
+    context: context,
+    initialDate: initialDate,
+    firstDate: firstDate,
+    lastDate: lastDate,
+  );
 
-      if (pickedDate != null) {
-        String formattedDate = "${pickedDate.month.toString().padLeft(2, '0')}/"
-            "${pickedDate.day.toString().padLeft(2, '0')}/"
-            "${pickedDate.year}";
-        controller.setDOB(formattedDate);
-      }
-    }
+  if (pickedDate != null) {
+    // Format date as YYYY-MM-DD
+    String formattedDate = "${pickedDate.year}-"
+        "${pickedDate.month.toString().padLeft(2, '0')}-"
+        "${pickedDate.day.toString().padLeft(2, '0')}";
+    controller.setDOB(formattedDate);
+  }
+}
 
     // Function to open the country picker dialog
     void _showCountryPicker() {
@@ -141,12 +141,6 @@ class CreatePatientProfileView extends StatelessWidget {
                               ),
                             ),
                             borderColor: Colors.grey,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please select your date of birth';
-                              }
-                              return null;
-                            },
                           );
                         }),
                       ],
@@ -181,12 +175,16 @@ class CreatePatientProfileView extends StatelessWidget {
                               isExpanded: true,
                               onChanged: (String? newValue) {
                                 controller.setGender(newValue!);
+                                if (newValue != 'female') {
+                                  controller.setPregnancy('');
+                                  controller.setTerms(0);
+                                } else {
+                                  controller.setPregnancy('No');
+                                  controller.setTerms(0);
+                                }
                               },
-                              items: [
-                                'Male',
-                                'Female',
-                                'Others'
-                              ].map<DropdownMenuItem<String>>((String value) {
+                              items: ['male', 'female']
+                                  .map<DropdownMenuItem<String>>((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
                                   child: Container(
@@ -206,20 +204,165 @@ class CreatePatientProfileView extends StatelessWidget {
                                   horizontal: 25,
                                 ),
                               ),
-                              // Add a validator for the field
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please select your gender';
-                                }
-                                return null;
-                              },
+
                             ),
                           );
                         }),
                       ],
                     ),
                   ),
-                  Container(
+                  Obx(() => Visibility(
+                        visible: controller.selectedGender.value == 'female',
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomText(
+                                text: 'pregnancy'.tr,
+                                weight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                child: DropdownButtonFormField<String>(
+                                  value: controller.selectPregnancy.value.isEmpty
+                                      ? null
+                                      : controller.selectPregnancy.value,
+                                  hint: Text(
+                                    'select_pregnancy'.tr,
+                                    style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 14,
+                                        fontFamily: 'Poppins'),
+                                  ),
+                                  isDense: true,
+                                  isExpanded: true,
+                                  onChanged: (String? newValue) {
+                                    controller.setPregnancy(newValue!);
+                                    if (newValue != 'Yes') {
+                                      controller.setTerms(0);
+                                    }
+                                  },
+                                  items: ['Yes', 'No']
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: Text(value),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide:
+                                          const BorderSide(color: Colors.grey),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 25,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (controller.selectedGender.value ==
+                                            'Female' &&
+                                        (value == null || value.isEmpty)) {
+                                      return 'Please select pregnancy status';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )),
+                  // Trimester Dropdown (Visible only when Pregnancy is Yes)
+                  Obx(() => Visibility(
+                        visible: controller.selectPregnancy.value == 'Yes',
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomText(
+                                text: 'trimester'.tr,
+                                weight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                child: DropdownButtonFormField<String>(
+                                  value: controller.selectTerms.value == 0
+                                      ? null
+                                      : {
+                                          1: 'First Trimester',
+                                          2: 'Second Trimester',
+                                          3: 'Third Trimester',
+                                        }[controller.selectTerms.value],
+                                  hint: Text(
+                                    'select_trimester'.tr,
+                                    style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 14,
+                                        fontFamily: 'Poppins'),
+                                  ),
+                                  isDense: true,
+                                  isExpanded: true,
+                                  onChanged: (String? newValue) {
+                                    if (newValue != null) {
+                                      final termValue = {
+                                        'First Trimester': 1,
+                                        'Second Trimester': 2,
+                                        'Third Trimester': 3,
+                                      }[newValue]!;
+                                      controller.setTerms(termValue);
+                                    }
+                                  },
+                                  items: [
+                                    'First Trimester',
+                                    'Second Trimester',
+                                    'Third Trimester'
+                                  ].map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: Text(value),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide:
+                                          const BorderSide(color: Colors.grey),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 25,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (controller.selectPregnancy.value ==
+                                            'Yes' &&
+                                        (value == null || value.isEmpty)) {
+                                      return 'Please select trimester';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )),
+                   Container(
                     margin: const EdgeInsets.only(bottom: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,18 +389,95 @@ class CreatePatientProfileView extends StatelessWidget {
                                 child: Icon(Icons.arrow_drop_down),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please select your nationality';
-                              }
-                              return null;
-                            },
                           );
                         }),
                       ],
                     ),
                   ),
                   Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          text: 'address'.tr,
+                          weight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomTextField(
+                          controller: controller.address,
+                          hintText: 'enter_address'.tr,
+                          borderColor: Colors.grey,
+                          borderRadius: 8,
+                        ),
+                      ],
+                    ),
+                  ),
+                   CustomText(
+                          text: 'martial_status'.tr,
+                          weight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                        const SizedBox(height: 10),
+                   Obx(() {
+        return Container(
+          width: double.infinity,
+          child: DropdownButtonFormField<String>(
+            value: controller.selectMartialStatus.value.isEmpty
+                ? null
+                : controller.selectMartialStatus.value, 
+            hint: Text(
+              'select_marital_status'.tr,
+              style: const TextStyle(
+                  color: Colors.grey, fontSize: 14, fontFamily: 'Poppins'),
+            ),
+            isDense: true,
+            isExpanded: true,
+            onChanged: (String? newValue) {
+              controller.setMartialStatus(newValue!);
+            },
+            items: ['single', 'married'].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(value),
+                ),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.grey),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 25),
+            ),
+          ),
+        );
+      }),
+                        SizedBox(height: 20),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          text: 'birth_place'.tr,
+                          weight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomTextField(
+                          controller: controller.birthPlace,
+                          hintText: 'enter_birthplace'.tr,
+                          borderColor: Colors.grey,
+                          borderRadius: 8,
+                        ),
+                      ],
+                    ),
+                  ),
+                    Container(
                     margin: const EdgeInsets.only(bottom: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,13 +493,6 @@ class CreatePatientProfileView extends StatelessWidget {
                           hintText: 'enter_weight'.tr,
                           borderColor: Colors.grey,
                           borderRadius: 8,
-                          // Add a validator for the field
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your weight';
-                            }
-                            return null;
-                          },
                         ),
                       ],
                     ),

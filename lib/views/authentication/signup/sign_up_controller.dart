@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pharmed_app/models/signup_error_response_model.dart';
-import 'package:pharmed_app/models/signup_otp_notverify_response_model.dart';
 import 'package:pharmed_app/models/signup_response_model.dart';
 import 'package:pharmed_app/service/api_service.dart';
 import 'package:pharmed_app/views/authentication/login/login_view.dart';
@@ -28,59 +26,54 @@ class SignUpController extends GetxController {
   final phoneNumformKey = GlobalKey<FormState>();
   final passformKey = GlobalKey<FormState>();
 
-  signUp() async {
-    if (!userNameformKey.currentState!.validate() ||
-        !emailformKey.currentState!.validate() ||
-        !passformKey.currentState!.validate()) {
-      return;
-    }
+ signUp() async {
+  if (!userNameformKey.currentState!.validate() ||
+      !emailformKey.currentState!.validate() ||
+      !passformKey.currentState!.validate()) {
+    return;
+  }
 
-    try {
-      isLoading.value = true;
-      var response = await apiService.signUp(
-          userNameController.text,
-          emailController.text,
-          phoneNumController.text,
-          passwordController.text);
+  try {
+    isLoading.value = true;
 
-      if (response is SignUpResponse) {
-        if (response.success == true) {
-          Get.to(SignupOtpView(email: emailController.text));
-        } else {
-          Get.snackbar("Error", response.message ?? "User Registration Failed",
-              backgroundColor: Colors.red, colorText: Colors.white);
-        }
-      } else if (response is SignUpErrorResponse) {
-        // Check if email already exists
-        if (response.message != null &&
-            response.message!
-                .contains("User Exist")) {
-          Get.snackbar(
-              "Warning", "Email already exists. Redirecting to login...",
-              backgroundColor: Colors.orange, colorText: Colors.white);
-          Get.offAll(LoginView());
-        } else {
-          Get.snackbar("Error", response.message ?? "User Registration Failed",
-              backgroundColor: Colors.red, colorText: Colors.white);
-        }
+    var response = await apiService.signUp(
+      userNameController.text,
+      emailController.text,
+      phoneNumController.text,
+      passwordController.text,
+    );
+
+    if (response is SignUpResponse) {
+      // Extract message from model when status is 201
+      final message = response.data?.issue.isNotEmpty == true
+          ? response.data?.issue.first.details?.text ?? "Success"
+          : "User created successfully.";
+
+      Get.snackbar("Success", message,
+          backgroundColor: Colors.green, colorText: Colors.white);
+      Get.to(SignupOtpView(email: emailController.text));
+
+    } else if (response is String) {
+      // For other cases, use plain string message
+      if (response.toLowerCase().contains("user already exists")) {
+        Get.snackbar("Error", response,
+            backgroundColor: Colors.red, colorText: Colors.white);
+        Get.offAll(LoginView());
+      } else if (response.toLowerCase().contains("not verified")) {
+        Get.snackbar("Notice", response,
+            backgroundColor: Colors.orange, colorText: Colors.white);
+        Get.to(SignupOtpView(email: emailController.text));
+      } else {
+        Get.snackbar("Error", response,
+            backgroundColor: Colors.red, colorText: Colors.white);
       }
-      else if(response is SignUpNotVerifyResponse){
-        if(response.message != null && response.message!.contains("Not Verified")){
-              Get.to(SignupOtpView(email: emailController.text));
-        }
-      }
-    } catch (e) {
-      Get.snackbar("Error", "An error occurred. Please try again.",
-          backgroundColor: Colors.red, colorText: Colors.white);
-    } finally {
-      isLoading.value = false;
     }
+  } catch (e) {
+    print("Sign up error: $e");
+    Get.snackbar("Error", "An error occurred. Please try again.",
+        backgroundColor: Colors.red, colorText: Colors.white);
+  } finally {
+    isLoading.value = false;
   }
 }
-
-
-// Get.offAll(WhoAreYouView(
-//             token: response.data!.token,
-//             userName: response.data!.username,
-//             id: response.data!.id,
-//           ));
+}

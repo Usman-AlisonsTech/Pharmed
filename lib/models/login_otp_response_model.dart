@@ -41,22 +41,18 @@ class Data {
     Data({
         required this.token,
         required this.userDetail,
-        required this.userType,
     });
 
     final String? token;
     final UserDetail? userDetail;
-    final String? userType;
 
     Data copyWith({
         String? token,
         UserDetail? userDetail,
-        String? userType,
     }) {
         return Data(
             token: token ?? this.token,
             userDetail: userDetail ?? this.userDetail,
-            userType: userType ?? this.userType,
         );
     }
 
@@ -64,14 +60,12 @@ class Data {
         return Data(
             token: json["token"],
             userDetail: json["user_detail"] == null ? null : UserDetail.fromJson(json["user_detail"]),
-            userType: json["user_type"],
         );
     }
 
     Map<String, dynamic> toJson() => {
         "token": token,
         "user_detail": userDetail?.toJson(),
-        "user_type": userType,
     };
 
 }
@@ -105,7 +99,7 @@ class UserDetail {
     final dynamic emailVerifiedAt;
     final dynamic userImage;
     final String? otp;
-    final String? phone;
+    final dynamic phone;
     final DateTime? createdAt;
     final DateTime? updatedAt;
     final int? status;
@@ -123,7 +117,7 @@ class UserDetail {
         dynamic? emailVerifiedAt,
         dynamic? userImage,
         String? otp,
-        String? phone,
+        dynamic? phone,
         DateTime? createdAt,
         DateTime? updatedAt,
         int? status,
