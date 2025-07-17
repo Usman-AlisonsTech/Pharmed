@@ -84,8 +84,7 @@ class SearchView extends StatelessWidget {
               ],
             ),
             SizedBox(height: 20),
-            Expanded(
-              child: Obx(() {
+            Obx(() {
                 if (controller.isSearchLoading.value) {
                   return Center(
                     child: Container(
@@ -103,7 +102,7 @@ class SearchView extends StatelessWidget {
                     color: Color(0xffF9F9F9),
                     margin: EdgeInsets.only(top: 20),
                     child: ListTile(
-                      title: CustomText(text: controller.searchController.text),
+                      title: CustomText(text: controller.searchController.text, weight: FontWeight.w500,fontSize: 14,),
                       onTap: () {
                         controller.searchMedicationInfo(
                             controller.searchController.text,
@@ -115,62 +114,63 @@ class SearchView extends StatelessWidget {
                 } else if (controller.searchController.text.isEmpty) {
                   return SizedBox();
                 } else {
-                  return ListView.builder(
-                    padding: EdgeInsets.only(top: 10),
-                    itemCount: controller.searchResults.length,
-                    itemBuilder: (context, index) {
-                      final suggestion = controller.searchResults[index];
-                      return Container(
-                        color: Color(0xffF9F9F9),
-                        margin: EdgeInsets.only(bottom: 10),
-                        child: InkWell(
-                          onTap: () {
-                            controller.searchController.text != ''
-                                ? controller.searchMedicationInfo(
-                                    suggestion.genericName.toString(),
-                                    suggestion.genericName ?? '',
-                                  )
-                                : null;
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      CustomText(
-                                        text:
-                                            suggestion.genericName ?? 'Unknown',
-                                        fontSize: 14,
-                                        weight: FontWeight.w500,
-                                      ),
-                                      SizedBox(height: 4),
-                                      CustomText(
-                                        text: suggestion.genericName ?? 'Unknown',
-                                        fontSize: 13,
-                                        weight: FontWeight.w500,
-                                        color: Color(0xffB1B1B1),
-                                      ),
-                                    ],
+                  return Expanded(
+                    child: ListView.builder(
+                      padding: EdgeInsets.only(top: 10),
+                      itemCount: controller.searchResults.length,
+                      itemBuilder: (context, index) {
+                        final suggestion = controller.searchResults[index];
+                        return Container(
+                          color: Color(0xffF9F9F9),
+                          margin: EdgeInsets.only(bottom: 10),
+                          child: InkWell(
+                            onTap: () {
+                              controller.searchController.text != ''
+                                  ? controller.searchMedicationInfo(
+                                      suggestion.genericName.toString(),
+                                      suggestion.genericName ?? '',
+                                    )
+                                  : null;
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CustomText(
+                                          text:
+                                              suggestion.genericName ?? 'Unknown',
+                                          fontSize: 14,
+                                          weight: FontWeight.w500,
+                                        ),
+                                        SizedBox(height: 4),
+                                        CustomText(
+                                          text: suggestion.genericName ?? 'Unknown',
+                                          fontSize: 13,
+                                          weight: FontWeight.w500,
+                                          color: Color(0xffB1B1B1),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 16),
-                                SvgPicture.asset('assets/svg/search_icon.svg'),
-                              ],
+                                  SizedBox(width: 16),
+                                  SvgPicture.asset('assets/svg/search_icon.svg'),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   );
                 }
               }),
-            ),
           ],
         ),
       ),

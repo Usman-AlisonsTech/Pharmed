@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
@@ -9,7 +10,8 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final Color? fillColor;
   final double? padding;
-  final TextInputType? textInputType;
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters; // ✅ Added inputFormatters
   final int? lines;
   final bool forceBorder;
   final double? borderRadius;
@@ -22,7 +24,7 @@ class CustomTextField extends StatelessWidget {
   final TextStyle? hintStyle;
   final double? hintTextPadding;
   final double? leftPadding;
-  final FocusNode? focusNode; // Added focusNode parameter
+  final FocusNode? focusNode;
 
   const CustomTextField({
     super.key,
@@ -34,7 +36,8 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.fillColor,
     this.padding,
-    this.textInputType,
+    this.keyboardType, // ✅ Changed name
+    this.inputFormatters, // ✅ Added parameter
     this.lines = 1,
     this.obscureText = false,
     this.forceBorder = false,
@@ -47,22 +50,23 @@ class CustomTextField extends StatelessWidget {
     this.hintStyle,
     this.hintTextPadding,
     this.leftPadding,
-    this.focusNode, // Passed focusNode to the constructor
+    this.focusNode,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      focusNode: focusNode, // Added focusNode to TextFormField
-      keyboardType: textInputType,
+      focusNode: focusNode,
+      keyboardType: keyboardType, // ✅ Changed here
+      inputFormatters: inputFormatters, // ✅ Added here
       maxLines: lines,
       validator: validator,
       onChanged: onChanged,
       obscureText: obscureText,
       readOnly: readOnly,
       initialValue: initialValue,
-      style: TextStyle(
+      style: const TextStyle(
         fontFamily: 'Poppins',
         fontWeight: FontWeight.w500,
       ),
@@ -73,17 +77,18 @@ class CustomTextField extends StatelessWidget {
         fillColor: fillColor,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
-        contentPadding: contentPadding ?? EdgeInsets.only(
-          top: 15,
-          bottom: 15,
-          left: leftPadding ?? 25,
-          right: 20,
-        ),
-        prefixIconConstraints: BoxConstraints(
+        contentPadding: contentPadding ??
+            EdgeInsets.only(
+              top: 15,
+              bottom: 15,
+              left: leftPadding ?? 25,
+              right: 20,
+            ),
+        prefixIconConstraints: const BoxConstraints(
           minWidth: 24,
           minHeight: 24,
         ),
-        suffixIconConstraints: BoxConstraints(
+        suffixIconConstraints: const BoxConstraints(
           minWidth: 24,
           minHeight: 24,
         ),
@@ -96,7 +101,6 @@ class CustomTextField extends StatelessWidget {
     );
   }
 
-  // Function to handle error border styling
   OutlineInputBorder errorBorder() {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(5),
@@ -104,13 +108,10 @@ class CustomTextField extends StatelessWidget {
     );
   }
 
-  // Function to handle default border styling
   OutlineInputBorder border() {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(borderRadius ?? 5),
-      borderSide: BorderSide(
-        color: borderColor ?? Colors.black,
-      ),
+      borderSide: BorderSide(color: borderColor ?? Colors.black),
     );
   }
 }
