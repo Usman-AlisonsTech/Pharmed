@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pharmed_app/models/popular_medication_model.dart';
 import 'package:pharmed_app/views/home/home_controller.dart';
@@ -285,26 +286,34 @@ class _MedicineContainerState extends State<MedicineContainer> {
                                 ),
                               ),
                               SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomText(text: 'frequency'.tr),
-                                    SizedBox(height: 8),
-                                    _buildTextField(
-                                      context,
-                                      controller: controller.frequencyController,
-                                      hintText: 'eg_twice_daily'.tr,
-                                      validator: (value) {
-                                        if (value == null || value.trim().isEmpty) {
-                                          return 'This field is required';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ],
+                               Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CustomText(text: 'frequency'.tr),
+                                      SizedBox(height: 8),
+                                      _buildTextField(
+                                        context,
+                                        controller:
+                                            controller.frequencyController,
+                                        hintText: '1',
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.trim().isEmpty) {
+                                            return 'This field is required';
+                                          }
+                                          return null;
+                                        },
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
+
                             ],
                           ),
                           SizedBox(height: 20),
@@ -405,12 +414,6 @@ class _MedicineContainerState extends State<MedicineContainer> {
                                                 Icons.watch_later_rounded,
                                                 color: Colors.grey,
                                               ),
-                                              validator: (value) {
-                                                if (value == null || value.trim().isEmpty) {
-                                                  return 'This field is required';
-                                                }
-                                                return null;
-                                              },
                                             )),
                                       ),
                                     ),
@@ -528,6 +531,8 @@ Widget _buildTextField(
   required String hintText,
   Widget? suffixIcon,
   String? Function(String?)? validator,
+  TextInputType? keyboardType,
+  List<TextInputFormatter>? inputFormatters,
 }) {
   final FocusNode focusNode = FocusNode();
 
@@ -536,7 +541,7 @@ Widget _buildTextField(
       Future.delayed(Duration(milliseconds: 300), () {
         Scrollable.ensureVisible(
           context,
-          alignment: 0.5, 
+          alignment: 0.5,
           duration: Duration(milliseconds: 200),
         );
       });
@@ -558,6 +563,8 @@ Widget _buildTextField(
           )
         : null,
     validator: validator,
+    keyboardType: keyboardType,
+    inputFormatters: inputFormatters,
   );
 }
 }

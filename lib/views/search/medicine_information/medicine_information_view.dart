@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pharmed_app/utils/constants.dart';
@@ -523,25 +524,32 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                               ),
                               SizedBox(width: 16),
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomText(text: 'frequency'.tr),
-                                    SizedBox(height: 8),
-                                    _buildTextField(
-                                      context,
-                                      controller: controller.frequencyController,
-                                      hintText: 'eg_twice_daily'.tr,
-                                      validator: (value) {
-                                        if (value == null || value.trim().isEmpty) {
-                                          return 'This field is required';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ],
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CustomText(text: 'frequency'.tr),
+                                      SizedBox(height: 8),
+                                      _buildTextField(
+                                        context,
+                                        controller:
+                                            controller.frequencyController,
+                                        hintText: '1',
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.trim().isEmpty) {
+                                            return 'This field is required';
+                                          }
+                                          return null;
+                                        },
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                           SizedBox(height: 20),
@@ -765,6 +773,8 @@ Widget _buildTextField(
   required String hintText,
   Widget? suffixIcon,
   String? Function(String?)? validator,
+  TextInputType? keyboardType,
+  List<TextInputFormatter>? inputFormatters,
 }) {
   final FocusNode focusNode = FocusNode();
 
@@ -795,6 +805,8 @@ Widget _buildTextField(
           )
         : null,
     validator: validator,
+    keyboardType: keyboardType,
+    inputFormatters: inputFormatters,
   );
 }
 }

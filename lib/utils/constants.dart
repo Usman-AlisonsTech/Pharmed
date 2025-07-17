@@ -7,21 +7,21 @@ class ApiConstants {
   static const String login = 'Auth/login';
   static const String loginOtp = 'Auth/otpverify';
   static const String signUp = 'Person';
-  static const String termsCondition = 'terms/content';
+  static const String termsCondition = 'Policy/terms';
   static const String patientProfile = 'Patient';
   static const String medicalProfile = 'doctor/create';
   static const String deleteAccount = 'user/delete';
   static const String delAccOtpVerify = 'user/verifydelete';
   static const String popularMedication = 'Medication/popular';
-  static const String addMedication  = 'patient/Medication/add';
-  static const String getMedication  =  'patient/Medication/get';
+  static const String addMedication  = 'MedicationStatement';
+  static const String getMedication  =  'Patients/medication/get';
   static const String updateMedication  =  'patient/Medication/update';
   static const String checkDrugInteraction = 'Medication/interaction/checker';
   static const String suggestion = 'Medication/suggestion';
-  static const String notification = 'patient/Medication/';
+  static const String notification = 'Patients/medication/';
   static const String getThread = 'Medication/thread/';
   static const String addThread  = 'Medication/thread/add';
-  static const String privacyPolicy = 'privacy/content';
+  static const String privacyPolicy = 'Policy/privacy';
   static const String forgotPass = 'forgot_password/sendCode';
   static const String secretKey = 'usman';
 }

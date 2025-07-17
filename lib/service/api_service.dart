@@ -388,7 +388,7 @@ Future<dynamic> signUp(
 
     try {
       final response = await http.get(
-        Uri.parse('${ApiConstants.baseurl}medications/search?query=$query'),
+        Uri.parse('${ApiConstants.baseurl}Medication/search?query=$query'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -421,81 +421,75 @@ Future<dynamic> signUp(
   }
 
   // add medication
-  Future<AddMedication> addMedication(Map<String, dynamic> data) async {
-    final url = Uri.parse(ApiConstants.baseurl + ApiConstants.addMedication);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('loggedInToken') ?? '';
+ Future<AddMedication?> addMedication(Map<String, dynamic> data) async {
+  final url = Uri.parse(ApiConstants.baseurl + ApiConstants.addMedication);
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString('loggedInToken') ?? '';
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode(data),
-      );
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(data),
+    );
 
-      print('Response Status Code : ${response.statusCode}');
-      print('Response Data : ${response.body}');
+    print('Response Status Code : ${response.statusCode}');
+    print('Response Data : ${response.body}');
 
-      // Check if the response is successful
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        return AddMedication.fromJson(responseData);
-      }else if(response.statusCode == 401){
-           prefs.clear();
-           Get.offAll(LoginView());
-           throw Exception('Unauthorized: Session expired');
-      } else {
-        print("Error: ${response.statusCode} - ${response.body}");
-        return AddMedication(
-          success: false,
-          data: false,
-          message: 'Error: ${response.statusCode} - ${response.body}',
-        );
-      }
-    } catch (error) {
-      print("Error: $error");
-      return AddMedication(
-        success: false,
-        data: false,
-        message: 'An error occurred: $error',
-      );
+    final responseData = json.decode(response.body);
+
+    if (response.statusCode == 201) {
+      return AddMedication.fromJson(responseData);
+    } else if (response.statusCode == 401) {
+      prefs.clear();
+      Get.offAll(LoginView());
+      throw Exception('Unauthorized: Session expired');
+    } else {
+      throw Exception(responseData['message'] ?? 'Error: ${response.statusCode}');
     }
+  } catch (error) {
+    print("Error: $error");
+    return null;
   }
+}
 
   // get medication
-  Future<GetMedicationResponse> getMedications({required int page}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('loggedInToken') ?? '';
-    final url = Uri.parse(
-        ApiConstants.baseurl + ApiConstants.getMedication + '?page=$page');
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
-      print('Response StatusCode: ${response.statusCode}');
-      print('Response Data: ${response.body}');
+Future<GetMedicationResponse> getMedications({required int page}) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString('loggedInToken') ?? '';
+  final url = Uri.parse(ApiConstants.baseurl + ApiConstants.getMedication + '?page=$page');
 
-      if (response.statusCode == 200) {
-        // Parse the response body into a GetMedicationResponse model
-        return GetMedicationResponse.fromJson(json.decode(response.body));
-      }else if(response.statusCode == 401){
-           prefs.clear();
-           Get.offAll(LoginView());
-           throw Exception('Unauthorized: Session expired');
-      } else {
-        throw Exception('Failed to load medications');
-      }
-    } catch (e) {
-      throw Exception('Error fetching medications: $e');
+  try {
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Response StatusCode: ${response.statusCode}');
+    print('Response Data: ${response.body}');
+
+    final jsonData = json.decode(response.body);
+
+    if (response.statusCode == 200) {
+      return GetMedicationResponse.fromJson(jsonData);
+    } else if (response.statusCode == 401) {
+      prefs.clear();
+      Get.offAll(LoginView());
+      throw Exception('Unauthorized: Session expired');
+    } else {
+      throw Exception(jsonData['message'] ?? 'Failed to load medications');
     }
+  } catch (e) {
+    throw Exception('Error fetching medications: $e');
   }
+}
+
 
   Future<UpdateMedicationResponse> updateMedication(
       Map<String, dynamic> data) async {

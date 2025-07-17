@@ -29,9 +29,9 @@ android {
     defaultConfig {
         applicationId = "com.alisonstechnology.pharmed_app"
         minSdkVersion 24
-        targetSdkVersion 34
+        targetSdkVersion 35
         multiDexEnabled true
-        versionCode = 6
+        versionCode = 7
         versionName "1.0.2"
     }
 

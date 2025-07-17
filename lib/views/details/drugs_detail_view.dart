@@ -46,21 +46,15 @@ class DrugsDetailView extends StatelessWidget {
                 weight: FontWeight.w900,
               ),
               SizedBox(height: screenHeight * 0.03),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // CustomText(
-                  //   text: "drugs".tr,
-                  //   fontSize: 18,
-                  //   weight: FontWeight.w700,
-                  // ),
-                  // SizedBox(width: 10),
-                  Obx(() => CustomText(
-                        text: controller.translatedDrugNames.value,
-                        fontSize: 20,
-                        weight: FontWeight.w500,
-                      )),
-                ],
+  
+              Container(
+                width: double.infinity,
+                child: Obx(() => CustomText(
+                      textAlign: TextAlign.center,
+                      text: controller.translatedDrugNames.value,
+                      fontSize: 20,
+                      weight: FontWeight.w500,
+                    )),
               ),
 
               SizedBox(height: screenHeight * 0.04),

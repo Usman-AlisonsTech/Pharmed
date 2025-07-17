@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pharmed_app/models/add_medication_response_model.dart';
 import 'package:pharmed_app/models/popular_medication_model.dart';
 import 'package:pharmed_app/models/search_response_model.dart';
 import 'package:pharmed_app/service/api_service.dart';
@@ -162,63 +163,60 @@ class HomeController extends GetxController {
   }
 
   Future<void> addToMedicines(String medicineName, BuildContext context) async {
-    try {
-      isAddToMedicinesLoading.value = true;
-      final Map<String, dynamic> data = {
-        "physician_name": physicianName.text,
-        "start_date": startDateController.text,
-        "end_date": endDateController.text,
-        "dosage": dosageController.text,
-        "frequency": frequencyController.text,
-        "reason": reasonController.text,
-        "medicine": medicineName,
-      };
+  try {
+    isAddToMedicinesLoading.value = true;
+    final Map<String, dynamic> data = {
+      "physician_name": physicianName.text,
+      "medicine": medicineName,
+      "status": "active",
+      "start_date": startDateController.text,
+      "end_date": endDateController.text,
+      "dosage": dosageController.text,
+      "frequency": frequencyController.text,
+      "reason": reasonController.text,
+    };
 
-      List<String> schedule = [];
-      for (var dateField in dateFields) {
-        if (dateField.value.isNotEmpty) {
-          schedule.add(dateField.value);
-        }
+    List<String> schedule = [];
+    for (var dateField in dateFields) {
+      if (dateField.value.isNotEmpty) {
+        schedule.add(dateField.value);
       }
-
-      if (schedule.isNotEmpty) {
-        data['schedule'] = schedule;
-      }
-
-      final success = await apiService.addMedication(data);
-
-      if (success != null) {
-        Get.snackbar("Success", "Medicine added successfully",
-            colorText: Colors.white, backgroundColor: Colors.green);
-
-        Navigator.pop(context);
-
-        // notificationController.fetchNoti();
-
-        // Clear fields
-        physicianName.clear();
-        startDateController.clear();
-        endDateController.clear();
-        dosageController.clear();
-        frequencyController.clear();
-        reasonController.clear();
-        schedule.clear();
-        dateFields.clear();
-      } else {
-        Get.snackbar(
-          "Error",
-          "Failed to add medicine",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      print(e);
-    } finally {
-      isAddToMedicinesLoading.value = false;
     }
+
+    if (schedule.isNotEmpty) {
+      data['schedule'] = schedule;
+    }
+
+    final AddMedication? response = await apiService.addMedication(data);
+
+    if (response != null && response.data != null) {
+      final detailsText = response.data?.issue[0].details?.text?? "Medicine added successfully";
+      Get.snackbar("Success", detailsText,
+          colorText: Colors.white, backgroundColor: Colors.green);
+
+      Navigator.pop(context);
+
+      // Clear fields
+      physicianName.clear();
+      startDateController.clear();
+      endDateController.clear();
+      dosageController.clear();
+      frequencyController.clear();
+      reasonController.clear();
+      schedule.clear();
+      dateFields.clear();
+    } else {
+      Get.snackbar("Error", "Failed to add medicine",
+          backgroundColor: Colors.red, colorText: Colors.white);
+      Navigator.pop(context);
+    }
+  } catch (e) {
+    Get.snackbar("Error", '$e',
+        backgroundColor: Colors.red, colorText: Colors.white);
+  } finally {
+    isAddToMedicinesLoading.value = false;
   }
+}
 
   // Function to fetch translation from API
   Future<void> fetchTranslation() async {
