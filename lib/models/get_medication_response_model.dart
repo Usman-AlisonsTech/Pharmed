@@ -1,286 +1,434 @@
 class GetMedicationResponse {
-  bool success;
-  Data data;
-  String message;
+    GetMedicationResponse({
+        required this.data,
+    });
 
-  GetMedicationResponse({
-    required this.success,
-    required this.data,
-    required this.message,
-  });
+    final List<Datum> data;
 
-  factory GetMedicationResponse.fromJson(Map<String, dynamic> json) {
-    return GetMedicationResponse(
-      success: json['success'],
-      data: Data.fromJson(json['data']),
-      message: json['message'],
-    );
-  }
+    GetMedicationResponse copyWith({
+        List<Datum>? data,
+    }) {
+        return GetMedicationResponse(
+            data: data ?? this.data,
+        );
+    }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'data': data.toJson(),
-      'message': message,
+    factory GetMedicationResponse.fromJson(Map<String, dynamic> json){ 
+        return GetMedicationResponse(
+            data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "data": data.map((x) => x?.toJson()).toList(),
     };
-  }
-}
 
-class Data {
-  int currentPage;
-  List<Datum> data;
-  String firstPageUrl;
-  int from;
-  int lastPage;
-  String lastPageUrl;
-  List<Link> links;
-  dynamic nextPageUrl;
-  String path;
-  int perPage;
-  dynamic prevPageUrl;
-  int to;
-  int total;
-
-  Data({
-    required this.currentPage,
-    required this.data,
-    required this.firstPageUrl,
-    required this.from,
-    required this.lastPage,
-    required this.lastPageUrl,
-    required this.links,
-    required this.nextPageUrl,
-    required this.path,
-    required this.perPage,
-    required this.prevPageUrl,
-    required this.to,
-    required this.total,
-  });
-
-  factory Data.fromJson(Map<String, dynamic> json) {
-    return Data(
-      currentPage: json['current_page'],
-      data: List<Datum>.from(json['data'].map((x) => Datum.fromJson(x))),
-      firstPageUrl: json['first_page_url'],
-      from: json['from'],
-      lastPage: json['last_page'],
-      lastPageUrl: json['last_page_url'],
-      links: List<Link>.from(json['links'].map((x) => Link.fromJson(x))),
-      nextPageUrl: json['next_page_url'],
-      path: json['path'],
-      perPage: json['per_page'],
-      prevPageUrl: json['prev_page_url'],
-      to: json['to'],
-      total: json['total'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'current_page': currentPage,
-      'data': List<dynamic>.from(data.map((x) => x.toJson())),
-      'first_page_url': firstPageUrl,
-      'from': from,
-      'last_page': lastPage,
-      'last_page_url': lastPageUrl,
-      'links': List<dynamic>.from(links.map((x) => x.toJson())),
-      'next_page_url': nextPageUrl,
-      'path': path,
-      'per_page': perPage,
-      'prev_page_url': prevPageUrl,
-      'to': to,
-      'total': total,
-    };
-  }
 }
 
 class Datum {
-  int id;
-  String medicine;
-  String physicianName;
-  DateTime startDate;
-  DateTime endDate;
-  String dosage;
-  String frequency;
-  String reason;
-  int patientUserId;
-  DateTime createdAt;
-  DateTime updatedAt;
-  String imageUrl;
-  PatientUser patientUser;
-  List<MedicalSchedule> medicalSchedule;
+    Datum({
+        required this.resourceType,
+        required this.id,
+        required this.status,
+        required this.taken,
+        required this.medicationCodeableConcept,
+        required this.subject,
+        required this.effectivePeriod,
+        required this.dateAsserted,
+        required this.informationSource,
+        required this.reasonCode,
+        required this.dosage,
+        required this.note,
+        required this.extension,
+    });
 
-  Datum({
-    required this.id,
-    required this.medicine,
-    required this.physicianName,
-    required this.startDate,
-    required this.endDate,
-    required this.dosage,
-    required this.frequency,
-    required this.reason,
-    required this.patientUserId,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.imageUrl,
-    required this.patientUser,
-    required this.medicalSchedule,
-  });
+    final String? resourceType;
+    final String? id;
+    final String? status;
+    final String? taken;
+    final MedicationCodeableConcept? medicationCodeableConcept;
+    final InformationSource? subject;
+    final Period? effectivePeriod;
+    final DateTime? dateAsserted;
+    final InformationSource? informationSource;
+    final List<Note> reasonCode;
+    final List<Dosage> dosage;
+    final List<Note> note;
+    final List<Extension> extension;
 
-  factory Datum.fromJson(Map<String, dynamic> json) {
-    return Datum(
-      id: json['id'],
-      medicine: json['medicine'],
-      physicianName: json['physician_name'],
-      startDate: DateTime.parse(json['start_date']),
-      endDate: DateTime.parse(json['end_date']),
-      dosage: json['dosage'],
-      frequency: json['frequency'],
-      reason: json['reason'],
-      patientUserId: json['patient_user_id'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-      imageUrl: json['image_url'],
-      patientUser: PatientUser.fromJson(json['patient_user']),
-      medicalSchedule: List<MedicalSchedule>.from(
-        json['medical_schedule'].map((x) => MedicalSchedule.fromJson(x)),
-      ),
-    );
-  }
+    Datum copyWith({
+        String? resourceType,
+        String? id,
+        String? status,
+        String? taken,
+        MedicationCodeableConcept? medicationCodeableConcept,
+        InformationSource? subject,
+        Period? effectivePeriod,
+        DateTime? dateAsserted,
+        InformationSource? informationSource,
+        List<Note>? reasonCode,
+        List<Dosage>? dosage,
+        List<Note>? note,
+        List<Extension>? extension,
+    }) {
+        return Datum(
+            resourceType: resourceType ?? this.resourceType,
+            id: id ?? this.id,
+            status: status ?? this.status,
+            taken: taken ?? this.taken,
+            medicationCodeableConcept: medicationCodeableConcept ?? this.medicationCodeableConcept,
+            subject: subject ?? this.subject,
+            effectivePeriod: effectivePeriod ?? this.effectivePeriod,
+            dateAsserted: dateAsserted ?? this.dateAsserted,
+            informationSource: informationSource ?? this.informationSource,
+            reasonCode: reasonCode ?? this.reasonCode,
+            dosage: dosage ?? this.dosage,
+            note: note ?? this.note,
+            extension: extension ?? this.extension,
+        );
+    }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'medicine': medicine,
-      'physician_name': physicianName,
-      'start_date': startDate.toIso8601String(),
-      'end_date': endDate.toIso8601String(),
-      'dosage': dosage,
-      'frequency': frequency,
-      'reason': reason,
-      'patient_user_id': patientUserId,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
-      'image_url': imageUrl,
-      'patient_user': patientUser.toJson(),
-      'medical_schedule': List<dynamic>.from(medicalSchedule.map((x) => x.toJson())),
+    factory Datum.fromJson(Map<String, dynamic> json){ 
+        return Datum(
+            resourceType: json["resourceType"],
+            id: json["id"],
+            status: json["status"],
+            taken: json["taken"],
+            medicationCodeableConcept: json["medicationCodeableConcept"] == null ? null : MedicationCodeableConcept.fromJson(json["medicationCodeableConcept"]),
+            subject: json["subject"] == null ? null : InformationSource.fromJson(json["subject"]),
+            effectivePeriod: json["effectivePeriod"] == null ? null : Period.fromJson(json["effectivePeriod"]),
+            dateAsserted: DateTime.tryParse(json["dateAsserted"] ?? ""),
+            informationSource: json["informationSource"] == null ? null : InformationSource.fromJson(json["informationSource"]),
+            reasonCode: json["reasonCode"] == null ? [] : List<Note>.from(json["reasonCode"]!.map((x) => Note.fromJson(x))),
+            dosage: json["dosage"] == null ? [] : List<Dosage>.from(json["dosage"]!.map((x) => Dosage.fromJson(x))),
+            note: json["note"] == null ? [] : List<Note>.from(json["note"]!.map((x) => Note.fromJson(x))),
+            extension: json["extension"] == null ? [] : List<Extension>.from(json["extension"]!.map((x) => Extension.fromJson(x))),
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "resourceType": resourceType,
+        "id": id,
+        "status": status,
+        "taken": taken,
+        "medicationCodeableConcept": medicationCodeableConcept?.toJson(),
+        "subject": subject?.toJson(),
+        "effectivePeriod": effectivePeriod?.toJson(),
+        "dateAsserted": dateAsserted!= null? "${dateAsserted!.year.toString().padLeft(4,'0')}-${dateAsserted!.month.toString().padLeft(2,'0')}-${dateAsserted!.day.toString().padLeft(2,'0')}":null,
+        "informationSource": informationSource?.toJson(),
+        "reasonCode": reasonCode.map((x) => x?.toJson()).toList(),
+        "dosage": dosage.map((x) => x?.toJson()).toList(),
+        "note": note.map((x) => x?.toJson()).toList(),
+        "extension": extension.map((x) => x?.toJson()).toList(),
     };
-  }
+
 }
 
-class MedicalSchedule {
-  int id;
-  DateTime schedule;
-  int medicalHistoryId;
-  int patientUserId;
-  DateTime createdAt;
-  DateTime updatedAt;
+class Dosage {
+    Dosage({
+        required this.text,
+        required this.timing,
+    });
 
-  MedicalSchedule({
-    required this.id,
-    required this.schedule,
-    required this.medicalHistoryId,
-    required this.patientUserId,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+    final String? text;
+    final Timing? timing;
 
-  factory MedicalSchedule.fromJson(Map<String, dynamic> json) {
-    return MedicalSchedule(
-      id: json['id'],
-      schedule: DateTime.parse(json['schedule']),
-      medicalHistoryId: json['medical_history_id'],
-      patientUserId: json['patient_user_id'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-    );
-  }
+    Dosage copyWith({
+        String? text,
+        Timing? timing,
+    }) {
+        return Dosage(
+            text: text ?? this.text,
+            timing: timing ?? this.timing,
+        );
+    }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'schedule': schedule.toIso8601String(),
-      'medical_history_id': medicalHistoryId,
-      'patient_user_id': patientUserId,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+    factory Dosage.fromJson(Map<String, dynamic> json){ 
+        return Dosage(
+            text: json["text"],
+            timing: json["timing"] == null ? null : Timing.fromJson(json["timing"]),
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "text": text,
+        "timing": timing?.toJson(),
     };
-  }
+
 }
 
-class PatientUser {
-  int id;
-  String? username;  // Add this field
-  String? name;
-  String email;
-  String? userType;
-  String? phone;
-  DateTime createdAt;
-  DateTime updatedAt;
+class Timing {
+    Timing({
+        required this.event,
+        required this.repeat,
+    });
 
-  PatientUser({
-    required this.id,
-    this.username,  // Make it nullable
-    this.name,
-    required this.email,
-    this.userType,
-    this.phone,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+    final List<DateTime> event;
+    final Repeat? repeat;
 
-  factory PatientUser.fromJson(Map<String, dynamic> json) {
-    return PatientUser(
-      id: json['id'],
-      username: json['username'],  // Map the field
-      name: json['name'],
-      email: json['email'],
-      userType: json['user_type'],
-      phone: json['phone'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-    );
-  }
+    Timing copyWith({
+        List<DateTime>? event,
+        Repeat? repeat,
+    }) {
+        return Timing(
+            event: event ?? this.event,
+            repeat: repeat ?? this.repeat,
+        );
+    }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'username': username,  // Include in serialization
-      'name': name,
-      'email': email,
-      'user_type': userType,
-      'phone': phone,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+    factory Timing.fromJson(Map<String, dynamic> json){ 
+        return Timing(
+            event: json["event"] == null ? [] : List<DateTime>.from(json["event"]!.map((x) => DateTime.tryParse(x ?? ""))),
+            repeat: json["repeat"] == null ? null : Repeat.fromJson(json["repeat"]),
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "event": event.map((x) => x?.toIso8601String()).toList(),
+        "repeat": repeat?.toJson(),
     };
-  }
+
 }
 
+class Repeat {
+    Repeat({
+        required this.frequency,
+        required this.period,
+        required this.periodUnit,
+        required this.boundsPeriod,
+    });
 
-class Link {
-  String? url;
-  String label;
-  bool active;
+    final int? frequency;
+    final int? period;
+    final String? periodUnit;
+    final Period? boundsPeriod;
 
-  Link({
-    required this.url,
-    required this.label,
-    required this.active,
-  });
+    Repeat copyWith({
+        int? frequency,
+        int? period,
+        String? periodUnit,
+        Period? boundsPeriod,
+    }) {
+        return Repeat(
+            frequency: frequency ?? this.frequency,
+            period: period ?? this.period,
+            periodUnit: periodUnit ?? this.periodUnit,
+            boundsPeriod: boundsPeriod ?? this.boundsPeriod,
+        );
+    }
 
-  factory Link.fromJson(Map<String, dynamic> json) {
-    return Link(
-      url: json['url'],
-      label: json['label'],
-      active: json['active'],
-    );
-  }
+    factory Repeat.fromJson(Map<String, dynamic> json){ 
+        return Repeat(
+            frequency: json["frequency"],
+            period: json["period"],
+            periodUnit: json["periodUnit"],
+            boundsPeriod: json["boundsPeriod"] == null ? null : Period.fromJson(json["boundsPeriod"]),
+        );
+    }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'url': url,
-      'label': label,
-      'active': active,
+    Map<String, dynamic> toJson() => {
+        "frequency": frequency,
+        "period": period,
+        "periodUnit": periodUnit,
+        "boundsPeriod": boundsPeriod?.toJson(),
     };
-  }
+
+}
+
+class Period {
+    Period({
+        required this.start,
+        required this.end,
+    });
+
+    final DateTime? start;
+    final DateTime? end;
+
+    Period copyWith({
+        DateTime? start,
+        DateTime? end,
+    }) {
+        return Period(
+            start: start ?? this.start,
+            end: end ?? this.end,
+        );
+    }
+
+    factory Period.fromJson(Map<String, dynamic> json){ 
+        return Period(
+            start: DateTime.tryParse(json["start"] ?? ""),
+            end: DateTime.tryParse(json["end"] ?? ""),
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "start": start!= null? "${start!.year.toString().padLeft(4,'0')}-${start!.month.toString().padLeft(2,'0')}-${start!.day.toString().padLeft(2,'0')}":null,
+        "end": end != null?"${end!.year.toString().padLeft(4,'0')}-${end!.month.toString().padLeft(2,'0')}-${end!.day.toString().padLeft(2,'0')}":null,
+    };
+
+}
+
+class Extension {
+    Extension({
+        required this.url,
+        required this.valueUrl,
+        required this.valueString,
+    });
+
+    final String? url;
+    final String? valueUrl;
+    final String? valueString;
+
+    Extension copyWith({
+        String? url,
+        String? valueUrl,
+        String? valueString,
+    }) {
+        return Extension(
+            url: url ?? this.url,
+            valueUrl: valueUrl ?? this.valueUrl,
+            valueString: valueString ?? this.valueString,
+        );
+    }
+
+    factory Extension.fromJson(Map<String, dynamic> json){ 
+        return Extension(
+            url: json["url"],
+            valueUrl: json["valueUrl"],
+            valueString: json["valueString"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "url": url,
+        "valueUrl": valueUrl,
+        "valueString": valueString,
+    };
+
+}
+
+class InformationSource {
+    InformationSource({
+        required this.reference,
+    });
+
+    final String? reference;
+
+    InformationSource copyWith({
+        String? reference,
+    }) {
+        return InformationSource(
+            reference: reference ?? this.reference,
+        );
+    }
+
+    factory InformationSource.fromJson(Map<String, dynamic> json){ 
+        return InformationSource(
+            reference: json["reference"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "reference": reference,
+    };
+
+}
+
+class MedicationCodeableConcept {
+    MedicationCodeableConcept({
+        required this.coding,
+        required this.text,
+    });
+
+    final List<Coding> coding;
+    final String? text;
+
+    MedicationCodeableConcept copyWith({
+        List<Coding>? coding,
+        String? text,
+    }) {
+        return MedicationCodeableConcept(
+            coding: coding ?? this.coding,
+            text: text ?? this.text,
+        );
+    }
+
+    factory MedicationCodeableConcept.fromJson(Map<String, dynamic> json){ 
+        return MedicationCodeableConcept(
+            coding: json["coding"] == null ? [] : List<Coding>.from(json["coding"]!.map((x) => Coding.fromJson(x))),
+            text: json["text"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "coding": coding.map((x) => x?.toJson()).toList(),
+        "text": text,
+    };
+
+}
+
+class Coding {
+    Coding({
+        required this.system,
+        required this.code,
+        required this.display,
+    });
+
+    final String? system;
+    final String? code;
+    final String? display;
+
+    Coding copyWith({
+        String? system,
+        String? code,
+        String? display,
+    }) {
+        return Coding(
+            system: system ?? this.system,
+            code: code ?? this.code,
+            display: display ?? this.display,
+        );
+    }
+
+    factory Coding.fromJson(Map<String, dynamic> json){ 
+        return Coding(
+            system: json["system"],
+            code: json["code"],
+            display: json["display"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "system": system,
+        "code": code,
+        "display": display,
+    };
+
+}
+
+class Note {
+    Note({
+        required this.text,
+    });
+
+    final String? text;
+
+    Note copyWith({
+        String? text,
+    }) {
+        return Note(
+            text: text ?? this.text,
+        );
+    }
+
+    factory Note.fromJson(Map<String, dynamic> json){ 
+        return Note(
+            text: json["text"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "text": text,
+    };
+
 }

@@ -20,7 +20,7 @@ class MyMedicalHistoryView extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
     final controller = Get.put(MyMedicalHistoryController());
 
-    controller.currentPage.value = 1;
+    // controller.currentPage.value = 1;
     controller.getMedications();
 
     return WillPopScope(
@@ -157,7 +157,7 @@ class MyMedicalHistoryView extends StatelessWidget {
                             scrollNotification.metrics.pixels ==
                                 scrollNotification.metrics.maxScrollExtent) {
                           // User has scrolled to the end
-                          controller.loadMoreMedications();
+                          // controller.loadMoreMedications();
                         }
                         return false;
                       },

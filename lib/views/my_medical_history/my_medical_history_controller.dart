@@ -12,12 +12,12 @@ class MyMedicalHistoryController extends GetxController {
   var dateFields = <String>[''].obs;
   ApiService apiService = ApiService();
   RxBool isLoading = false.obs;
-  RxBool isPaginationLoading = false.obs; // Separate loading state for pagination
+  RxBool isPaginationLoading = false.obs;
   RxBool isUpdateLoading = false.obs;
   var medicationsList = <Datum>[].obs;
   var filteredMedicationsList = <Datum>[].obs;
   RxBool hasNextPage = true.obs;
-  RxInt currentPage = 1.obs;
+  // RxInt currentPage = 1.obs;
   TextEditingController physicianName = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
@@ -35,20 +35,20 @@ class MyMedicalHistoryController extends GetxController {
     });
   }
 
-  void filterMedications() {
-    String query = searchController.text.toLowerCase();
-    if (query.isEmpty) {
-      filteredMedicationsList.value = medicationsList;
-    } else {
-      filteredMedicationsList.value = medicationsList.where((medication) {
-        String originalName = medication.medicine.toLowerCase();
-        String translatedName =
-            translatedMedicines[medication.medicine]?.toLowerCase() ?? '';
+ void filterMedications() {
+  String query = searchController.text.toLowerCase();
+  if (query.isEmpty) {
+    filteredMedicationsList.value = medicationsList;
+  } else {
+    filteredMedicationsList.value = medicationsList.where((medication) {
+      String originalName = medication.medicationCodeableConcept?.text?.toLowerCase() ?? '';
+      String translatedName =
+          translatedMedicines[medication.medicationCodeableConcept?.text]?.toLowerCase() ?? '';
 
-        return originalName.contains(query) || translatedName.contains(query);
-      }).toList();
-    }
+      return originalName.contains(query) || translatedName.contains(query);
+    }).toList();
   }
+}
 
   void addDateField() {
     dateFields.add('');
@@ -107,105 +107,99 @@ class MyMedicalHistoryController extends GetxController {
 
   // get Medication History
   Future<void> getMedications({int page = 1}) async {
-    // Use different loading states for initial load vs pagination
-    if (page == 1) {
-      isLoading.value = true;
-    } else {
-      isPaginationLoading.value = true;
-    }
+  if (page == 1) {
+    isLoading.value = true;
+  } else {
+    isPaginationLoading.value = true;
+  }
 
-    try {
-      GetMedicationResponse response =
-          await apiService.getMedications(page: page);
+  try {
+    GetMedicationResponse response = await apiService.getMedications(page: page);
 
-      if (response.success) {
-        if (response.data.nextPageUrl == null) {
-          hasNextPage.value = false;
-        } else {
-          hasNextPage.value = true;
-        }
-
-        // Load or append data based on page
-        if (page == 1) {
-          medicationsList.value = response.data.data;
-        } else {
-          medicationsList.addAll(response.data.data);
-        }
-
-        filteredMedicationsList.value = medicationsList;
-      } else {
-        throw Exception('Failed to load medications: ${response.message}');
-      }
-    } catch (e) {
-      print('Error fetching Medications: $e');
-    } finally {
+    // Success condition
+    if (response.data != null && response.data.isNotEmpty) {
       if (page == 1) {
-        isLoading.value = false;
+        medicationsList.value = response.data;
       } else {
-        isPaginationLoading.value = false;
+        medicationsList.addAll(response.data);
       }
-    }
-  }
 
-  Future<void> loadMoreMedications() async {
-    // Only load more if there's a next page and not already loading
-    if (hasNextPage.value && !isPaginationLoading.value) {
-      currentPage.value++;
-      await getMedications(page: currentPage.value);
+      // hasNextPage.value = response.nextPageUrl != null;
+      filteredMedicationsList.value = medicationsList;
+    } else {
+      Get.snackbar('No Medications', 'No medications found',
+          backgroundColor: Colors.orange, colorText: Colors.white);
+    }
+  } catch (e) {
+    print('Error fetching Medications: $e');
+    Get.snackbar("Error", e.toString(),
+        backgroundColor: Colors.red, colorText: Colors.white);
+  } finally {
+    if (page == 1) {
+      isLoading.value = false;
+    } else {
+      isPaginationLoading.value = false;
     }
   }
+}
+
+  // Future<void> loadMoreMedications() async {
+  //   // Only load more if there's a next page and not already loading
+  //   if (hasNextPage.value && !isPaginationLoading.value) {
+  //     currentPage.value++;
+  //     await getMedications(page: currentPage.value);
+  //   }
+  // }
 
   Future<void> updateMedicines(String medicineName, int id, context) async {
-    try {
-      // Check if any field is empty before updating
-      if (dateFields.any((date) => date.isEmpty)) {
-        Get.snackbar("Error", "Schedule Your Doses field cannot be empty.",
-            backgroundColor: Colors.red, colorText: Colors.white);
-        return;
-      }
-
-      isUpdateLoading.value = true;
-      currentPage.value = 1;
-
-      final Map<String, dynamic> data = {
-        "id": id,
-        "physician_name": physicianName.text,
-        "start_date": startDateController.text,
-        "end_date": endDateController.text,
-        "dosage": dosageController.text,
-        "frequency": frequencyController.text,
-        "reason": reasonController.text,
-        "medicine": medicineName,
-        "schedule": dateFields.where((date) => date.isNotEmpty).toList(),
-        "_method": "PUT",
-      };
-
-      final success = await apiService.updateMedication(data);
-
-      if (success.success != false) {
-        Get.snackbar("Success", "Medicine updated successfully",
-            colorText: Colors.white,
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2), onTap: (snack) {
-          Navigator.pop(context);
-        }).future.then((_) {
-          Navigator.pop(context);
-          clearFields();
-        });
-
-        getMedications(page: currentPage.value);
-      } else {
-        Get.snackbar("Error", "Failed to update medicine",
-            backgroundColor: Colors.red, colorText: Colors.white);
-      }
-    } catch (e) {
-      print("Error updating medicine: $e");
-      Get.snackbar('Error', e.toString(),
+  try {
+    if (dateFields.any((date) => date.isEmpty)) {
+      Get.snackbar("Error", "Schedule Your Doses field cannot be empty.",
           backgroundColor: Colors.red, colorText: Colors.white);
-    } finally {
-      isUpdateLoading.value = false;
+      return;
     }
+
+    isUpdateLoading.value = true;
+
+    final Map<String, dynamic> data = {
+      "status": "completed",
+      "physician_name": physicianName.text,
+      "start_date": startDateController.text,
+      "end_date": endDateController.text,
+      "dosage": dosageController.text,
+      "frequency": frequencyController.text,
+      "reason": reasonController.text,
+      "medicine": medicineName,
+      "schedule": dateFields.where((date) => date.isNotEmpty).toList(),
+      "_method": "PUT",
+    };
+
+    final response = await apiService.updateMedication(data, id.toString());
+
+    if (response != null && response.data != null) {
+      final message = response.data!.issue.isNotEmpty
+          ? response.data!.issue.first.details?.text ?? "Medicine updated successfully."
+          : "Medicine updated successfully.";
+
+      Get.snackbar("Success", message,
+          colorText: Colors.white,
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2)).future.then((_) {
+        Navigator.pop(context);
+        clearFields();
+      });
+    } else {
+      Get.snackbar("Error", "Failed to update medicine",
+          backgroundColor: Colors.red, colorText: Colors.white);
+    }
+  } catch (e) {
+    print("Error updating medicine: $e");
+    Get.snackbar('Error', e.toString(),
+        backgroundColor: Colors.red, colorText: Colors.white);
+  } finally {
+    isUpdateLoading.value = false;
   }
+}
 
   Future<void> fetchMedicineTranslations(List<String> medicineNames) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

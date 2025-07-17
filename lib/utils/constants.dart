@@ -15,14 +15,14 @@ class ApiConstants {
   static const String popularMedication = 'Medication/popular';
   static const String addMedication  = 'MedicationStatement';
   static const String getMedication  =  'Patients/medication/get';
-  static const String updateMedication  =  'patient/Medication/update';
+  static const String updateMedication  =  'MedicationStatement';
   static const String checkDrugInteraction = 'Medication/interaction/checker';
   static const String suggestion = 'Medication/suggestion';
   static const String notification = 'Patients/medication/';
   static const String getThread = 'Medication/thread/';
   static const String addThread  = 'Medication/thread/add';
   static const String privacyPolicy = 'Policy/privacy';
-  static const String forgotPass = 'forgot_password/sendCode';
+  static const String forgotPass = 'Auth/forgot_password';
   static const String secretKey = 'usman';
 }
 
