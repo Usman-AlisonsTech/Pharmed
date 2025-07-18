@@ -11,6 +11,7 @@ import 'package:pharmed_app/models/login_response_model.dart';
 import 'package:pharmed_app/models/medical_profile_model.dart';
 import 'package:pharmed_app/models/patient_profile_response_model.dart';
 import 'package:pharmed_app/models/popular_medication_model.dart';
+import 'package:pharmed_app/models/profile_detail_response_model.dart';
 import 'package:pharmed_app/models/signup_otp_response_model.dart';
 import 'package:pharmed_app/models/signup_response_model.dart';
 import 'package:pharmed_app/models/suggestion_response_model.dart';
@@ -671,6 +672,40 @@ Future<UpdateMedicationResponse?> updateMedication(Map<String, dynamic> data, St
       throw Exception('Error adding thread data: $e');
     }
   }
+
+   Future<ProfileDetailResponse> getProfileDetail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('loggedInToken') ?? '';
+    int id = prefs.getInt('id')??0;
+    final url = Uri.parse(
+        '${ApiConstants.baseurl}${ApiConstants.getProfileDetail}/${id.toString()}');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print('Response Body : ${response.body}');
+
+      if (response.statusCode == 200) {
+        return ProfileDetailResponse.fromJson(json.decode(response.body));
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           throw Exception('Unauthorized: Session expired');
+      } else {
+        throw Exception('Failed to load thread: ${response.body}');
+      }
+    } catch (e) {
+      print('Error in getThread: $e');
+      rethrow;
+    }
+  }
+
 
   Future<http.Response> translateText(String text, String targetLang) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

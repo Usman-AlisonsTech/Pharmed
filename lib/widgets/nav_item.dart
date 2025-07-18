@@ -5,6 +5,7 @@ import 'package:pharmed_app/views/authentication/login/login_view.dart';
 import 'package:pharmed_app/views/sidebar_views/change_language/change_language_view.dart';
 import 'package:pharmed_app/views/sidebar_views/delete_account/delete_account_view.dart';
 import 'package:pharmed_app/views/sidebar_views/privacy_policy/privacy_policy_view.dart';
+import 'package:pharmed_app/views/sidebar_views/profile/profile_view/profile_view.dart';
 import 'package:pharmed_app/views/sidebar_views/terms_condition/terms_condition_view.dart';
 import 'package:pharmed_app/widgets/common_button.dart';
 import 'package:pharmed_app/widgets/custom_text.dart';
@@ -29,6 +30,10 @@ Widget buildDrawerItem(double screenWidth, double screenHeight, BuildContext con
         navItem(screenWidth, screenHeight, 'privacy_policy'.tr,
             'assets/svg/privacy.svg', 'read_privacy'.tr, () {
           Get.to(PrivacyPolicyView());
+        }),
+         navItem(screenWidth, screenHeight, 'my_profile'.tr,
+            'assets/svg/profile.svg', 'read_profile_info'.tr, () {
+          Get.to(ProfileView());
         }),
         SizedBox(height: 15),
          CommonButton(
