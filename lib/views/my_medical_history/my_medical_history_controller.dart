@@ -127,8 +127,8 @@ class MyMedicalHistoryController extends GetxController {
       // hasNextPage.value = response.nextPageUrl != null;
       filteredMedicationsList.value = medicationsList;
     } else {
-      Get.snackbar('No Medications', 'No medications found',
-          backgroundColor: Colors.orange, colorText: Colors.white);
+      // Get.snackbar('No Medications', 'No medications found',
+      //     backgroundColor: Colors.orange, colorText: Colors.white);
     }
   } catch (e) {
     print('Error fetching Medications: $e');
