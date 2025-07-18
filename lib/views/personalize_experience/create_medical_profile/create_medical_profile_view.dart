@@ -123,6 +123,64 @@ class CreateMedicalProfileView extends StatelessWidget {
                     ],
                   ),
                 ),
+                Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          text: 'gender'.tr,
+                          weight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                        const SizedBox(height: 10),
+                        Obx(() {
+                          return Container(
+                            width: double.infinity,
+                            child: DropdownButtonFormField<String>(
+                              value: controller.selectedGender.value.isEmpty
+                                  ? null
+                                  : controller.selectedGender.value,
+                              hint: Text(
+                                'select_gender'.tr,
+                                style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 14,
+                                    fontFamily: 'Poppins'),
+                              ),
+                              isDense: true,
+                              isExpanded: true,
+                              onChanged: (String? newValue) {
+                                controller.setGender(newValue!);
+                              },
+                              items: ['male', 'female', 'others']
+                                  .map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: Text(value),
+                                  ),
+                                );
+                              }).toList(),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      const BorderSide(color: Colors.grey),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 25,
+                                ),
+                              ),
+
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
                 // Upload Certificate Section
                 Container(
                   margin: const EdgeInsets.only(bottom: 20),

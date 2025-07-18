@@ -9,7 +9,7 @@ class ApiConstants {
   static const String signUp = 'Person';
   static const String termsCondition = 'Policy/terms';
   static const String patientProfile = 'Patient';
-  static const String medicalProfile = 'doctor/create';
+  static const String medicalProfile = 'Practitioner';
   static const String deleteAccount = 'user/delete';
   static const String delAccOtpVerify = 'user/verifydelete';
   static const String popularMedication = 'Medication/popular';

@@ -1,299 +1,377 @@
 class MedicalProfileResponse {
     MedicalProfileResponse({
-        required this.success,
-        required this.data,
-        required this.message,
+        required this.resourceType,
+        required this.type,
+        required this.entry,
     });
 
-    final bool? success;
-    final Data? data;
-    final String? message;
+    final String? resourceType;
+    final String? type;
+    final List<Entry> entry;
 
     MedicalProfileResponse copyWith({
-        bool? success,
-        Data? data,
-        String? message,
+        String? resourceType,
+        String? type,
+        List<Entry>? entry,
     }) {
         return MedicalProfileResponse(
-            success: success ?? this.success,
-            data: data ?? this.data,
-            message: message ?? this.message,
+            resourceType: resourceType ?? this.resourceType,
+            type: type ?? this.type,
+            entry: entry ?? this.entry,
         );
     }
 
     factory MedicalProfileResponse.fromJson(Map<String, dynamic> json){ 
         return MedicalProfileResponse(
-            success: json["success"],
-            data: json["data"] == null ? null : Data.fromJson(json["data"]),
-            message: json["message"],
+            resourceType: json["resourceType"],
+            type: json["type"],
+            entry: json["entry"] == null ? [] : List<Entry>.from(json["entry"]!.map((x) => Entry.fromJson(x))),
         );
     }
 
     Map<String, dynamic> toJson() => {
-        "success": success,
-        "data": data?.toJson(),
-        "message": message,
+        "resourceType": resourceType,
+        "type": type,
+        "entry": entry.map((x) => x?.toJson()).toList(),
     };
 
 }
 
-class Data {
-    Data({
-        required this.id,
-        required this.fullName,
-        required this.institute,
-        required this.status,
-        required this.userId,
-        required this.field,
-        required this.createdAt,
-        required this.updatedAt,
-        required this.user,
-        required this.documents,
+class Entry {
+    Entry({
+        required this.resource,
     });
 
-    final int? id;
-    final String? fullName;
-    final String? institute;
-    final int? status;
-    final int? userId;
-    final String? field;
-    final DateTime? createdAt;
-    final DateTime? updatedAt;
-    final User? user;
-    final List<Document> documents;
+    final Resource? resource;
 
-    Data copyWith({
-        int? id,
-        String? fullName,
-        String? institute,
-        int? status,
-        int? userId,
-        String? field,
-        DateTime? createdAt,
-        DateTime? updatedAt,
-        User? user,
-        List<Document>? documents,
+    Entry copyWith({
+        Resource? resource,
     }) {
-        return Data(
-            id: id ?? this.id,
-            fullName: fullName ?? this.fullName,
-            institute: institute ?? this.institute,
-            status: status ?? this.status,
-            userId: userId ?? this.userId,
-            field: field ?? this.field,
-            createdAt: createdAt ?? this.createdAt,
-            updatedAt: updatedAt ?? this.updatedAt,
-            user: user ?? this.user,
-            documents: documents ?? this.documents,
+        return Entry(
+            resource: resource ?? this.resource,
         );
     }
 
-    factory Data.fromJson(Map<String, dynamic> json){ 
-        return Data(
-            id: json["id"],
-            fullName: json["full_name"],
-            institute: json["institute"],
-            status: json["status"],
-            userId: json["user_id"],
-            field: json["field"],
-            createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-            updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
-            user: json["user"] == null ? null : User.fromJson(json["user"]),
-            documents: json["documents"] == null ? [] : List<Document>.from(json["documents"]!.map((x) => Document.fromJson(x))),
+    factory Entry.fromJson(Map<String, dynamic> json){ 
+        return Entry(
+            resource: json["resource"] == null ? null : Resource.fromJson(json["resource"]),
         );
     }
 
     Map<String, dynamic> toJson() => {
-        "id": id,
-        "full_name": fullName,
-        "institute": institute,
-        "status": status,
-        "user_id": userId,
-        "field": field,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "user": user?.toJson(),
-        "documents": documents.map((x) => x?.toJson()).toList(),
+        "resource": resource?.toJson(),
     };
 
 }
 
-class Document {
-    Document({
+class Resource {
+    Resource({
+        required this.resourceType,
         required this.id,
-        required this.document,
-        required this.documentType,
-        required this.doctorId,
-        required this.status,
-        required this.createdAt,
-        required this.updatedAt,
-    });
-
-    final int? id;
-    final List<String> document;
-    final String? documentType;
-    final int? doctorId;
-    final int? status;
-    final DateTime? createdAt;
-    final DateTime? updatedAt;
-
-    Document copyWith({
-        int? id,
-        List<String>? document,
-        String? documentType,
-        int? doctorId,
-        int? status,
-        DateTime? createdAt,
-        DateTime? updatedAt,
-    }) {
-        return Document(
-            id: id ?? this.id,
-            document: document ?? this.document,
-            documentType: documentType ?? this.documentType,
-            doctorId: doctorId ?? this.doctorId,
-            status: status ?? this.status,
-            createdAt: createdAt ?? this.createdAt,
-            updatedAt: updatedAt ?? this.updatedAt,
-        );
-    }
-
-    factory Document.fromJson(Map<String, dynamic> json){ 
-        return Document(
-            id: json["id"],
-            document: json["document"] == null ? [] : List<String>.from(json["document"]!.map((x) => x)),
-            documentType: json["document_type"],
-            doctorId: json["doctor_id"],
-            status: json["status"],
-            createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-            updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
-        );
-    }
-
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "document": document.map((x) => x).toList(),
-        "document_type": documentType,
-        "doctor_id": doctorId,
-        "status": status,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-    };
-
-}
-
-class User {
-    User({
-        required this.id,
-        required this.username,
+        required this.identifier,
+        required this.active,
         required this.name,
-        required this.email,
-        required this.userType,
-        required this.verificationCode,
-        required this.emailVerifiedAt,
-        required this.userImage,
-        required this.otp,
-        required this.phone,
-        required this.createdAt,
-        required this.updatedAt,
-        required this.status,
-        required this.patientId,
-        required this.doctorId,
-        required this.preferredLang,
+        required this.gender,
+        required this.telecom,
+        required this.qualification,
+        required this.extension,
     });
 
-    final int? id;
-    final String? username;
-    final String? name;
-    final String? email;
-    final String? userType;
-    final dynamic verificationCode;
-    final dynamic emailVerifiedAt;
-    final dynamic userImage;
-    final dynamic otp;
-    final dynamic phone;
-    final DateTime? createdAt;
-    final DateTime? updatedAt;
-    final int? status;
-    final int? patientId;
-    final int? doctorId;
-    final dynamic preferredLang;
+    final String? resourceType;
+    final String? id;
+    final List<Identifier> identifier;
+    final bool? active;
+    final List<Name> name;
+    final String? gender;
+    final List<Telecom> telecom;
+    final List<Qualification> qualification;
+    final List<ResourceExtension> extension;
 
-    User copyWith({
-        int? id,
-        String? username,
-        String? name,
-        String? email,
-        String? userType,
-        dynamic? verificationCode,
-        dynamic? emailVerifiedAt,
-        dynamic? userImage,
-        dynamic? otp,
-        dynamic? phone,
-        DateTime? createdAt,
-        DateTime? updatedAt,
-        int? status,
-        int? patientId,
-        int? doctorId,
-        dynamic? preferredLang,
+    Resource copyWith({
+        String? resourceType,
+        String? id,
+        List<Identifier>? identifier,
+        bool? active,
+        List<Name>? name,
+        String? gender,
+        List<Telecom>? telecom,
+        List<Qualification>? qualification,
+        List<ResourceExtension>? extension,
     }) {
-        return User(
+        return Resource(
+            resourceType: resourceType ?? this.resourceType,
             id: id ?? this.id,
-            username: username ?? this.username,
+            identifier: identifier ?? this.identifier,
+            active: active ?? this.active,
             name: name ?? this.name,
-            email: email ?? this.email,
-            userType: userType ?? this.userType,
-            verificationCode: verificationCode ?? this.verificationCode,
-            emailVerifiedAt: emailVerifiedAt ?? this.emailVerifiedAt,
-            userImage: userImage ?? this.userImage,
-            otp: otp ?? this.otp,
-            phone: phone ?? this.phone,
-            createdAt: createdAt ?? this.createdAt,
-            updatedAt: updatedAt ?? this.updatedAt,
-            status: status ?? this.status,
-            patientId: patientId ?? this.patientId,
-            doctorId: doctorId ?? this.doctorId,
-            preferredLang: preferredLang ?? this.preferredLang,
+            gender: gender ?? this.gender,
+            telecom: telecom ?? this.telecom,
+            qualification: qualification ?? this.qualification,
+            extension: extension ?? this.extension,
         );
     }
 
-    factory User.fromJson(Map<String, dynamic> json){ 
-        return User(
+    factory Resource.fromJson(Map<String, dynamic> json){ 
+        return Resource(
+            resourceType: json["resourceType"],
             id: json["id"],
-            username: json["username"],
-            name: json["name"],
-            email: json["email"],
-            userType: json["user_type"],
-            verificationCode: json["verification_code"],
-            emailVerifiedAt: json["email_verified_at"],
-            userImage: json["user_image"],
-            otp: json["otp"],
-            phone: json["phone"],
-            createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-            updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
-            status: json["status"],
-            patientId: json["patient_id"],
-            doctorId: json["doctor_id"],
-            preferredLang: json["preferred_lang"],
+            identifier: json["identifier"] == null ? [] : List<Identifier>.from(json["identifier"]!.map((x) => Identifier.fromJson(x))),
+            active: json["active"],
+            name: json["name"] == null ? [] : List<Name>.from(json["name"]!.map((x) => Name.fromJson(x))),
+            gender: json["gender"],
+            telecom: json["telecom"] == null ? [] : List<Telecom>.from(json["telecom"]!.map((x) => Telecom.fromJson(x))),
+            qualification: json["qualification"] == null ? [] : List<Qualification>.from(json["qualification"]!.map((x) => Qualification.fromJson(x))),
+            extension: json["extension"] == null ? [] : List<ResourceExtension>.from(json["extension"]!.map((x) => ResourceExtension.fromJson(x))),
         );
     }
 
     Map<String, dynamic> toJson() => {
+        "resourceType": resourceType,
         "id": id,
-        "username": username,
-        "name": name,
-        "email": email,
-        "user_type": userType,
-        "verification_code": verificationCode,
-        "email_verified_at": emailVerifiedAt,
-        "user_image": userImage,
-        "otp": otp,
-        "phone": phone,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "status": status,
-        "patient_id": patientId,
-        "doctor_id": doctorId,
-        "preferred_lang": preferredLang,
+        "identifier": identifier.map((x) => x?.toJson()).toList(),
+        "active": active,
+        "name": name.map((x) => x?.toJson()).toList(),
+        "gender": gender,
+        "telecom": telecom.map((x) => x?.toJson()).toList(),
+        "qualification": qualification.map((x) => x?.toJson()).toList(),
+        "extension": extension.map((x) => x?.toJson()).toList(),
+    };
+
+}
+
+class ResourceExtension {
+    ResourceExtension({
+        required this.url,
+        required this.valueInteger,
+        required this.extension,
+    });
+
+    final String? url;
+    final int? valueInteger;
+    final List<ExtensionExtension> extension;
+
+    ResourceExtension copyWith({
+        String? url,
+        int? valueInteger,
+        List<ExtensionExtension>? extension,
+    }) {
+        return ResourceExtension(
+            url: url ?? this.url,
+            valueInteger: valueInteger ?? this.valueInteger,
+            extension: extension ?? this.extension,
+        );
+    }
+
+    factory ResourceExtension.fromJson(Map<String, dynamic> json){ 
+        return ResourceExtension(
+            url: json["url"],
+            valueInteger: json["valueInteger"],
+            extension: json["extension"] == null ? [] : List<ExtensionExtension>.from(json["extension"]!.map((x) => ExtensionExtension.fromJson(x))),
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "url": url,
+        "valueInteger": valueInteger,
+        "extension": extension.map((x) => x?.toJson()).toList(),
+    };
+
+}
+
+class ExtensionExtension {
+    ExtensionExtension({
+        required this.title,
+        required this.url,
+        required this.contentType,
+    });
+
+    final String? title;
+    final String? url;
+    final String? contentType;
+
+    ExtensionExtension copyWith({
+        String? title,
+        String? url,
+        String? contentType,
+    }) {
+        return ExtensionExtension(
+            title: title ?? this.title,
+            url: url ?? this.url,
+            contentType: contentType ?? this.contentType,
+        );
+    }
+
+    factory ExtensionExtension.fromJson(Map<String, dynamic> json){ 
+        return ExtensionExtension(
+            title: json["title"],
+            url: json["url"],
+            contentType: json["contentType"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "title": title,
+        "url": url,
+        "contentType": contentType,
+    };
+
+}
+
+class Identifier {
+    Identifier({
+        required this.use,
+        required this.value,
+    });
+
+    final String? use;
+    final String? value;
+
+    Identifier copyWith({
+        String? use,
+        String? value,
+    }) {
+        return Identifier(
+            use: use ?? this.use,
+            value: value ?? this.value,
+        );
+    }
+
+    factory Identifier.fromJson(Map<String, dynamic> json){ 
+        return Identifier(
+            use: json["use"],
+            value: json["value"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "use": use,
+        "value": value,
+    };
+
+}
+
+class Name {
+    Name({
+        required this.text,
+    });
+
+    final String? text;
+
+    Name copyWith({
+        String? text,
+    }) {
+        return Name(
+            text: text ?? this.text,
+        );
+    }
+
+    factory Name.fromJson(Map<String, dynamic> json){ 
+        return Name(
+            text: json["text"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "text": text,
+    };
+
+}
+
+class Qualification {
+    Qualification({
+        required this.code,
+        required this.issuer,
+    });
+
+    final Name? code;
+    final Issuer? issuer;
+
+    Qualification copyWith({
+        Name? code,
+        Issuer? issuer,
+    }) {
+        return Qualification(
+            code: code ?? this.code,
+            issuer: issuer ?? this.issuer,
+        );
+    }
+
+    factory Qualification.fromJson(Map<String, dynamic> json){ 
+        return Qualification(
+            code: json["code"] == null ? null : Name.fromJson(json["code"]),
+            issuer: json["issuer"] == null ? null : Issuer.fromJson(json["issuer"]),
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "code": code?.toJson(),
+        "issuer": issuer?.toJson(),
+    };
+
+}
+
+class Issuer {
+    Issuer({
+        required this.display,
+    });
+
+    final String? display;
+
+    Issuer copyWith({
+        String? display,
+    }) {
+        return Issuer(
+            display: display ?? this.display,
+        );
+    }
+
+    factory Issuer.fromJson(Map<String, dynamic> json){ 
+        return Issuer(
+            display: json["display"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "display": display,
+    };
+
+}
+
+class Telecom {
+    Telecom({
+        required this.system,
+        required this.value,
+        required this.use,
+    });
+
+    final String? system;
+    final String? value;
+    final String? use;
+
+    Telecom copyWith({
+        String? system,
+        String? value,
+        String? use,
+    }) {
+        return Telecom(
+            system: system ?? this.system,
+            value: value ?? this.value,
+            use: use ?? this.use,
+        );
+    }
+
+    factory Telecom.fromJson(Map<String, dynamic> json){ 
+        return Telecom(
+            system: json["system"],
+            value: json["value"],
+            use: json["use"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "system": system,
+        "value": value,
+        "use": use,
     };
 
 }

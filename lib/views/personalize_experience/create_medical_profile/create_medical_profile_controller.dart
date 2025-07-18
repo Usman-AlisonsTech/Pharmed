@@ -12,11 +12,16 @@ class CreateMedicalProfileController extends GetxController {
   var fileNames = <String>[].obs;
   var medicalFileNames = <String>[].obs;
   RxBool isLoading = false.obs;
+  var selectedGender = ''.obs;
   TextEditingController fullNameController = TextEditingController();
   TextEditingController instituteController = TextEditingController();
   TextEditingController fieldController = TextEditingController();
 
   ApiService apiService = ApiService();
+
+    void setGender(String gender) {
+    selectedGender.value = gender;
+  }
 
   // Method to handle certificate file picking
   Future<void> pickCertificateFiles() async {
@@ -84,13 +89,21 @@ class CreateMedicalProfileController extends GetxController {
         institute: instituteController.text,
         field: fieldController.text,
         certificates: uploadedCertificate,
+        gender: selectedGender.value,
         medicalLicenses: uploadedMedicalLicense,
       );
 
-      if (response.success != false) {
+      // if (response.success != false) {
         Get.offAll(TermsAndConditionsView());
-      }
+        
+      // }
     } catch (e) {
+       Get.snackbar(
+      'Error',
+      e.toString().replaceFirst('Exception: ', ''),
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
       print('Error creating medical profile: $e');
     } finally {
       isLoading.value = false;

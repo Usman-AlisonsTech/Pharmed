@@ -200,6 +200,7 @@ Future<dynamic> signUp(
     required String fullName,
     required String institute,
     required String field,
+    required String gender,
     required List<File> certificates,
     required List<File> medicalLicenses,
   }) async {
@@ -207,6 +208,8 @@ Future<dynamic> signUp(
       final url = Uri.parse(ApiConstants.baseurl + ApiConstants.medicalProfile);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String token = prefs.getString('loggedInToken') ?? '';
+      String? email = prefs.getString('email') ?? '';
+      String? phone = prefs.getString('phone') ?? '';
 
       var request = http.MultipartRequest('POST', url);
       request.headers['Authorization'] = 'Bearer $token';
@@ -215,6 +218,10 @@ Future<dynamic> signUp(
       request.fields['full_name'] = fullName;
       request.fields['institute'] = institute;
       request.fields['field'] = field;
+      request.fields['gender'] = gender;
+      request.fields['email'] = email;
+      request.fields['phone'] = phone;
+      request.fields['status'] = '1';
 
       // Attach certificate files
       for (var file in certificates) {
@@ -239,7 +246,7 @@ Future<dynamic> signUp(
       print('Response Status Code: ${response.statusCode}');
       print('Response Data: ${response.body}');
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         return MedicalProfileResponse.fromJson(json.decode(response.body));
       } else {
         throw Exception('Failed to create medical profile');
