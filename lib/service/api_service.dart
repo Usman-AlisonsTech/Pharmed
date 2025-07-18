@@ -278,11 +278,16 @@ Future<dynamic> signUp(
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('loggedInToken') ?? '';
     try {
-      final response = await http.post(
-        Uri.parse(ApiConstants.baseurl + ApiConstants.deleteAccount),
-        headers: {"Content-Type": "application/json",'Authorization': 'Bearer ${token}',},
-      );
-
+       final response = await http.post(
+      Uri.parse(ApiConstants.baseurl + ApiConstants.deleteAccount),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+         "_method": "DELETE",
+      }),
+    );
       print('Response Status Code : ${response.statusCode}');
       print('Response Data : ${response.body}');
 

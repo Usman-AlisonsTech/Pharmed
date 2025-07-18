@@ -9,25 +9,27 @@ class DeleteAccountController extends GetxController {
   final ApiService apiService = ApiService();
 
     Future<void> deleteAccount() async {
-    try {
-      final response =  await apiService.deleteAccount();
+  try {
+    final response = await apiService.deleteAccount();
 
-      if (response['message'].toString() == 'OTP Sent Successfully') {
-       Get.snackbar("Success", '${response['message']??'Otp Sent'}',
-            backgroundColor: Colors.green, colorText: Colors.white);
-      }
-       else {
-        Get.snackbar("Error", '${response['message']??'Error'}',
-            backgroundColor: Colors.red, colorText: Colors.white);
-      }
-    } catch (e) {
-      Get.snackbar("Error",
-          "Error,Otp not sent",
+    final message = response['issue'] != null &&
+            response['issue'] is List &&
+            response['issue'][0]['details'] != null
+        ? response['issue'][0]['details']['text'].toString()
+        : 'Unknown response';
+
+    if (message.contains('OTP Sent')) {
+      Get.snackbar("Success", message,
+          backgroundColor: Colors.green, colorText: Colors.white);
+    } else {
+      Get.snackbar("Error", message,
           backgroundColor: Colors.red, colorText: Colors.white);
-    } finally {
-      isLoading.value = false;
     }
+  } catch (e) {
+    Get.snackbar("Error", "Error, OTP not sent",
+        backgroundColor: Colors.red, colorText: Colors.white);
   }
+}
 
   Future<void> delAccVerifyOtp(String otp) async {
     isLoading.value = true;
@@ -35,11 +37,13 @@ class DeleteAccountController extends GetxController {
       final response =  await apiService.delAccOtpVerify(otp);
 
       if (response['message'].toString() == 'User Soft Deleted Successfully.') {
-       Get.snackbar("Success", '${response['message']??'Otp Sent'}',
+       Get.snackbar("Success", '${response['message']??'Account Deleted'}',
             backgroundColor: Colors.green, colorText: Colors.white);
 
         SharedPreferences prefs =await SharedPreferences.getInstance();    
         await prefs.remove('loggedInToken'); 
+        await prefs.remove('username'); 
+        await prefs.remove('id'); 
         Get.offAll(LoginView());
       }
        else {
