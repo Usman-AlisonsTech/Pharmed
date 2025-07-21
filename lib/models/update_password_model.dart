@@ -55,42 +55,45 @@ class Data {
         required this.patientId,
         required this.doctorId,
         required this.preferredLang,
+        required this.deletedAt,
     });
 
     final int? id;
     final String? username;
-    final String? name;
+    final dynamic name;
     final String? email;
     final String? userType;
     final String? verificationCode;
     final dynamic emailVerifiedAt;
     final dynamic userImage;
-    final dynamic otp;
-    final String? phone;
+    final String? otp;
+    final dynamic phone;
     final DateTime? createdAt;
     final DateTime? updatedAt;
     final int? status;
     final int? patientId;
-    final int? doctorId;
+    final dynamic doctorId;
     final dynamic preferredLang;
+    final dynamic deletedAt;
 
     Data copyWith({
         int? id,
         String? username,
-        String? name,
+        dynamic? name,
         String? email,
         String? userType,
         String? verificationCode,
         dynamic? emailVerifiedAt,
         dynamic? userImage,
-        dynamic? otp,
-        String? phone,
+        String? otp,
+        dynamic? phone,
         DateTime? createdAt,
         DateTime? updatedAt,
         int? status,
         int? patientId,
-        int? doctorId,
+        dynamic? doctorId,
         dynamic? preferredLang,
+        dynamic? deletedAt,
     }) {
         return Data(
             id: id ?? this.id,
@@ -109,6 +112,7 @@ class Data {
             patientId: patientId ?? this.patientId,
             doctorId: doctorId ?? this.doctorId,
             preferredLang: preferredLang ?? this.preferredLang,
+            deletedAt: deletedAt ?? this.deletedAt,
         );
     }
 
@@ -130,6 +134,7 @@ class Data {
             patientId: json["patient_id"],
             doctorId: json["doctor_id"],
             preferredLang: json["preferred_lang"],
+            deletedAt: json["deleted_at"],
         );
     }
 
@@ -150,6 +155,7 @@ class Data {
         "patient_id": patientId,
         "doctor_id": doctorId,
         "preferred_lang": preferredLang,
+        "deleted_at": deletedAt,
     };
 
 }

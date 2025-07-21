@@ -22,7 +22,8 @@ class ApiConstants {
   static const String getThread = 'Medication/thread/';
   static const String addThread  = 'Medication/thread/add';
   static const String privacyPolicy = 'Policy/privacy';
-  static const String forgotPass = 'Auth/forgot_password';
+  static const String forgotPass = 'Auth/forgot_password/sendCode';
+  static const String confirmPassword = 'Auth/forgot_password/updatePassword';
   static const String getProfileDetail = 'Patient';
   static const String secretKey = 'usman';
 }

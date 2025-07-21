@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:pharmed_app/models/add_medication_response_model.dart';
 import 'package:pharmed_app/models/add_thread_response_model.dart';
+import 'package:pharmed_app/models/confirm_password_response_model.dart';
 import 'package:pharmed_app/models/drug_interaction_response_model.dart';
 import 'package:pharmed_app/models/get_medication_response_model.dart';
 import 'package:pharmed_app/models/login_otp_response_model.dart';
@@ -711,6 +712,43 @@ Future<UpdateMedicationResponse?> updateMedication(Map<String, dynamic> data, St
     }
   }
 
+
+
+  Future<ConfirmPasswordResponse> confirmPassword(String email, String pass, String confirmPass) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('loggedInToken') ?? '';
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConstants.baseurl}${ApiConstants.confirmPassword}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': pass,
+          'password_confirmation': confirmPass,
+        }),
+      );
+
+      print('Response Status Code : ${response.statusCode}');
+      print('Response Body : ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        return ConfirmPasswordResponse.fromJson(responseBody);
+      }else if(response.statusCode == 401){
+           prefs.clear();
+           Get.offAll(LoginView());
+           throw Exception('Unauthorized: Session expired');
+      } else {
+        throw Exception('Failed to add thread: ${response.body}');
+      }
+    } catch (e) {
+      print('Error adding thread: $e'); // Log error details
+      throw Exception('Error adding thread data: $e');
+    }
+  }
 
   Future<http.Response> translateText(String text, String targetLang) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

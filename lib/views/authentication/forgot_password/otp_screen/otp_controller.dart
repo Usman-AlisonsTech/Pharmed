@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:pharmed_app/models/sent_otp_response_model.dart';
 import 'package:pharmed_app/models/update_password_model.dart';
+import 'package:pharmed_app/service/api_service.dart';
 import 'package:pharmed_app/utils/constants.dart';
 import 'package:pharmed_app/views/authentication/login/login_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,8 +40,7 @@ class OtpController extends GetxController {
     isLoading.value = true;
     try {
       final response = await http.post(
-        Uri.parse(
-            'https://pharmed.alisonstech-dev.com/API/public/api/forgot_password/verifyCode'),
+        Uri.parse('${ApiConstants.baseurl}Auth/forgot_password/verifyCode'),
         headers: {
           "Content-Type": "application/json",
           'Authorization': 'Bearer ${token}',
@@ -49,24 +49,50 @@ class OtpController extends GetxController {
           "email": email,
           "password": newPass.text,
           "c_password": confirmPass.text,
-          "otp": otp,
+          "otp": otp, 
         }),
       );
+
+      print(response.statusCode);
+      print(response.body);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         UpdatePasswordResponse updateResponse =
             UpdatePasswordResponse.fromJson(responseData);
 
-        if (updateResponse.success == true) {
-          Get.snackbar(
-            'Success',
-            'Password updated successfully!',
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-          );
-          Get.offAll(LoginView());
-        } else {
+        if (updateResponse.message == 'OTP Verified Succesfully.') {
+  try {
+    final confirmResponse = await ApiService()
+        .confirmPassword(email, newPass.text, confirmPass.text);
+
+    if (confirmResponse.success == true && confirmResponse.data == true) {
+      Get.snackbar(
+        'Success',
+        confirmResponse.message ?? 'Your password is changed successfully.',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+      Get.offAll(LoginView());
+    } else {
+      Get.snackbar(
+        'Error',
+        confirmResponse.message ?? 'Failed to change password',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  } catch (e) {
+    Get.snackbar(
+      'Error',
+      'Something went wrong while confirming password.',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+    print('confirmPassword error: $e');
+  }
+}
+ else {
           Get.snackbar(
             'Error',
             updateResponse.message ?? 'Failed to update password',
