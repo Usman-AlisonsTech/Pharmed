@@ -19,8 +19,8 @@ class DeleteAccountController extends GetxController {
         : 'Unknown response';
 
     if (message.contains('OTP Sent')) {
-      Get.snackbar("Success", message,
-          backgroundColor: Colors.green, colorText: Colors.white);
+      // Get.snackbar("Success", message,
+      //     backgroundColor: Colors.green, colorText: Colors.white);
     } else {
       Get.snackbar("Error", message,
           backgroundColor: Colors.red, colorText: Colors.white);
