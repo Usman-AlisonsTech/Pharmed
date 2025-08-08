@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pharmed_app/models/add_medication_response_model.dart';
+import 'package:pharmed_app/models/medicine_info_response_model.dart';
 import 'package:pharmed_app/models/popular_medication_model.dart';
 import 'package:pharmed_app/models/search_response_model.dart';
 import 'package:pharmed_app/service/api_service.dart';
@@ -33,6 +34,7 @@ class HomeController extends GetxController {
   TextEditingController frequencyController = TextEditingController();
   TextEditingController reasonController = TextEditingController();
 
+ Rx<MedicineInformationResponseModel?> medicineData = Rx<MedicineInformationResponseModel?>(null);
 
   @override
   void onInit() {
@@ -135,32 +137,33 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> searchMedication(String query, String medicineName) async {
-    try {
-      isSearchLoading.value = true;
-      jsonData.clear();
-      Get.to(() => MedicineInformationView(
-            jsonData: jsonData,
-            medicineName: medicineName,
-            isLoading: isSearchLoading,
-          ));
+Future<void> searchMedication(String query, String medicineName) async {
+  try {
+    isSearchLoading.value = true;
+    medicineData.value = null;
+    
+    Get.to(() => MedicineInformationView(
+      medicineData: medicineData,
+      medicineName: medicineName,
+      isLoading: isSearchLoading,
+    ));
 
-      final result = await apiService.searchMedicationInfo(query);
+    final result = await apiService.searchMedicationInfo(query);
 
-      if (result != null && result.isNotEmpty) {
-        jsonData.assignAll(result);
-      } else {
-        print("No medications found.");
-        jsonData.assignAll([
-          {"message": "No Search History"}
-        ]);
-      }
-    } catch (e) {
-      print("Error: $e");
-    } finally {
-      isSearchLoading.value = false;
+    if (result != null) {
+      medicineData.value = result;
+      print("Medicine data loaded: ${result.drug}"); 
+    } else {
+      print("No medications found.");
+      medicineData.value = null;
     }
+  } catch (e) {
+    print("Error: $e");
+    medicineData.value = null;
+  } finally {
+    isSearchLoading.value = false;
   }
+}
 
   Future<void> addToMedicines(String medicineName, BuildContext context) async {
   try {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:pharmed_app/models/medicine_info_response_model.dart';
 import 'package:pharmed_app/utils/constants.dart';
 import 'package:pharmed_app/views/connect_phar/connect_phar_view.dart';
 import 'package:pharmed_app/views/home/home_controller.dart';
@@ -9,15 +10,14 @@ import 'package:pharmed_app/views/search/medicine_information/medicine_informati
 import 'package:pharmed_app/widgets/common_button.dart';
 import 'package:pharmed_app/widgets/custom_text.dart';
 import 'package:pharmed_app/widgets/custom_textfield.dart';
-
 class MedicineInformationView extends StatefulWidget {
   final String medicineName;
-  final List<dynamic> jsonData;
+  final Rx<MedicineInformationResponseModel?> medicineData;
   final RxBool isLoading;
 
   const MedicineInformationView({
     super.key,
-    required this.jsonData,
+    required this.medicineData,
     required this.medicineName,
     required this.isLoading,
   });
@@ -31,15 +31,13 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
   final RxList<dynamic> savedData = <dynamic>[].obs;
   final homeController = Get.find<HomeController>();
   final controller = Get.put(MedicineInformationController());
-  List<dynamic> localJsonData = [];
   final RxMap<String, String> translations = <String, String>{}.obs;
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    localJsonData = List.from(widget.jsonData);
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -65,6 +63,78 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
     }
   }
 
+  Widget _buildContentList(List<String> items, String emptyMessage) {
+    if (items.isEmpty) {
+      return Center(
+        child: Text(
+          emptyMessage,
+          style: TextStyle(
+            fontSize: MediaQuery.of(context).size.width * 0.04,
+            fontWeight: FontWeight.w400,
+            fontFamily: 'Poppins',
+            color: Colors.grey,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 15),
+          child: Text(
+            items[index],
+            style: TextStyle(
+              fontSize: MediaQuery.of(context).size.width * 0.04,
+              fontWeight: FontWeight.w400,
+              fontFamily: 'Poppins',
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNoDataMessage() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_off,
+            size: 64,
+            color: Colors.grey.shade400,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No Medicine History',
+            style: TextStyle(
+              fontSize: MediaQuery.of(context).size.width * 0.05,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+              color: Colors.grey.shade600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Try searching for a different medication',
+            style: TextStyle(
+              fontSize: MediaQuery.of(context).size.width * 0.04,
+              fontWeight: FontWeight.w400,
+              fontFamily: 'Poppins',
+              color: Colors.grey.shade500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -83,13 +153,55 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
             ),
           );
         } else {
+          // Check if there's no data
+          if (widget.medicineData.value == null) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: ScreenConstants.screenhorizontalPadding,
+                  right: ScreenConstants.screenhorizontalPadding,
+                  top: screenHeight * 0.055,
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () => Get.back(),
+                          child: const Icon(Icons.arrow_back),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            widget.medicineName,
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.07,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: 'Poppins',
+                            ),
+                            textAlign: TextAlign.start,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.2),
+                    _buildNoDataMessage(),
+                  ],
+                ),
+              ),
+            );
+          }
+
           return SingleChildScrollView(
             child: Padding(
-          padding: EdgeInsets.only(
-          left: ScreenConstants.screenhorizontalPadding,
-          right: ScreenConstants.screenhorizontalPadding,
-          top: screenHeight * 0.055,
-        ),
+              padding: EdgeInsets.only(
+                left: ScreenConstants.screenhorizontalPadding,
+                right: ScreenConstants.screenhorizontalPadding,
+                top: screenHeight * 0.055,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -136,55 +248,55 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                           },
                         ),
                       ),
-                      if (widget.jsonData.length != 1 ||
-                          widget.jsonData[0]["message"] != "No Search History")
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(ConnectPharView(
-                              medicineName: widget.medicineName,
-                            ));
-                          },
-                          child: Container(
-                            constraints: BoxConstraints(
-                              minWidth: screenWidth * 0.2,
-                              maxWidth: screenWidth * 0.3,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: Colors.black,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/svg/chat.svg',
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(ConnectPharView(
+                            medicineName: widget.medicineName,
+                          ));
+                        },
+                        child: Container(
+                          constraints: BoxConstraints(
+                            minWidth: screenWidth * 0.2,
+                            maxWidth: screenWidth * 0.3,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.black,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/svg/chat.svg',
+                                color: Colors.white,
+                                width: 16,
+                                height: 16,
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                'connect_phar'.tr,
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.035,
                                   color: Colors.white,
-                                  width: 16,
-                                  height: 16,
+                                  fontWeight: FontWeight.w700,
                                 ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'connect_phar'.tr,
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.035,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  softWrap: true,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.visible,
-                                ),
-                              ],
-                            ),
+                                softWrap: true,
+                                maxLines: 2,
+                                overflow: TextOverflow.visible,
+                              ),
+                            ],
                           ),
                         ),
+                      ),
                     ],
                   ),
                   SizedBox(height: screenHeight * 0.03),
                   TabBar(
                     controller: _tabController,
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
                     labelColor: Colors.black,
                     unselectedLabelColor: Colors.grey,
                     indicatorColor: ColorConstants.themecolor,
@@ -197,220 +309,91 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                       Tab(text: 'Uses'),
                       Tab(text: 'Side Effects'),
                       Tab(text: 'Precautions'),
+                      Tab(text: 'Warnings'),
                     ],
                   ),
-                  SizedBox(height: screenHeight * 0.05),
-                SizedBox(
+
+                  SizedBox(height: screenHeight * 0.02),
+                  SizedBox(
                     height: screenHeight * 0.6,
                     child: TabBarView(
                       controller: _tabController,
                       children: [
-                        ListView.builder(
-                          padding: const EdgeInsets.only(top: 10),
-                          itemCount: widget.jsonData.length,
-                          itemBuilder: (context, index) {
-                            return SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: _buildWidgets(widget.jsonData),
-                          ),
-                        );
-                          },
+                        _buildContentList(
+                          widget.medicineData.value!.usage,
+                          'No usage information available',
                         ),
-                       ListView(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          children: [
-                            Text(
-                              'Side Effects',
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.045,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              'Common side effects may include dizziness, headache, nausea, or mild stomach upset. Consult your doctor if symptoms persist.',
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.04,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Poppins',
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ],
+                        _buildContentList(
+                          widget.medicineData.value!.dosage,
+                          'No dosage information available',
                         ),
-
-                        ListView(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          children: [
-                            Text(
-                              'Precautions',
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.045,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              'Please read all precautions carefully before taking this medication. Inform your doctor of any allergies or existing conditions.',
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.04,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Poppins',
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ],
-                        )
-
+                        _buildContentList(
+                          widget.medicineData.value!.precautions,
+                          'No precautions information available',
+                        ),
+                        _buildContentList(
+                          widget.medicineData.value!.warnings,
+                          'No warnings information available',
+                        ),
                       ],
                     ),
                   )
-
                 ],
               ),
             ),
           );
         }
       }),
-      bottomNavigationBar: (widget.jsonData.length == 1 &&
-              widget.jsonData[0]["message"] == "No Search History")
-          ? const SizedBox()
-          : Padding(
-              padding: const EdgeInsets.only(
-                  left: 25, right: 25, bottom: 20, top: 10),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CommonButton(
-                    onPressed: () {
-                      if (widget.jsonData.length == 1 &&
-                          widget.jsonData[0]["message"] == "No Search History") {
-                        return;
-                      } else {
-                        _showBottomSheet(context, widget.medicineName);
-                      }
-                    },
-                    title: 'add_to_medicines'.tr,
-                    bgColor: Colors.black,
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomText(
-                        text: 'Source: FDA –',
-                        fontSize: 12, 
-                        weight: FontWeight.w500,
-                        textAlign: TextAlign.center,
-                      ),
-                      CustomText(
-                        text: 'https://api.fda.gov',
-                        fontSize: 12, 
-                        color: ColorConstants.themecolor,
-                        weight: FontWeight.w500,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+      bottomNavigationBar:
+          Obx((){
+            if(widget.medicineData.value == null){
+                return SizedBox();
+            }else{
+              return Padding(
+                padding: const EdgeInsets.only(
+                    left: 25, right: 25, bottom: 20, top: 10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CommonButton(
+                      onPressed: () {
+                        if (widget.medicineData.value == null) {
+                          return;
+                        } else {
+                          _showBottomSheet(context, widget.medicineName);
+                        }
+                      },
+                      title: 'add_to_medicines'.tr,
+                      bgColor: Colors.black,
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomText(
+                          text: 'Source: FDA –',
+                          fontSize: 12,
+                          weight: FontWeight.w500,
+                          textAlign: TextAlign.center,
+                        ),
+                        CustomText(
+                          text: 'https://api.fda.gov',
+                          fontSize: 12,
+                          color: ColorConstants.themecolor,
+                          weight: FontWeight.w500,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }
+          }
+          ),
     );
   }
 
-  List<Widget> _buildWidgets(dynamic data,
-      {String? heading, bool isSubKey = false}) {
-    List<Widget> widgets = [];
-
-    // If the heading is not 'medications' and it's not null, translate the heading
-    if (heading != null && heading.toLowerCase() != 'medications') {
-      String formattedHeading = heading.replaceAll('_', ' ').capitalize!;
-
-      // Translate the heading
-      widgets.add(FutureBuilder<String>(
-        future: controller.translateText(formattedHeading),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return SizedBox();
-          } else if (snapshot.hasError) {
-            return Text(
-              formattedHeading,
-              style: TextStyle(
-                fontSize: isSubKey ? 15 : 22,
-                fontWeight: isSubKey ? FontWeight.w700 : FontWeight.w800,
-                color: Colors.black,
-                fontFamily: 'Poppins',
-              ),
-            );
-          } else {
-            return Text(
-              snapshot.data ?? formattedHeading,
-              style: TextStyle(
-                fontSize: isSubKey ? 15 : 22,
-                fontWeight: isSubKey ? FontWeight.w700 : FontWeight.w800,
-                color: Colors.black,
-                fontFamily: 'Poppins',
-              ),
-            );
-          }
-        },
-      ));
-
-      savedData.add('$formattedHeading :');
-      widgets.add(SizedBox(height: 5));
-    }
-
-    if (data is Map<String, dynamic>) {
-      data.forEach((key, value) {
-        if (key.toLowerCase() == 'id' || key.toLowerCase() == 'route') return;
-        widgets.addAll(_buildWidgets(value, heading: key, isSubKey: true));
-      });
-    } else if (data is List) {
-      for (var item in data) {
-        widgets.addAll(_buildWidgets(item, isSubKey: true));
-      }
-    } else {
-      savedData.add(data);
-
-      widgets.add(FutureBuilder<String>(
-        future: controller.translateText(data.toString()),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return SizedBox();
-          } else if (snapshot.hasError) {
-            return Text(
-              data.toString(),
-              style: const TextStyle(
-                fontSize: 15,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w400,
-              ),
-            );
-          } else {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  snapshot.data ?? '',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            );
-          }
-        },
-      ));
-    }
-
-    widgets.add(SizedBox(height: 10));
-    return widgets;
-  }
 
   void _showBottomSheet(BuildContext context, medicineName) {
   final HomeController controller = Get.find<HomeController>();

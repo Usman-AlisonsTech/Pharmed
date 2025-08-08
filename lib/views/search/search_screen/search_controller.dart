@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pharmed_app/models/medicine_info_response_model.dart';
 import 'package:pharmed_app/models/suggestion_response_model.dart';
 import 'package:pharmed_app/service/api_service.dart';
 import 'package:pharmed_app/views/search/medicine_information/medicine_information_view.dart';
@@ -10,6 +11,8 @@ class SearchScreenController extends GetxController {
   ApiService apiService = ApiService();
   RxBool isSearchLoading = false.obs;
   var searchResults = <Datum>[].obs;
+
+  Rx<MedicineInformationResponseModel?> medicineData = Rx<MedicineInformationResponseModel?>(null);
 
   clearSearchField() {
     searchController.clear();
@@ -41,30 +44,32 @@ class SearchScreenController extends GetxController {
     }
   }
 
-  Future<void> searchMedicationInfo(String query, String medicineName) async {
-    try {
-      isSearchLoading.value = true;
-      jsonData.clear();
-      Get.to(() => MedicineInformationView(
-            jsonData: jsonData,
-            medicineName: medicineName,
-            isLoading: isSearchLoading,
-          ));
+ Future<void> searchMedicationInfo(String query, String medicineName) async {
+  try {
+    isSearchLoading.value = true;
+    medicineData.value = null;
+    
+    Get.to(() => MedicineInformationView(
+      medicineData: medicineData, 
+      medicineName: medicineName,
+      isLoading: isSearchLoading,
+    ));
 
-      final result = await apiService.searchMedicationInfo(query);
+    final result = await apiService.searchMedicationInfo(query);
 
-      if (result != null && result.isNotEmpty) {
-        jsonData.assignAll(result);
-      } else {
-        print("No medications found.");
-        jsonData.assignAll([
-          {"message": "No Search History"}
-        ]);
-      }
-    } catch (e) {
-      print("Error: $e");
-    } finally {
-      isSearchLoading.value = false;
+    if (result != null) {
+      medicineData.value = result;
+      print("Medicine data loaded: ${result.drug}"); 
+    } else {
+      print("No medications found.");
+      medicineData.value = null;
     }
+  } catch (e) {
+    print("Error: $e");
+    medicineData.value = null;
+  } finally {
+    isSearchLoading.value = false;
   }
+}
+
 }

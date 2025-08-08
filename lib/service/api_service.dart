@@ -10,6 +10,7 @@ import 'package:pharmed_app/models/get_medication_response_model.dart';
 import 'package:pharmed_app/models/login_otp_response_model.dart';
 import 'package:pharmed_app/models/login_response_model.dart';
 import 'package:pharmed_app/models/medical_profile_model.dart';
+import 'package:pharmed_app/models/medicine_info_response_model.dart';
 import 'package:pharmed_app/models/patient_profile_response_model.dart';
 import 'package:pharmed_app/models/popular_medication_model.dart';
 import 'package:pharmed_app/models/profile_detail_response_model.dart';
@@ -396,43 +397,43 @@ Future<dynamic> signUp(
     }
   }
 
-  Future<List<dynamic>> searchMedicationInfo(String query) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('loggedInToken') ?? '';
+  Future<MedicineInformationResponseModel?> searchMedicationInfo(String query) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString('loggedInToken') ?? '';
 
-    try {
-      final response = await http.get(
-        Uri.parse('${ApiConstants.baseurl}Medication/search?query=$query'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
-      print('Response Status Code : ${response.statusCode}');
+  try {
+    final response = await http.get(
+      Uri.parse('https://pharmedic.ae/drugchecker/drug/$query'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    
+    print('Response Status Code: ${response.statusCode}');
+    print('Response Body: ${response.body}');
 
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-
-        if (jsonData is List) {
-          return jsonData;
-        } else if (jsonData is Map<String, dynamic>) {
-          return [jsonData];
-        }
-      } else if (response.statusCode == 500) {
-        print("Server error (500). Returning empty data.");
-        return [];
-      }else if(response.statusCode == 401){
-           prefs.clear();
-           Get.offAll(LoginView());
-      } else {
-        print("Error fetching medications: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Error: $e");
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body); 
+      return  MedicineInformationResponseModel.fromJson(jsonData);
+      
+    } else if (response.statusCode == 500) {
+      print("Server error (500). Returning empty data.");
+      throw Exception('Server Error (500)');
+    } else if (response.statusCode == 401) {
+      prefs.clear();
+      Get.offAll(LoginView());
+      throw Exception('Unauthorized: Session expired');
+    } else {
+      print("Error fetching medications: ${response.statusCode}");
+      print("Error response body: ${response.body}");
+      throw Exception(response.body);
     }
-
-    return [];
+  } catch (e) {
+    print("Error in searchMedicationInfo: $e");
+    return null;
   }
+}
 
   // add medication
  Future<AddMedication?> addMedication(Map<String, dynamic> data) async {
