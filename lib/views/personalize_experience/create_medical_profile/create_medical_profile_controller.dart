@@ -13,7 +13,8 @@ class CreateMedicalProfileController extends GetxController {
   var medicalFileNames = <String>[].obs;
   RxBool isLoading = false.obs;
   var selectedGender = ''.obs;
-  TextEditingController fullNameController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
   TextEditingController instituteController = TextEditingController();
   TextEditingController fieldController = TextEditingController();
 
@@ -68,7 +69,8 @@ class CreateMedicalProfileController extends GetxController {
 
   // Use the service to create a medical profile
   Future<void> createMedicalProfile() async {
-    if (fullNameController.text.isEmpty ||
+    if (firstNameController.text.isEmpty ||
+        lastNameController.text.isEmpty ||
         instituteController.text.isEmpty ||
         fieldController.text.isEmpty ||
         uploadedCertificate.isEmpty ||
@@ -85,7 +87,7 @@ class CreateMedicalProfileController extends GetxController {
     isLoading.value = true;
     try {
       MedicalProfileResponse response = await apiService.createMedicalProfile(
-        fullName: fullNameController.text,
+        fullName: firstNameController.text+lastNameController.text,
         institute: instituteController.text,
         field: fieldController.text,
         certificates: uploadedCertificate,

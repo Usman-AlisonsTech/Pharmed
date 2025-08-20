@@ -6,7 +6,8 @@ import 'package:pharmed_app/views/authentication/login/login_view.dart';
 import 'package:pharmed_app/views/authentication/signup/signup_otp/signup_otp_view.dart';
 
 class SignUpController extends GetxController {
-  TextEditingController userNameController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneNumController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -22,12 +23,14 @@ class SignUpController extends GetxController {
   final apiService = ApiService();
 
   final emailformKey = GlobalKey<FormState>();
-  final userNameformKey = GlobalKey<FormState>();
+  final firstName = GlobalKey<FormState>();
+  final lastName = GlobalKey<FormState>();
   final phoneNumformKey = GlobalKey<FormState>();
   final passformKey = GlobalKey<FormState>();
 
  signUp() async {
-  if (!userNameformKey.currentState!.validate() ||
+  if (!firstName.currentState!.validate() ||
+      !lastName.currentState!.validate() ||
       !emailformKey.currentState!.validate() ||
       !passformKey.currentState!.validate()) {
     return;
@@ -37,7 +40,7 @@ class SignUpController extends GetxController {
     isLoading.value = true;
 
     var response = await apiService.signUp(
-      userNameController.text,
+      firstNameController.text+lastNameController.text,
       emailController.text,
       phoneNumController.text,
       passwordController.text,

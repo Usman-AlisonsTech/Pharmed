@@ -13,6 +13,7 @@ class ChangeLanguageView extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     final controller = Get.put(ChangeLanguageController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body:  Padding(
@@ -49,18 +50,19 @@ class ChangeLanguageView extends StatelessWidget {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                            color: ColorConstants.themecolor, width: 1),
+                            color:isDark? Colors.black: ColorConstants.themecolor, width: 1),
                         color: controller.selectedLanguage.value == 'en'
                             ? ColorConstants.themecolor
-                            : Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            offset: Offset(0, 4),
-                            blurRadius: 6,
-                            spreadRadius: 1,
-                          ),
-                        ]),
+                            :isDark? Color(0xFF121212): Colors.white,
+                        // boxShadow: [
+                        //   BoxShadow(
+                        //     color: Colors.grey.withOpacity(0.5),
+                        //     offset: Offset(0, 4),
+                        //     blurRadius: 6,
+                        //     spreadRadius: 1,
+                        //   ),
+                        // ]
+                        ),
                     padding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 30),
                     child: Row(
@@ -72,7 +74,7 @@ class ChangeLanguageView extends StatelessWidget {
                           fontSize: 13,
                           color: controller.selectedLanguage.value == 'en'
                               ? Colors.white
-                              : Colors.black,
+                              :isDark? Colors.white: Colors.black,
                         ),
                         if (controller.selectedLanguage.value == 'en')
                           const Icon(
@@ -95,19 +97,11 @@ class ChangeLanguageView extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          offset: Offset(0, 4),
-                          blurRadius: 6,
-                          spreadRadius: 1,
-                        ),
-                      ],
                       border: Border.all(
-                          color: ColorConstants.themecolor, width: 1),
+                          color:isDark? Colors.black: ColorConstants.themecolor, width: 1),
                       color: controller.selectedLanguage.value == 'ar'
                           ? ColorConstants.themecolor
-                          : Colors.white,
+                          :isDark? Color(0xFF121212): Colors.white,
                     ),
                     padding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 30),
@@ -120,7 +114,7 @@ class ChangeLanguageView extends StatelessWidget {
                           fontSize: 13,
                           color: controller.selectedLanguage.value == 'ar'
                               ? Colors.white
-                              : Colors.black,
+                              : isDark? Colors.white: Colors.black,
                         ),
                         if (controller.selectedLanguage.value == 'ar')
                           const Icon(
@@ -144,18 +138,10 @@ class ChangeLanguageView extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color: ColorConstants.themecolor, width: 1),
+                          color: isDark? Colors.black: ColorConstants.themecolor, width: 1),
                       color: controller.selectedLanguage.value == 'ur'
                           ? ColorConstants.themecolor
-                          : Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          offset: Offset(0, 4),
-                          blurRadius: 6,
-                          spreadRadius: 1,
-                        ),
-                      ],
+                          : isDark? Color(0xFF121212): Colors.white,
                     ),
                     padding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 30),
@@ -168,7 +154,7 @@ class ChangeLanguageView extends StatelessWidget {
                           fontSize: 13,
                           color: controller.selectedLanguage.value == 'ur'
                               ? Colors.white
-                              : Colors.black,
+                              : isDark? Colors.white: Colors.black,
                         ),
                         if (controller.selectedLanguage.value == 'ur')
                           const Icon(
@@ -196,7 +182,7 @@ class ChangeLanguageView extends StatelessWidget {
           onPressed: () {
             Get.offAll(BottomNavigation());
           },
-          bgColor: Colors.black,
+          bgColor:isDark? Colors.grey[900]: Colors.black,
         ),
       ),
     );

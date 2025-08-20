@@ -40,13 +40,15 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+        ? Color(0xFF121212) // 👈 dark mode
+        : Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
             offset: const Offset(0, 4),
-            blurRadius: 2,
-            spreadRadius: 1,
+            blurRadius: 3,
+            spreadRadius: 0,
           ),
         ],
       ),
@@ -119,6 +121,7 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                       'assets/svg/three_dots.svg',
                       width: 5,
                       height: 5,
+                      color: Theme.of(context).iconTheme.color,
                     ),
                     onSelected: (String value) {
                       if (value == 'Option 1') {
@@ -126,7 +129,6 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                         _showBottomSheet(context, value, widget.data);
                       }
                     },
-                    color: Colors.white,
                     itemBuilder: (BuildContext context) {
                       return [
                         PopupMenuItem<String>(
@@ -264,7 +266,9 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
       isDismissible: false,
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+      ? Color(0xFF121212)   // 👈 dark mode
+      : Colors.white,
       builder: (BuildContext context) {
         double screenWidth = MediaQuery.of(context).size.width;
         double screenHeight = MediaQuery.of(context).size.height;
@@ -403,7 +407,7 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                                   });
                                 },
                                 child: SvgPicture.asset(
-                                    'assets/svg/tabler_edit.svg'))
+                                    'assets/svg/tabler_edit.svg',  color: Theme.of(context).iconTheme.color,))
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -610,7 +614,6 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(8),
                                               border: Border.all(color: Colors.grey),
-                                              color: const Color(0xffF9F9F9),
                                             ),
                                             padding: const EdgeInsets.all(10),
                                             child: const Center(
@@ -637,7 +640,6 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: Colors.grey),
-                                color: const Color(0xffF9F9F9),
                               ),
                               padding: const EdgeInsets.all(10),
                               child: const Center(
@@ -654,7 +656,8 @@ class _MedicalHistoryContainerState extends State<MedicalHistoryContainer> {
                         Obx(() => CommonButton(
                               isLoading: controller.isUpdateLoading.value,
                               title: 'edit'.tr,
-                              bgColor: Colors.black,
+                              bgColor: ColorConstants.themecolor,
+                              borderColor: ColorConstants.themecolor,
                               onPressed: () {
                                 controller.updateMedicines(
                                     data.medicationCodeableConcept?.text??'',

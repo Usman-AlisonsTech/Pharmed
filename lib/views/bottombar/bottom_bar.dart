@@ -46,6 +46,8 @@ import 'package:pharmed_app/views/notification/notification_view.dart';
     @override
     Widget build(BuildContext context) {
       double screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
       double bottomNavHeight =
           screenHeight < 600 ? 60 : 77;
 
@@ -55,7 +57,7 @@ import 'package:pharmed_app/views/notification/notification_view.dart';
           child: Container(
             height: bottomNavHeight, // Dynamically set height
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark? Color(0xFF121212): Colors.white,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.3),
@@ -65,7 +67,7 @@ import 'package:pharmed_app/views/notification/notification_view.dart';
               ],
             ),
             child: BottomAppBar(
-              color: Colors.white,
+              color:isDark? Color(0xFF121212): Colors.white,
               elevation: 1,
               shape: const CircularNotchedRectangle(),
               child: Row(

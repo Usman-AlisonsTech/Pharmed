@@ -92,7 +92,7 @@ class _DicViewState extends State<DicView> {
       child: Scaffold(
         key: scaffoldKey,
         drawer: Drawer(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
@@ -113,6 +113,7 @@ class _DicViewState extends State<DicView> {
                               child: Icon(
                                 Icons.arrow_back,
                                 size: 22,
+                                color: Theme.of(context).iconTheme.color,
                               ))),
                       CustomText(
                         text: 'setting'.tr,
@@ -151,7 +152,9 @@ class _DicViewState extends State<DicView> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
-                    color: Color(0xffF9F9F9),
+                    color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.black
+                    : const Color(0xffF9F9F9),
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -198,10 +201,11 @@ class _DicViewState extends State<DicView> {
                             controller.searchResults.isEmpty &&
                             searchController.text.isNotEmpty) {
                           return Container(
-                            color: Color(0xffF9F9F9),
+                            color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.black
+                           : const Color(0xffF9F9F9),
                             margin: EdgeInsets.only(top: 0),
                             child: ListTile(
-                              tileColor: Colors.red,
                               title: CustomText(text: searchController.text),
                               trailing: CircleAvatar(
                                 backgroundColor: ColorConstants.themecolor,
@@ -228,7 +232,9 @@ class _DicViewState extends State<DicView> {
       constraints: BoxConstraints(maxHeight: 200),
       margin: EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: Color(0xffF9F9F9),
+       color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.black
+                    : const Color(0xffF9F9F9),
       ),
       child: MediaQuery.removePadding(
         context: context,
@@ -299,6 +305,7 @@ class _DicViewState extends State<DicView> {
                                     drug,
                                     style: TextStyle(
                                       fontSize: 12,
+                                      color: Colors.black,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -363,7 +370,9 @@ class _DicViewState extends State<DicView> {
                         fontFamily: 'Poppins',
                         horizontalPadding: 10,
                         verticalPadding: 12,
-                        bgColor: Colors.black,
+                        textColor:Colors.white,
+                        bgColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[900] : Colors.black,
                       ),
                     ),
                   ],

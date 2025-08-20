@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:pharmed_app/views/connect_phar/connect_phar_controller.dart';
 import 'package:pharmed_app/widgets/custom_text.dart';
@@ -49,10 +47,11 @@ class _ConnectPharViewState extends State<ConnectPharView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark =Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor:isDark?Color(0xFF121212): Colors.white,
         title: Text(
           'connect_pharm'.tr,
           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:horizontal_week_calendar/horizontal_week_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:pharmed_app/views/theme_controller.dart';
+import 'package:pharmed_app/widgets/common_button.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:pharmed_app/utils/constants.dart';
 import 'package:pharmed_app/views/notification/notification_controller.dart';
 import 'package:pharmed_app/views/notification/widgets/notification_container.dart';
@@ -15,16 +17,21 @@ class NotificationView extends StatefulWidget {
 }
 
 class _NotificationViewState extends State<NotificationView> {
-  var selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.now();
+  DateTime focusedDate = DateTime.now();
+
   final NotificationController controller = Get.put(NotificationController());
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final screenHeight = MediaQuery.sizeOf(context).height;
-
+  void initState() {
+    super.initState();
     controller
         .fetchNotifications(DateFormat('yyyy-MM-dd').format(selectedDate));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.sizeOf(context).height;
 
     return WillPopScope(
        onWillPop: () async {
@@ -49,173 +56,132 @@ class _NotificationViewState extends State<NotificationView> {
     },
       child: Scaffold(
         body: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: ScreenConstants.screenhorizontalPadding,
-                right: ScreenConstants.screenhorizontalPadding,
-                top: screenHeight * 0.055,
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            DateFormat('dd').format(selectedDate),
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 40,
-                                fontFamily: 'Poppins'),
-                          ),
-                          const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                DateFormat('EEEE').format(selectedDate),
-                                style: const TextStyle(
-                                    color: Color(0xff1204AA),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'Poppins'),
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    DateFormat('MMMM').format(selectedDate),
-                                    style: const TextStyle(
-                                        color: Color(0xff1204AA),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: 'Poppins'),
-                                  ),
-                                  Text(
-                                    DateFormat('yyyy').format(selectedDate),
-                                    style: const TextStyle(
-                                        color: Color(0xff1204AA),
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 14,
-                                        fontFamily: 'Poppins'),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                      if (controller.getFormattedDate(selectedDate).isNotEmpty)
-                        GestureDetector(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: const Color(0xffe8e9f4),
-                            ),
-                            padding: const EdgeInsets.all(10),
-                            width: 83,
-                            height: 44,
-                            child: Center(
-                              child: CustomText(
-                                text: controller.getFormattedDate(selectedDate),
-                                weight: FontWeight.w600,
-                                color: const Color(0xff1722BF),
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: ScreenConstants.screenhorizontalPadding,
+              right: ScreenConstants.screenhorizontalPadding,
+              top: screenHeight * 0.04,
+            ),
+            child: Column(
+              children: [
+                TableCalendar(
+                  calendarFormat: CalendarFormat.month,
+                  firstDay: DateTime(2015),
+                  lastDay: DateTime(2040),
+                  focusedDay: focusedDate,
+                  currentDay: selectedDate,
+                  startingDayOfWeek: StartingDayOfWeek.monday,
+                  headerStyle: const HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
+                    titleTextStyle: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  HorizontalWeekCalendar(
-                    minDate: DateTime(2015, 12, 31),
-                    maxDate: DateTime(2030, 1, 31),
-                    initialDate: DateTime.now(),
-                    onDateChange: (date) {
-                      setState(() {
-                        selectedDate = date;
-                      });
-                      controller.fetchNotifications(
-                          DateFormat('yyyy-MM-dd').format(selectedDate));
-                    },
-                    showTopNavbar: false,
-                    monthFormat: "MMMM yyyy",
-                    weekStartFrom: WeekStartFrom.Monday,
-                    borderRadius: BorderRadius.circular(7),
-                    activeBackgroundColor: ColorConstants.themecolor,
-                    activeTextColor: Colors.white,
-                    inactiveBackgroundColor: Colors.white,
-                    inactiveTextColor: Colors.black,
-                    disabledTextColor: Colors.black,
-                    disabledBackgroundColor: Colors.white,
-                    activeNavigatorColor: Colors.deepPurple,
-                    inactiveNavigatorColor: Colors.grey,
-                    monthColor: Colors.deepPurple,
+                  // headerVisible: false,
+                  daysOfWeekHeight: 20,
+                  rowHeight: 60,
+                  calendarStyle: CalendarStyle(
+                    cellMargin: const EdgeInsets.all(2),
+                    todayDecoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border:
+                          Border.all(color: ColorConstants.themecolor, width: 2),
+                    ),
+                    todayTextStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    selectedDecoration: BoxDecoration(
+                      color: ColorConstants.themecolor,
+                      shape: BoxShape.circle,
+                    ),
+                    selectedTextStyle: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    defaultDecoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.grey, width: 1),
+                    ),
+                    weekendDecoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.grey, width: 1),
+                    ),
+                    outsideDecoration:
+                        const BoxDecoration(shape: BoxShape.circle),
                   ),
-                  SizedBox(height: screenHeight * 0.05),
-                  Row(
-                    children: [
-                      CustomText(
-                        text: 'time'.tr,
-                        fontSize: 14,
-                        color: Color(0xffBCC1CD),
-                        weight: FontWeight.w500,
-                      ),
-                      SizedBox(width: screenWidth * 0.18),
-                      CustomText(
-                        text: 'medication'.tr,
-                        fontSize: 14,
-                        color: Color(0xffBCC1CD),
-                        weight: FontWeight.w500,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: screenHeight * 0.05),
-                  Obx(() {
-                    if (controller.isLoading.value) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-      
-                    if (controller.notifications.isEmpty) {
-                      return const Center(
-                          child: CustomText(text: "No notifications available"));
-                    }
-      
-                    return Column(
-                      children: controller.notifications.map((notification) {
-                        // Format the DateTime object
-                        String formattedTime =
-                            DateFormat('h:mm a').format(notification.schedule);
-      
-                        controller.fetchMedicineTranslations(
-                            [notification.medicalHistory.medicine]);
-                        controller.fetchFrequencyTranslations(
-                            [notification.medicalHistory.frequency]);
-      
-                        String translatedName = controller.translatedMedicines[
-                                notification.medicalHistory.medicine] ??
-                            notification.medicalHistory.medicine ??
-                            '';
-                        String translatedFrequency =
-                            controller.translatedFrequency[
-                                    notification.medicalHistory.frequency] ??
-                                notification.medicalHistory.frequency ??
-                                '';
-      
-                        return NotificationContainer(
-                          title: translatedName,
-                          subtitle: translatedFrequency,
-                          time: formattedTime,
-                        );
-                      }).toList(),
+                  selectedDayPredicate: (day) => isSameDay(selectedDate, day),
+                  onDaySelected: (selected, focused) {
+                    setState(() {
+                      selectedDate = selected;
+                      focusedDate = focused;
+                    });
+                    controller.fetchNotifications(
+                      DateFormat('yyyy-MM-dd').format(selectedDate),
                     );
-                  }),
-                  SizedBox(height: screenHeight * 0.05),
-                ],
-              ),
+                  },
+                ),
+      
+                SizedBox(height: screenHeight * 0.05),
+                /// Notifications List
+                Obx(() {
+                  if (controller.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+      
+                  if (controller.notifications.isEmpty) {
+                    return const Center(
+                        child: CustomText(text: "No notifications available"));
+                  }
+      
+                  return Column(
+                    children: controller.notifications.map((notification) {
+                      String formattedTime =
+                          DateFormat('h:mm a').format(notification.schedule);
+      
+                      controller.fetchMedicineTranslations(
+                          [notification.medicalHistory.medicine]);
+                      controller.fetchFrequencyTranslations(
+                          [notification.medicalHistory.frequency]);
+                      controller.fetchDosageTranslations(
+                          [notification.medicalHistory.dosage]);
+                      controller.fetchNoteTranslations(
+                          [notification.medicalHistory.reason]);
+      
+                      String translatedName = controller.translatedMedicines[
+                              notification.medicalHistory.medicine] ??
+                          notification.medicalHistory.medicine ??
+                          '';
+                      String translatedFrequency = controller.translatedFrequency[
+                              notification.medicalHistory.frequency] ??
+                          notification.medicalHistory.frequency ??
+                          '';
+                      String translatedDosage = controller.translatedDosage[
+                              notification.medicalHistory.dosage] ??
+                          notification.medicalHistory.dosage ??
+                          '';
+                      String translatedNote = controller.translatedNote[
+                              notification.medicalHistory.reason] ??
+                          notification.medicalHistory.reason ??
+                          '';
+      
+                      return NotificationContainer(
+                        title: translatedName,
+                        frequency: translatedFrequency,
+                        time: formattedTime,
+                        dosage: translatedDosage,
+                        note: translatedNote,
+                      );
+                    }).toList(),
+                  );
+                }),
+                SizedBox(height: screenHeight * 0.05),
+              ],
             ),
           ),
+        ),
       ),
     );
   }

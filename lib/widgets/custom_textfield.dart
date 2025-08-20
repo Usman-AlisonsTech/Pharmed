@@ -11,7 +11,7 @@ class CustomTextField extends StatelessWidget {
   final Color? fillColor;
   final double? padding;
   final TextInputType? keyboardType;
-  final List<TextInputFormatter>? inputFormatters; // ✅ Added inputFormatters
+  final List<TextInputFormatter>? inputFormatters;
   final int? lines;
   final bool forceBorder;
   final double? borderRadius;
@@ -36,8 +36,8 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.fillColor,
     this.padding,
-    this.keyboardType, // ✅ Changed name
-    this.inputFormatters, // ✅ Added parameter
+    this.keyboardType,
+    this.inputFormatters,
     this.lines = 1,
     this.obscureText = false,
     this.forceBorder = false,
@@ -55,20 +55,24 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return TextFormField(
       controller: controller,
       focusNode: focusNode,
-      keyboardType: keyboardType, // ✅ Changed here
-      inputFormatters: inputFormatters, // ✅ Added here
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       maxLines: lines,
       validator: validator,
       onChanged: onChanged,
       obscureText: obscureText,
       readOnly: readOnly,
       initialValue: initialValue,
-      style: const TextStyle(
+      style: TextStyle(
         fontFamily: 'Poppins',
         fontWeight: FontWeight.w500,
+        color: isDark ? Colors.white : Colors.black, // 👈 text auto color
       ),
       decoration: InputDecoration(
         hintText: hintText,
@@ -92,9 +96,13 @@ class CustomTextField extends StatelessWidget {
           minWidth: 24,
           minHeight: 24,
         ),
-        hintStyle: hintStyle ?? const TextStyle(color: Colors.grey, fontSize: 16),
-        enabledBorder: border(),
-        focusedBorder: border(),
+        hintStyle: hintStyle ??
+            TextStyle(
+              color: isDark ? Colors.white70 : Colors.grey, // 👈 hint auto color
+              fontSize: 16,
+            ),
+        enabledBorder: border(isDark),
+        focusedBorder: border(isDark),
         errorBorder: errorBorder(),
         focusedErrorBorder: errorBorder(),
       ),
@@ -108,10 +116,12 @@ class CustomTextField extends StatelessWidget {
     );
   }
 
-  OutlineInputBorder border() {
+  OutlineInputBorder border(bool isDark) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(borderRadius ?? 5),
-      borderSide: BorderSide(color: borderColor ?? Colors.black),
+      borderSide: BorderSide(
+        color: borderColor ?? (isDark ? Colors.white : Colors.black), // 👈 auto border color
+      ),
     );
   }
 }

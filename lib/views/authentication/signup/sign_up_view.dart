@@ -36,6 +36,7 @@ class _SignUpViewState extends State<SignUpView> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -68,7 +69,7 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     const SizedBox(height: 3),
                     CustomText(
-                      text: 'sign_up_text'.tr,
+                      text: 'sign_in_for_personalize'.tr,
                       color: Colors.white,
                       fontSize: screenWidth * 0.035,
                       weight: FontWeight.w500,
@@ -84,30 +85,62 @@ class _SignUpViewState extends State<SignUpView> {
                   Container(
                     margin: const EdgeInsets.only(bottom: 20),
                     child: Form(
-                      key: controller.userNameformKey,
+                      key: controller.firstName,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            text: 'user_name'.tr,
+                            text: 'first_name'.tr,
                             weight: FontWeight.w500,
                             fontSize: 16,
                           ),
                           const SizedBox(height: 10),
                           CustomTextField(
                             borderRadius: 8,
-                            controller: controller.userNameController,
+                            controller: controller.firstNameController,
                             prefixIcon: const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 15),
                               child: Icon(Icons.person, size: 20),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your name';
+                                return 'Please enter your first name';
                               }
                               return null;
                             },
-                            hintText: 'enter_full_name'.tr,
+                            hintText: 'enter_first_name'.tr,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                    Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: Form(
+                      key: controller.lastName,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomText(
+                            text: 'last_name'.tr,
+                            weight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
+                          const SizedBox(height: 10),
+                          CustomTextField(
+                            borderRadius: 8,
+                            controller: controller.lastNameController,
+                            prefixIcon: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 15),
+                              child: Icon(Icons.person, size: 20),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your last name';
+                              }
+                              return null;
+                            },
+                            hintText: 'enter_last_name'.tr,
                           ),
                         ],
                       ),
@@ -247,7 +280,7 @@ class _SignUpViewState extends State<SignUpView> {
                         text: "already_have_account".tr,
                         weight: FontWeight.w500,
                         fontSize: 14,
-                        color: Color(0xff59606E),
+                        color: isDark? Colors.grey[400]: Color(0xff59606E),
                       ),
                       const SizedBox(width: 4),
                       GestureDetector(

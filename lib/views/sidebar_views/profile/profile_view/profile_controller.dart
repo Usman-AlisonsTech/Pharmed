@@ -19,7 +19,7 @@ class ProfileController extends GetxController {
       final response = await ApiService().getProfileDetail();
       profileData.value = response;
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load profile: $e',backgroundColor: Colors.red, colorText: Colors.white);
+      // Get.snackbar('Error', 'Failed to load profile: $e',backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       isLoading(false);
     }

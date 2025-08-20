@@ -10,12 +10,13 @@ class CustomAppbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
           InkWell(onTap: (){
               scaffoldKey.currentState?.openDrawer();
-            },child: SvgPicture.asset('assets/svg/side-bar.svg', width: 23,)),
+            },child: SvgPicture.asset('assets/svg/side-bar.svg', width: 23,color: Theme.of(context).iconTheme.color,)),
         SizedBox(width: screenWidth * 0.05),
         Expanded(
           child: GestureDetector(
@@ -25,7 +26,7 @@ class CustomAppbar extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
               decoration: BoxDecoration(
-                color: Color(0xffF9F9F9),
+                color: isDark ? Colors.black : Color(0xffF9F9F9),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: Color(0xffDADADA),

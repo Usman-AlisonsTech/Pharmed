@@ -63,42 +63,64 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
     }
   }
 
-  Widget _buildContentList(List<String> items, String emptyMessage) {
-    if (items.isEmpty) {
-      return Center(
-        child: Text(
-          emptyMessage,
-          style: TextStyle(
-            fontSize: MediaQuery.of(context).size.width * 0.04,
-            fontWeight: FontWeight.w400,
-            fontFamily: 'Poppins',
-            color: Colors.grey,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 15),
-          child: Text(
-            items[index],
+  Widget _buildContentList(List<String> items, String emptyMessage, bool isDark) {
+  if (items.isEmpty) {
+    return Center(
+      child: FutureBuilder<String>(
+        future: controller.translateText(emptyMessage),
+        builder: (context, snapshot) {
+          return Text(
+            snapshot.data ?? emptyMessage,
             style: TextStyle(
               fontSize: MediaQuery.of(context).size.width * 0.04,
               fontWeight: FontWeight.w400,
               fontFamily: 'Poppins',
-              color: Colors.black87,
-              height: 1.5,
+              color: isDark? Colors.white70 : Colors.grey,
             ),
-          ),
-        );
-      },
+            textAlign: TextAlign.center,
+          );
+        },
+      ),
     );
   }
+
+  return ListView.builder(
+    padding: const EdgeInsets.symmetric(vertical: 10),
+    itemCount: items.length,
+    itemBuilder: (context, index) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 15),
+        child: FutureBuilder<String>(
+          future: controller.translateText(items[index]),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Container(
+                margin: EdgeInsets.only(bottom: 10),
+                height: 10,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              );
+            }
+            
+            return Text(
+              snapshot.data ?? items[index],
+              style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.04,
+                fontWeight: FontWeight.w400,
+                fontFamily: 'Poppins',
+                color:isDark? Colors.white70 : Colors.black87,
+                height: 1.5,
+              ),
+            );
+          },
+        ),
+      );
+    },
+  );
+}
 
   Widget _buildNoDataMessage() {
     return Center(
@@ -112,7 +134,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
           ),
           const SizedBox(height: 16),
           Text(
-            'No Medicine History',
+            'no_medicine_history'.tr,
             style: TextStyle(
               fontSize: MediaQuery.of(context).size.width * 0.05,
               fontWeight: FontWeight.w600,
@@ -122,7 +144,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
           ),
           const SizedBox(height: 8),
           Text(
-            'Try searching for a different medication',
+            'try_searching_different_medicine'.tr,
             style: TextStyle(
               fontSize: MediaQuery.of(context).size.width * 0.04,
               fontWeight: FontWeight.w400,
@@ -139,6 +161,8 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     savedData.clear();
 
@@ -173,17 +197,39 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: Text(
-                            widget.medicineName,
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.07,
-                              fontWeight: FontWeight.w900,
-                              fontFamily: 'Poppins',
-                            ),
-                            textAlign: TextAlign.start,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          child: FutureBuilder<String>(
+                          future: controller.translateText(widget.medicineName),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox();
+                            } else if (snapshot.hasError) {
+                              return Text(
+                                widget.medicineName,
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.07,
+                                  fontWeight: FontWeight.w900,
+                                  fontFamily: 'Poppins',
+                                ),
+                                textAlign: TextAlign.start,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            } else {
+                              return Text(
+                                snapshot.data ?? widget.medicineName,
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.07,
+                                  fontWeight: FontWeight.w900,
+                                  fontFamily: 'Poppins',
+                                ),
+                                textAlign: TextAlign.start,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            }
+                          },
+                        ),
                         ),
                       ],
                     ),
@@ -261,7 +307,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: Colors.black,
+                            color: isDark? Colors.grey[700]: Colors.black,
                           ),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
@@ -297,7 +343,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                     controller: _tabController,
                     isScrollable: true,
                     tabAlignment: TabAlignment.start,
-                    labelColor: Colors.black,
+                    labelColor: isDark? Colors.white: Colors.black,
                     unselectedLabelColor: Colors.grey,
                     indicatorColor: ColorConstants.themecolor,
                     labelStyle: TextStyle(
@@ -305,11 +351,11 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
                     ),
-                    tabs: const [
-                      Tab(text: 'Uses'),
-                      Tab(text: 'Side Effects'),
-                      Tab(text: 'Precautions'),
-                      Tab(text: 'Warnings'),
+                    tabs:  [
+                      Tab(text: 'uses'.tr),
+                      Tab(text: 'side_effect'.tr),
+                      Tab(text: 'precautions'.tr),
+                      Tab(text: 'warnings'.tr),
                     ],
                   ),
 
@@ -321,19 +367,19 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                       children: [
                         _buildContentList(
                           widget.medicineData.value!.usage,
-                          'No usage information available',
+                          'no_warning_info_available'.tr,isDark
                         ),
                         _buildContentList(
                           widget.medicineData.value!.dosage,
-                          'No dosage information available',
+                          'no_dosage_info_available'.tr,isDark
                         ),
                         _buildContentList(
                           widget.medicineData.value!.precautions,
-                          'No precautions information available',
+                          'no_precaution_info_available'.tr,isDark
                         ),
                         _buildContentList(
                           widget.medicineData.value!.warnings,
-                          'No warnings information available',
+                          'no_warning_info_available'.tr,isDark
                         ),
                       ],
                     ),
@@ -350,7 +396,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                 return SizedBox();
             }else{
               return Padding(
-                padding: const EdgeInsets.only(
+                padding:  EdgeInsets.only(
                     left: 25, right: 25, bottom: 20, top: 10),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -360,11 +406,11 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                         if (widget.medicineData.value == null) {
                           return;
                         } else {
-                          _showBottomSheet(context, widget.medicineName);
+                          _showBottomSheet(context, widget.medicineName, isDark);
                         }
                       },
                       title: 'add_to_medicines'.tr,
-                      bgColor: Colors.black,
+                      bgColor:isDark? Colors.grey[700]:  Colors.black,
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -395,15 +441,16 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
   }
 
 
-  void _showBottomSheet(BuildContext context, medicineName) {
+  void _showBottomSheet(BuildContext context, medicineName,bool isDark) {
   final HomeController controller = Get.find<HomeController>();
+  final MedicineInformationController medicineInfoController = Get.find<MedicineInformationController>();
   final _formKey = GlobalKey<FormState>();
 
   showModalBottomSheet(
     isDismissible: false,
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.white,
+    backgroundColor:isDark ? Color(0xFF121212): Colors.white,
     builder: (BuildContext context) {
       double screenWidth = MediaQuery.of(context).size.width;
       double screenHeight = MediaQuery.of(context).size.height;
@@ -462,11 +509,39 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CustomText(
-                            text: medicineName ?? '',
-                            weight: FontWeight.w900,
-                            fontSize: 30,
-                          ),
+                         FutureBuilder<String>(
+                          future: medicineInfoController.translateText(widget.medicineName),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox();
+                            } else if (snapshot.hasError) {
+                              return Text(
+                                widget.medicineName,
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.07,
+                                  fontWeight: FontWeight.w900,
+                                  fontFamily: 'Poppins',
+                                ),
+                                textAlign: TextAlign.start,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            } else {
+                              return Text(
+                                snapshot.data ?? widget.medicineName,
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.07,
+                                  fontWeight: FontWeight.w900,
+                                  fontFamily: 'Poppins',
+                                ),
+                                textAlign: TextAlign.start,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            }
+                          },
+                        ),
                           SizedBox(height: 20),
                           CustomText(text: 'prescribing_physician_name'.tr),
                           SizedBox(height: 10),
@@ -652,7 +727,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(color: Colors.grey),
-                                        color: Color(0xffF9F9F9),
+                                        color: isDark? Colors.black: Color(0xffF9F9F9),
                                       ),
                                       padding: EdgeInsets.all(10),
                                       child: Center(
@@ -706,7 +781,7 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                                               decoration: BoxDecoration(
                                                 borderRadius: BorderRadius.circular(8),
                                                 border: Border.all(color: Colors.grey),
-                                                color: Color(0xffF9F9F9),
+                                                color:isDark? Colors.black: Color(0xffF9F9F9),
                                               ),
                                               padding: EdgeInsets.all(10),
                                               child: Center(
@@ -725,7 +800,8 @@ class _MedicineInformationViewState extends State<MedicineInformationView>
                           SizedBox(height: 20),
                            Obx(() => CommonButton(
                         title: 'add_to_medicines'.tr,
-                        bgColor: Colors.black,
+                        bgColor: ColorConstants.themecolor,
+                        borderColor: ColorConstants.themecolor,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             controller.addToMedicines(widget.medicineName, context);

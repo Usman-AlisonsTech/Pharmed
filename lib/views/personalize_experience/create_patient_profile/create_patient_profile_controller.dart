@@ -12,7 +12,8 @@ class CreateYourProfileController extends GetxController {
   var selectPregnancy = ''.obs;
   var selectTerms = 0.obs;
   var selectMartialStatus = ''.obs;
-  TextEditingController fullName = TextEditingController();
+  TextEditingController firstName = TextEditingController();
+  TextEditingController lastName = TextEditingController();
   TextEditingController weight = TextEditingController();
   TextEditingController address = TextEditingController();
   TextEditingController birthPlace = TextEditingController();
@@ -55,7 +56,7 @@ class CreateYourProfileController extends GetxController {
   String? email = prefs.getString('email') ?? '';
   String? phone = prefs.getString('phone') ?? '';
 
-  if (fullName.text.isEmpty) {
+  if (firstName.text.isEmpty && lastName.text.isEmpty) {
     isLoading.value = false;
     Get.snackbar('Validation Error', 'Required fields must be filled');
     return;
@@ -63,7 +64,7 @@ class CreateYourProfileController extends GetxController {
 
   try {
     PatientProfileResponse response = await apiService.createPatientProfile(
-      name: fullName.text,
+      name: firstName.text+lastName.text,
       dob: selectedDOB.value,
       gender: selectedGender.value,
       nationality: selectedCountry.value,

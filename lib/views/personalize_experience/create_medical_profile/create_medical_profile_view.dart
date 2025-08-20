@@ -13,7 +13,7 @@ class CreateMedicalProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     final CreateMedicalProfileController controller =
         Get.put(CreateMedicalProfileController());
-
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -28,40 +28,68 @@ class CreateMedicalProfileView extends StatelessWidget {
                   height: screenHeight * 0.01,
                 ),
                 CustomText(
-                  text: 'create_own_profile'.tr,
+                  text: 'set_up_your_health'.tr,
                   weight: FontWeight.w900,
                   fontSize: 30,
                 ),
                 const SizedBox(height: 10),
                 CustomText(
-                  text: 'enter_detail'.tr,
+                  text: 'from_prescription'.tr,
                   color: ColorConstants.themecolor,
                   weight: FontWeight.w500,
                 ),
                 SizedBox(
                   height: screenHeight * 0.05,
                 ),
-                // Full Name
+                // First Name
                 Container(
                   margin: const EdgeInsets.only(bottom: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomText(
-                        text: 'full_name'.tr,
+                        text: 'first_name'.tr,
                         weight: FontWeight.w500,
                         fontSize: 16,
                       ),
                       const SizedBox(height: 10),
                       // Use TextFormField for validation
                       CustomTextField(
-                        controller: controller.fullNameController,
+                        controller: controller.firstNameController,
                         borderRadius: 8,
-                        hintText: 'enter_full_name'.tr,
+                        hintText: 'enter_first_name'.tr,
                         borderColor: Colors.grey,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your full name';
+                            return 'Please enter your first name';
+                          }
+                          return null; // Return null if no error
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                 // Last Name
+                Container(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        text: 'last_name'.tr,
+                        weight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                      const SizedBox(height: 10),
+                      // Use TextFormField for validation
+                      CustomTextField(
+                        controller: controller.lastNameController,
+                        borderRadius: 8,
+                        hintText: 'enter_last_name'.tr,
+                        borderColor: Colors.grey,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your last name';
                           }
                           return null; // Return null if no error
                         },
@@ -211,7 +239,6 @@ class CreateMedicalProfileView extends StatelessWidget {
                                         child: CustomText(
                                           text: controller.fileNames[index],
                                           weight: FontWeight.w500,
-                                          color: Colors.black,
                                           textOverflow: TextOverflow.ellipsis,
                                           fontSize: 14,
                                         ),
@@ -263,7 +290,6 @@ class CreateMedicalProfileView extends StatelessWidget {
                                           text: controller
                                               .medicalFileNames[index],
                                           weight: FontWeight.w500,
-                                          color: Colors.black,
                                           textOverflow: TextOverflow.ellipsis,
                                           fontSize: 14,
                                         ),
@@ -294,7 +320,7 @@ class CreateMedicalProfileView extends StatelessWidget {
                     },
                     isLoading: controller.isLoading.value,
                     title: 'next'.tr,
-                    bgColor: Colors.black,
+                    bgColor:isDark? Colors.grey[900]: Colors.black,
                   ),
                 ),
                 SizedBox(height: 10),

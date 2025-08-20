@@ -45,6 +45,7 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -76,7 +77,7 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     const SizedBox(height: 3),
                     CustomText(
-                      text: 'fill_detail'.tr,
+                      text: 'enter_credential'.tr,
                       color: Colors.white,
                       fontSize: 14,
                       weight: FontWeight.w500,
@@ -218,7 +219,7 @@ class _LoginViewState extends State<LoginView> {
                         text: "dont_have_acc".tr,
                         weight: FontWeight.w500,
                         fontSize: 14,
-                        color: const Color(0xff59606E),
+                        color: isDark? Colors.grey[400]: Color(0xff59606E),
                       ),
                       const SizedBox(width: 4),
                       GestureDetector(

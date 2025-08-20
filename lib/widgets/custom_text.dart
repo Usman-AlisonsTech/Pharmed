@@ -9,10 +9,10 @@ class CustomText extends StatelessWidget {
   final TextAlign? textAlign;
   final FontStyle? fontStyle;
   final TextOverflow? textOverflow;
-  final TextDecoration? decoration; // Added decoration parameter
-  final double decorationThickness; // Added thickness for underline
-  final TextDecorationStyle? decorationStyle; // Added decorationStyle parameter
-  final Color? decorationColor; // Added decorationColor parameter
+  final TextDecoration? decoration;
+  final double decorationThickness;
+  final TextDecorationStyle? decorationStyle;
+  final Color? decorationColor;
 
   const CustomText({
     super.key,
@@ -24,29 +24,32 @@ class CustomText extends StatelessWidget {
     this.fontStyle,
     this.textOverflow,
     this.textAlign,
-    this.decoration = TextDecoration.none, // Default is no decoration
-    this.decorationThickness = 1.0, // Default thickness for the underline
-    this.decorationStyle = TextDecorationStyle.solid, // Default to solid underline style
-    this.decorationColor, // Passed decorationColor to the constructor
+    this.decoration = TextDecoration.none,
+    this.decorationThickness = 1.0,
+    this.decorationStyle = TextDecorationStyle.solid,
+    this.decorationColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       text,
       maxLines: lines,
       textAlign: textAlign,
+      overflow: textOverflow,
       style: TextStyle(
         fontSize: fontSize,
-        color: color,
         fontWeight: weight,
         fontStyle: fontStyle,
-        overflow: textOverflow,
         fontFamily: 'Poppins',
-        decoration: decoration, // Apply decoration (underline, etc.)
-        decorationThickness: decorationThickness, // Adjust underline thickness
-        decorationStyle: decorationStyle ?? TextDecorationStyle.solid, // Apply decoration style
-        decorationColor: decorationColor ?? color, // Set the underline color, default to text color
+        color: color ?? theme.textTheme.bodyMedium?.color, // 👈 auto color
+        decoration: decoration,
+        decorationThickness: decorationThickness,
+        decorationStyle: decorationStyle ?? TextDecorationStyle.solid,
+        decorationColor:
+            decorationColor ?? color ?? theme.textTheme.bodyMedium?.color,
       ),
     );
   }

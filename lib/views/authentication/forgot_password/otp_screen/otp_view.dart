@@ -49,6 +49,8 @@ class _OtpViewState extends State<OtpView> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -117,7 +119,7 @@ class _OtpViewState extends State<OtpView> {
                         height: 50,
                         textStyle: const TextStyle(
                           fontSize: 20,
-                          color: Colors.black,
+                          // color: Colors.black,
                           fontWeight: FontWeight.w500,
                         ),
                         decoration: BoxDecoration(
@@ -141,7 +143,7 @@ class _OtpViewState extends State<OtpView> {
                           text: 'dint_recieve_code'.tr,
                           weight: FontWeight.w500,
                           fontSize: 14,
-                          color: const Color(0xff59606E)),
+                          color: isDark? Colors.grey[400]: Color(0xff59606E)),
                       const SizedBox(width: 2),
                       GestureDetector(
                         onTap: () {

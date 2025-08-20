@@ -16,6 +16,7 @@ class WhoAreYouView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Access the controller
     final WhoAreYouController controller = Get.put(WhoAreYouController());
@@ -37,7 +38,7 @@ class WhoAreYouView extends StatelessWidget {
               ),
               const SizedBox(height: 5),
               CustomText(
-                text: 'are_you_a'.tr,
+                text: 'are_you_signing'.tr,
                 color: ColorConstants.themecolor,
                 weight: FontWeight.w500,
               ),
@@ -53,18 +54,10 @@ class WhoAreYouView extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color: ColorConstants.themecolor, width: 1),
+                          color: isDark? Color(0xFF121212): ColorConstants.themecolor, width: 1),
                       color: controller.selectedRole.value == 'Patient'
                           ? ColorConstants.themecolor
-                          : Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          offset: Offset(0, 4),
-                          blurRadius: 6,
-                          spreadRadius: 1,
-                        ),
-                      ],
+                          : isDark? Color(0xFF121212): Colors.white,
                     ),
                     padding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 30),
@@ -77,7 +70,7 @@ class WhoAreYouView extends StatelessWidget {
                           fontSize: 16,
                           color: controller.selectedRole.value == 'Patient'
                               ? Colors.white
-                              : Colors.black,
+                              : isDark? Colors.white: Colors.black,
                         ),
                         if (controller.selectedRole.value == 'Patient')
                           const Icon(
@@ -102,19 +95,11 @@ class WhoAreYouView extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color: ColorConstants.themecolor, width: 1),
+                          color: isDark? Color(0xFF121212) : ColorConstants.themecolor, width: 1),
                       color: controller.selectedRole.value ==
                               'Medical Professional'
                           ? ColorConstants.themecolor
-                          : Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          offset: Offset(0, 4),
-                          blurRadius: 6,
-                          spreadRadius: 1,
-                        ),
-                      ],
+                          : isDark? Color(0xFF121212): Colors.white,
                     ),
                     padding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 30),
@@ -128,7 +113,7 @@ class WhoAreYouView extends StatelessWidget {
                           color: controller.selectedRole.value ==
                                   'Medical Professional'
                               ? Colors.white
-                              : Colors.black,
+                              :isDark? Colors.white: Colors.black,
                         ),
                         if (controller.selectedRole.value ==
                             'Medical Professional')
@@ -171,7 +156,7 @@ class WhoAreYouView extends StatelessWidget {
             color: Colors.white,
             size: 18,
           ),
-          bgColor: Colors.black,
+          bgColor: isDark?Colors.grey[900] : Colors.black,
           // shadowColor: Colors.grey,
         ),
       ),

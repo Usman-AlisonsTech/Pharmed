@@ -47,46 +47,50 @@ class MyMedicalHistoryView extends StatelessWidget {
       child: Scaffold(
         key: scaffoldKey,
         drawer: Drawer(
-          backgroundColor: Colors.white,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              SizedBox(height: screenHeight * 0.1),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                          onTap: () {
-                            scaffoldKey.currentState?.closeDrawer();
-                          },
-                          child: Container(
-                              margin: EdgeInsets.only(
-                                  left: screenWidth * 0.05,
-                                  right: screenWidth * 0.05),
-                              child: Icon(
-                                Icons.arrow_back,
-                                size: 22,
-                              ))),
-                      CustomText(
-                        text: 'setting'.tr,
-                        weight: FontWeight.w900,
-                        fontSize: 30,
-                      )
-                    ],
+  backgroundColor: Theme.of(context).scaffoldBackgroundColor, 
+  child: ListView(
+    padding: EdgeInsets.zero,
+    children: <Widget>[
+      SizedBox(height: screenHeight * 0.1),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  scaffoldKey.currentState?.closeDrawer();
+                },
+                child: Container(
+                  margin: EdgeInsets.only(
+                    left: screenWidth * 0.05,
+                    right: screenWidth * 0.05,
                   ),
-                ],
+                  child: Icon(
+                    Icons.arrow_back,
+                    size: 22,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                ),
               ),
-              SizedBox(height: screenHeight * 0.02),
-              buildDrawerItem(
-                screenWidth,
-                screenHeight,
-                context,
+              CustomText(
+                text: 'setting'.tr,
+                weight: FontWeight.w900,
+                fontSize: 30,
               ),
             ],
           ),
-        ),
+        ],
+      ),
+      SizedBox(height: screenHeight * 0.02),
+      buildDrawerItem(
+        screenWidth,
+        screenHeight,
+        context,
+      ),
+    ],
+  ),
+),
         body: Padding(
           padding: EdgeInsets.only(
             left: ScreenConstants.screenhorizontalPadding,
@@ -102,7 +106,7 @@ class MyMedicalHistoryView extends StatelessWidget {
                     onTap: () {
                       scaffoldKey.currentState?.openDrawer();
                     },
-                    child: SvgPicture.asset('assets/svg/side-bar.svg', width: 23,),
+                    child: SvgPicture.asset('assets/svg/side-bar.svg', width: 23,color: Theme.of(context).iconTheme.color,),
               ),
               SizedBox(width: screenWidth * 0.05),
               CustomText(
@@ -156,8 +160,6 @@ class MyMedicalHistoryView extends StatelessWidget {
                         if (scrollNotification is ScrollEndNotification &&
                             scrollNotification.metrics.pixels ==
                                 scrollNotification.metrics.maxScrollExtent) {
-                          // User has scrolled to the end
-                          // controller.loadMoreMedications();
                         }
                         return false;
                       },

@@ -20,6 +20,7 @@ class DrugsDetailView extends StatelessWidget {
     });
 
     double screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -72,7 +73,7 @@ class DrugsDetailView extends StatelessWidget {
                           text: detail,
                           fontSize: 14,
                           weight: FontWeight.w400,
-                          color: Colors.grey[700],
+                          color:isDark?Colors.white70: Colors.grey[700],
                         ),
                       );
                     }).toList(),
@@ -97,8 +98,8 @@ class DrugsDetailView extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CustomText(text: '45', weight: FontWeight.w600,fontSize: 20),
-                        CustomText(text: 'low risk', weight: FontWeight.w400,fontSize: 15),
+                        CustomText(text: '45', weight: FontWeight.w600,fontSize: 20, color:isDark?Colors.black:Colors.black ,),
+                        CustomText(text: 'low risk', weight: FontWeight.w400,fontSize: 15,color: isDark?Colors.black:Colors.black ,),
                       ],
                     ),
                     CircleAvatar(backgroundColor:Color(0xffF3E632),child: Icon(Icons.dangerous, color: Colors.white,),)

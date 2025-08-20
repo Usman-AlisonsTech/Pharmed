@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+// import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +8,7 @@ import 'package:pharmed_app/service/api_service.dart';
 import 'package:pharmed_app/service/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+// import 'package:timezone/timezone.dart' as tz;
 
 class NotificationController extends GetxController {
   var isLoading = false.obs;
@@ -16,6 +16,8 @@ class NotificationController extends GetxController {
   final ApiService apiService = ApiService();
   RxMap<String, String> translatedMedicines = <String, String>{}.obs;
   RxMap<String, String> translatedFrequency = <String, String>{}.obs;
+  RxMap<String, String> translatedDosage = <String, String>{}.obs;
+  RxMap<String, String> translatedNote = <String, String>{}.obs;
   final NotiService notiService = NotiService();
 
   @override
@@ -61,26 +63,26 @@ class NotificationController extends GetxController {
     }
   }
 
-void scheduleMedicineNotification(Datum notification) {
-  try {
-    // Parsing schedule from API response
-    DateTime scheduledTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(notification.schedule.toString());
+// void scheduleMedicineNotification(Datum notification) {
+//   try {
+//     // Parsing schedule from API response
+//     DateTime scheduledTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(notification.schedule.toString());
 
-    // Convert to local timezone
-    final tz.TZDateTime scheduledDate = tz.TZDateTime.from(scheduledTime, tz.local);
+//     // Convert to local timezone
+//     final tz.TZDateTime scheduledDate = tz.TZDateTime.from(scheduledTime, tz.local);
 
-    notiService.scheduleNotification(
-      id: notification.id ?? 0,
-      title: "Medicine Reminder",
-      body: "Take your medicine: ${notification.medicalHistory.medicine}",
-      scheduledDate: scheduledDate,
-    );
+//     notiService.scheduleNotification(
+//       id: notification.id ?? 0,
+//       title: "Medicine Reminder",
+//       body: "Take your medicine: ${notification.medicalHistory.medicine}",
+//       scheduledDate: scheduledDate,
+//     );
 
-    print("Notification scheduled for: $scheduledDate");
-  } catch (e) {
-    print("Error scheduling notification: $e");
-  }
-}
+//     print("Notification scheduled for: $scheduledDate");
+//   } catch (e) {
+//     print("Error scheduling notification: $e");
+//   }
+// }
 
 
   Future<void> fetchMedicineTranslations(List<String> medicineNames) async {
@@ -146,6 +148,74 @@ void scheduleMedicineNotification(Datum notification) {
         }
       }
       translatedFrequency.refresh();
+    } catch (e) {
+      print("Error fetching translations: $e");
+    }
+  }
+
+  Future<void> fetchDosageTranslations(List<String> dosage) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String languageCode = prefs.getString('selectedLanguage') ?? '';
+
+    if (languageCode.toLowerCase() == 'en') {
+      translatedDosage.value = {for (var name in dosage) name: name};
+      return;
+    }
+
+    try {
+      for (var medicineName in dosage) {
+        if (translatedDosage.containsKey(medicineName)) continue;
+
+        http.Response response = await apiService.translateText(medicineName, languageCode);
+
+        if (response.statusCode == 200) {
+          final utf8DecodedResponse = utf8.decode(response.bodyBytes);
+          final data = json.decode(utf8DecodedResponse);
+
+          if (data['translated_data']?['text'] != null) {
+            translatedDosage[medicineName] = data['translated_data']['text'];
+          } else {
+            print('Error: Translated text not found in the response');
+          }
+        } else {
+          print('Error: ${response.statusCode}');
+        }
+      }
+      translatedDosage.refresh();
+    } catch (e) {
+      print("Error fetching translations: $e");
+    }
+  }
+
+  Future<void> fetchNoteTranslations(List<String> note) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String languageCode = prefs.getString('selectedLanguage') ?? '';
+
+    if (languageCode.toLowerCase() == 'en') {
+      translatedNote.value = {for (var name in note) name: name};
+      return;
+    }
+
+    try {
+      for (var medicineName in note) {
+        if (translatedNote.containsKey(medicineName)) continue;
+
+        http.Response response = await apiService.translateText(medicineName, languageCode);
+
+        if (response.statusCode == 200) {
+          final utf8DecodedResponse = utf8.decode(response.bodyBytes);
+          final data = json.decode(utf8DecodedResponse);
+
+          if (data['translated_data']?['text'] != null) {
+            translatedNote[medicineName] = data['translated_data']['text'];
+          } else {
+            print('Error: Translated text not found in the response');
+          }
+        } else {
+          print('Error: ${response.statusCode}');
+        }
+      }
+      translatedNote.refresh();
     } catch (e) {
       print("Error fetching translations: $e");
     }

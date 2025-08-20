@@ -27,6 +27,7 @@ class _TermsAndConditionsViewState extends State<TermsAndConditionsView> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Initialize the controller
     final TermsAndConditionController controller =
@@ -99,9 +100,9 @@ class _TermsAndConditionsViewState extends State<TermsAndConditionsView> {
                           Get.offAll(LoginView());
                         },
                         title: 'decline'.tr,
-                        textColor: Colors.black,
+                        textColor:isDark? Colors.white : Colors.black,
                         textWeight: FontWeight.w700,
-                        bgColor: Colors.white,
+                        bgColor: isDark? Colors.grey[900]: Colors.white,
                       ),
                       const SizedBox(height: 10),
                       CommonButton(
@@ -109,7 +110,7 @@ class _TermsAndConditionsViewState extends State<TermsAndConditionsView> {
                           Get.offAll(BottomNavigation());
                         },
                         title: 'accept_terms_condition'.tr,
-                        bgColor: Colors.black,
+                        bgColor: isDark? Colors.grey[900]: Colors.black,
                       ),
                     ],
                   );
@@ -129,8 +130,8 @@ class _TermsAndConditionsViewState extends State<TermsAndConditionsView> {
                   title: 'scroll_bottom'.tr,
                   textWeight: FontWeight.w700,
                   trailingIcon: const Icon(Icons.arrow_downward_rounded),
-                  bgColor: Colors.white,
-                  textColor: Colors.black,
+                  bgColor: isDark? Colors.grey[900]: Colors.white,
+                  textColor:isDark? Colors.white: Colors.black,
                   onPressed: _scrollToBottom,
                 ),
               )

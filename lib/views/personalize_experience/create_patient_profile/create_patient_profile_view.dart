@@ -15,6 +15,7 @@ class CreatePatientProfileView extends StatelessWidget {
     final CreateYourProfileController controller =
         Get.put(CreateYourProfileController());
     double screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Function to pick the date and set the date in MM/DD/YYYY format
    Future<void> _selectDate(BuildContext context) async {
@@ -47,8 +48,8 @@ class CreatePatientProfileView extends StatelessWidget {
         },
         countryListTheme: CountryListThemeData(
           flagSize: 25,
-          backgroundColor: Colors.white,
-          textStyle: const TextStyle(fontSize: 16, color: Colors.black),
+          backgroundColor: isDark? Color(0xFF121212): Colors.white,
+          textStyle: TextStyle(fontSize: 16, color: isDark? Colors.white: Colors.black),
           borderRadius: BorderRadius.circular(15),
           inputDecoration: InputDecoration(
             hintText: 'Search a country...',
@@ -93,19 +94,45 @@ class CreatePatientProfileView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomText(
-                          text: 'full_name'.tr,
+                          text: 'first_name'.tr,
                           weight: FontWeight.w500,
                           fontSize: 16,
                         ),
                         const SizedBox(height: 10),
                         CustomTextField(
-                          controller: controller.fullName,
+                          controller: controller.firstName,
                           borderRadius: 8,
-                          hintText: 'enter_full_name'.tr,
+                          hintText: 'enter_first_name'.tr,
                           borderColor: Colors.grey,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your full name';
+                              return 'Please enter your first name';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                   Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          text: 'last_name'.tr,
+                          weight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomTextField(
+                          controller: controller.lastName,
+                          borderRadius: 8,
+                          hintText: 'enter_last_name'.tr,
+                          borderColor: Colors.grey,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your last name';
                             }
                             return null;
                           },
@@ -507,7 +534,7 @@ class CreatePatientProfileView extends StatelessWidget {
                         }
                       },
                       title: 'next'.tr,
-                      bgColor: Colors.black,
+                      bgColor: isDark? Colors.grey[900]: Colors.black,
                       isLoading: controller.isLoading.value,
                     ),
                   ),

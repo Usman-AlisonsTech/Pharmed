@@ -41,7 +41,7 @@ class SignupOtpController extends GetxController {
 Future<void> resendOtp() async {
   try {
     var response = await apiService.signUp(
-      signUpController.userNameController.text,
+      signUpController.firstNameController.text+signUpController.lastNameController.text,
       signUpController.emailController.text,
       signUpController.phoneNumController.text,
       signUpController.passwordController.text,

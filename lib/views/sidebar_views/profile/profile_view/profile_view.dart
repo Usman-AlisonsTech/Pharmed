@@ -12,6 +12,8 @@ class ProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     final ProfileController controller = Get.put(ProfileController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
 
     return Scaffold(
       body: Obx(() { 
@@ -67,7 +69,7 @@ class ProfileView extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: const Color(0xffF9F9F9),
+                  color: isDark? Color(0xFF121212): Color(0xffF9F9F9),
                 ),
                 padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
                 child: controller.isLoading.value
@@ -85,14 +87,14 @@ class ProfileView extends StatelessWidget {
                         ],
                       ),
               ),
-              SizedBox(height: screenHeight * 0.04),
-              CommonButton(
-                onPressed: () {
-                },
-                title: 'edit_profile'.tr,
-                bgColor: Colors.black,
-                icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white),
-              ),
+              // SizedBox(height: screenHeight * 0.04),
+              // CommonButton(
+              //   onPressed: () {
+              //   },
+              //   title: 'edit_profile'.tr,
+              //   bgColor: Colors.black,
+              //   icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+              // ),
             ],
           ),
         ),

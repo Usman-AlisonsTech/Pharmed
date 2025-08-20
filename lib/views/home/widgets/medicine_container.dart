@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pharmed_app/models/popular_medication_model.dart';
+import 'package:pharmed_app/utils/constants.dart';
 import 'package:pharmed_app/views/home/home_controller.dart';
 import 'package:pharmed_app/widgets/common_button.dart';
 import 'package:pharmed_app/widgets/custom_text.dart';
@@ -48,6 +49,9 @@ class _MedicineContainerState extends State<MedicineContainer> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+
     return GestureDetector(
       onTap: () {
         controller.searchMedication(
@@ -57,7 +61,7 @@ class _MedicineContainerState extends State<MedicineContainer> {
         padding:
             EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: 15),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark? Color(0xFF121212) : Colors.white,
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.3),
@@ -125,12 +129,12 @@ class _MedicineContainerState extends State<MedicineContainer> {
                     String displayName = controller.translatedMedicines[widget.data.name] ?? 
                       widget.data.name ?? 
                      'Unknown Medicine';
-                    _showBottomSheet(context, widget.data, displayName);
+                    _showBottomSheet(context, widget.data, displayName, isDark);
                   },
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      color: Colors.black,
+                      color:isDark? Colors.grey[800]: Colors.black,
                     ),
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                     child: Center(
@@ -150,7 +154,7 @@ class _MedicineContainerState extends State<MedicineContainer> {
     );
   }
 
-  void _showBottomSheet(BuildContext context, Datum data, medicineName) {
+  void _showBottomSheet(BuildContext context, Datum data, medicineName, isDark) {
   final HomeController controller = Get.find<HomeController>();
   final _formKey = GlobalKey<FormState>();
 
@@ -158,7 +162,7 @@ class _MedicineContainerState extends State<MedicineContainer> {
     isDismissible: false,
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.white,
+    backgroundColor: isDark? Color(0xFF121212) : Colors.white,
     builder: (BuildContext context) {
       double screenWidth = MediaQuery.of(context).size.width;
       double screenHeight = MediaQuery.of(context).size.height;
@@ -427,7 +431,6 @@ class _MedicineContainerState extends State<MedicineContainer> {
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(color: Colors.grey),
-                                        color: Color(0xffF9F9F9),
                                       ),
                                       padding: EdgeInsets.all(10),
                                       child: Center(
@@ -481,7 +484,6 @@ class _MedicineContainerState extends State<MedicineContainer> {
                                               decoration: BoxDecoration(
                                                 borderRadius: BorderRadius.circular(8),
                                                 border: Border.all(color: Colors.grey),
-                                                color: Color(0xffF9F9F9),
                                               ),
                                               padding: EdgeInsets.all(10),
                                               child: Center(
@@ -500,7 +502,8 @@ class _MedicineContainerState extends State<MedicineContainer> {
                           SizedBox(height: 20),
                           Obx(() => CommonButton(
                                 title: 'add_to_medicines'.tr,
-                                bgColor: Colors.black,
+                              bgColor: ColorConstants.themecolor,
+                              borderColor: ColorConstants.themecolor,
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     controller.addToMedicines(data.name ?? '', context);

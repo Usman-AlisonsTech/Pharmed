@@ -98,7 +98,6 @@ class _DeleteAccountViewState extends State<DeleteAccountView> {
                         height: 50,
                         textStyle: const TextStyle(
                           fontSize: 20,
-                          color: Colors.black,
                           fontWeight: FontWeight.w500,
                         ),
                         decoration: BoxDecoration(

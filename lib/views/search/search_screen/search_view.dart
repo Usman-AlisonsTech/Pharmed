@@ -12,6 +12,8 @@ class SearchView extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     final controller = Get.put(SearchScreenController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
 
     return Scaffold(
       body: Padding(
@@ -47,7 +49,7 @@ class SearchView extends StatelessWidget {
                           fontSize: 14,
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: isDark? Colors.black : Colors.white,
                         prefixIcon: GestureDetector(
                           onTap: () {
                             controller.searchMedication(
@@ -56,22 +58,21 @@ class SearchView extends StatelessWidget {
                           child: Icon(
                             Icons.search,
                             size: 18,
-                            color: Colors.black,
                           ),
                         ),
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.black),
+                          borderSide: BorderSide(color:isDark?Colors.white: Colors.black),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.black),
+                          borderSide: BorderSide(color:isDark?Colors.white: Colors.black),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.black),
+                          borderSide: BorderSide(color:isDark?Colors.white: Colors.black),
                         ),
                       ),
                       onChanged: (value) {
@@ -99,7 +100,7 @@ class SearchView extends StatelessWidget {
                 } else if (controller.searchResults.isEmpty &&
                     controller.searchController.text.isNotEmpty) {
                   return Container(
-                    color: Color(0xffF9F9F9),
+                    color: isDark? Color(0xFF121212): Color(0xffF9F9F9),
                     margin: EdgeInsets.only(top: 20),
                     child: ListTile(
                       title: CustomText(text: controller.searchController.text, weight: FontWeight.w500,fontSize: 14,),
@@ -108,7 +109,7 @@ class SearchView extends StatelessWidget {
                             controller.searchController.text,
                             controller.searchController.text);
                       },
-                      trailing: SvgPicture.asset('assets/svg/search_icon.svg'),
+                      trailing: SvgPicture.asset('assets/svg/search_icon.svg', color: isDark?Colors.white:Colors.black),
                     ),
                   );
                 } else if (controller.searchController.text.isEmpty) {
@@ -121,7 +122,7 @@ class SearchView extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final suggestion = controller.searchResults[index];
                         return Container(
-                          color: Color(0xffF9F9F9),
+                          color: isDark? Color(0xFF121212):Color(0xffF9F9F9),
                           margin: EdgeInsets.only(bottom: 10),
                           child: InkWell(
                             onTap: () {
@@ -160,7 +161,7 @@ class SearchView extends StatelessWidget {
                                     ),
                                   ),
                                   SizedBox(width: 16),
-                                  SvgPicture.asset('assets/svg/search_icon.svg'),
+                                  SvgPicture.asset('assets/svg/search_icon.svg', color: isDark?Colors.white:Colors.black,),
                                 ],
                               ),
                             ),
