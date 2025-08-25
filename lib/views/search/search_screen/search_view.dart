@@ -152,7 +152,7 @@ class SearchView extends StatelessWidget {
                                         ),
                                         SizedBox(height: 4),
                                         CustomText(
-                                          text: suggestion.genericName ?? 'Unknown',
+                                          text: suggestion.dosage ?? '',
                                           fontSize: 13,
                                           weight: FontWeight.w500,
                                           color: Color(0xffB1B1B1),
